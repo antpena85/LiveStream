@@ -146,3 +146,224 @@ records create/resume followed by pause/stop and successful listener removal,
 so the watch must be reopened and kept awake for the controlled trial. These
 events are not a new ping result. The first trial is phone Home/other-app with
 baseline and recovery pings, collected before a separate screen-off/lock trial.
+
+## Revision-2 Home trial: initiating watch paused
+
+The owner reported `Local request: CANCELLED on pause`, a first phone request
+timeout after reopening, then successful retries from phone and watch.
+The [watch lifecycle report](home-trial-pixel-watch-4.json) records request start
+at local elapsed 44,582,786 ms and pause at 44,592,733 ms, approximately
+9.947 seconds later, with `interactive=false`, pending cancellation and listener
+removal. This trial is confounded by the initiating watch pausing before the
+ten-second timeout; it does not settle phone background delivery. No screen
+timeout setting, wake lock or listener behavior was changed.
+
+The [phone lifecycle report](home-trial-pixel-10-pro-xl.json) records a request
+timeout while its activity was active, followed by a matched acknowledgment
+at 580 ms. The watch report later records a matched acknowledgment at 121 ms
+and receipt/acknowledgment of a phone ping. Watch pause/resume transitions are
+present, but the timeout's exact cause is not established. Do not equate active
+phone state with readiness of the remote watch listener at that instant.
+
+Collection initially timed out querying one ADB transport; a subsequent read
+collected the watch report without resetting pairing or radios. Pixel 8 Pro
+received no probe interaction. Next repeat the phone Home trial with the watch
+probe kept awake throughout the wait. Use one request, wait for a new matched
+acknowledgment or timeout, and collect before changing the phone state again.
+If cancellation recurs, retain it as cancellation, not remote failure. Screen-off/
+lock, production background delivery, radio recovery and G2 remain unverified.
+
+## Home repeat: watch pause reproduced
+
+The owner again reported cancellation. The
+[watch repeat report](home-repeat-pixel-watch-4.json) records request start at
+49,324,247 ms, pause at 49,334,172 ms (9.925 seconds later), and pending
+cancellation at 49,334,227 ms. The pause samples `interactive=false`. This is
+another local cancellation, not an observed acknowledgment timeout.
+
+The [phone repeat report](home-repeat-pixel-10-pro-xl.json) records activity
+pause/stop and successful listener removal; the latest sampled state is inactive
+and interactive. No new incoming callback follows that final pause in this
+snapshot. Phone Home-state response remains unproven because the initiating
+watch did not stay active through its timeout window.
+
+Do not ask the owner to repeat the unchanged procedure again. Next prepare a
+bounded diagnostic keep-awake option for the visible initiating watch during
+an outstanding request, with cleanup on acknowledgment, failure, timeout or
+pause. Preserve listener scope, do not add a background service or change
+system sleep settings, and label the intervention in evidence. No such change
+has been implemented in this follow-up.
+
+## Revision 3: bounded pending-request keep-awake deployed
+
+The subsequent owner `proceed` authorized the diagnostic adjustment.
+Two T04 red/green cycles verify pending eligibility through matched acknowledgment
+and explicit completion rejecting late acknowledgment. Retained outputs:
+[first red](keep-awake-red.log), [first green](keep-awake-green.log),
+[terminal red](keep-awake-terminal-red.log),
+[terminal green](keep-awake-terminal-green.log), and
+[final request-state XML](keep-awake-terminal-green.xml). The full JVM suite
+has 16 passing tests; these are host request-state checks, not Android power
+or listener timing tests.
+
+The Android adapter sets its keep-screen-on window flag for an active pending
+request and clears it on matched acknowledgment, send failure, timeout or pause.
+Each revision-3 event samples the flag. No background service, wake lock,
+pairing reset or system sleep-setting change was added. A stale send-failure
+callback is labeled separately rather than replacing a newer request result.
+
+[Build output](revision3-build.log) and [deployment receipt](revision3-deployment.json)
+retain the offline build and APK digest. Installation succeeded on Pro XL and
+Watch 4; [phone initial report](revision3-initial-pixel-10-pro-xl.json) and
+[watch initial report](revision3-initial-pixel-watch-4.json) confirm revision 3.
+Both initial reports include subsequent pause events, so they do not establish
+stable foreground readiness or keep-awake success. Revision 3 uses the separate
+`files/link-lifecycle-v3-report.json`; revision-2 reports are preserved.
+Pixel 8 Pro received no deployment or probe interaction.
+
+Next: owner opens both probes, waits for readiness, puts phone on Home, then
+sends one watch ping while leaving the watch probe visible for twelve seconds.
+Collect before recovery or screen-off trials. Physical keep-awake efficacy,
+Home-state response, M2.2, M2.4 and G2 remain open.
+
+## Revision-3 Home trial: timeout without initiating-watch pause
+
+After the owner reported `timeout`, collected new snapshots without reopening
+the phone probe or altering device settings:
+[phone](revision3-home-timeout-20261025T191120Z-pixel-10-pro-xl.json) and
+[watch](revision3-home-timeout-20261025T191120Z-pixel-watch-4.json).
+The watch request started at local elapsed 53,252,455 ms with `keepScreenOn=true`;
+send acceptance followed. `ack_timeout` occurred at 53,262,476 ms, 10.021 seconds
+later, still active and interactive, with `keepScreenOn=false` after cleanup.
+No intervening watch pause is logged. Its next pause was 35.223 seconds after
+the timeout. This run verifies the bounded adjustment avoided the previously
+observed initiating-watch cancellation; it does not establish all terminal
+Android cleanup paths or sustained power behavior.
+
+The phone's final sequence is listener readiness, pause/stop and listener removal
+with `removed=true`, inactive, interactive and unlocked. There is no later
+incoming callback in the collected phone report. Approximate wall-time ordering
+puts removal before the watch request, consistent with the owner's Home trial;
+cross-device clocks are not independently synchronized and monotonic clocks
+must not be compared across devices.
+
+Result: the foreground-only diagnostic produced no matching acknowledgment
+with the receiving phone app on Home. This is consistent with deliberate
+listener removal; it is not evidence of radio disconnection, a registration
+race, or platform inability to support a production background receiver.
+Next reopen the phone probe, wait for `listener_ready`, and send one watch ping
+to verify foreground recovery. Collect before a separate screen-off trial.
+Do not repeat the unchanged Home case. M2.2, M2.4 and G2 remain open.
+
+## Layout-only safe-area correction
+
+Owner reported first-line obstruction by the phone camera cutout and watch
+round edge before attempting recovery. Replaced raw-pixel padding with dp
+spacing and system-bar/display-cutout insets. Round screens use a centered
+70%-width/height clipped scrolling viewport, keeping all rows away from the
+curved corners even when scrolled. No dependency, transport, listener, timeout,
+keep-awake policy or diagnostic schema change was made.
+
+[Offline build](safe-area-build.log) passed; the
+[JVM regression task](safe-area-regression.log) passed using up-to-date results,
+not a fresh test execution or UI test. [Deployment receipt](safe-area-deployment.json)
+records successful installation of the same APK digest on Pro XL and Watch 4.
+No pings were sent. An attempted UI capture showed the phone lock screen,
+so visual confirmation requires the owner to unlock/open both probes; do not
+claim verified clipping correction from the build or installation alone.
+Pixel 8 Pro received no deployment or probe interaction. Recovery trial remains
+pending until the owner can read both displays.
+
+Pre-commit validation: [fresh JVM regression run](precommit-regression.log)
+passed with all tasks rerun (16 tests), distinct from the cached layout check.
+The incidental phone lock-screen screenshot was removed before staging; it
+provided no probe UI evidence. Retain the deployment receipt and owner's
+subsequent readability confirmation instead.
+
+## Recovery after requested lock trial: matched acknowledgment
+
+Owner reported `MATCHED`. The
+[phone snapshot](revision3-lock-recovery-20261025T195500Z-pixel-10-pro-xl.json)
+records a new foreground activity, listener readiness, incoming ping and
+accepted acknowledgment send while interactive and unlocked. The
+[watch retry snapshot](revision3-lock-recovery-20261025T195500Z-pixel-watch-4-retry.json)
+records request start at local elapsed 55,907,349 ms and matched acknowledgment
+at 55,907,910 ms (`roundTripMs=561`), active/interactive with no intervening
+pause. The keep-screen-on flag changed from true at request/send to false at
+matched acknowledgment. Exact packet-level cross-device correlation cannot be
+reconstructed without the intentionally omitted tokens; the watch's matched
+acknowledgment establishes local request success.
+
+The first watch ADB read timed out; retry collected the report without a
+pairing/radio reset, activity launch or settings change. An ADB collection
+timeout is not a probe acknowledgment timeout. Pixel 8 Pro received no probe
+interaction.
+
+This completes the requested Home and lock lifecycle observation sequence:
+watch cancellation was corrected by bounded foreground keep-awake; watch
+requests timed out with the phone receiver paused/listener removed, and
+foreground recovery succeeded after each condition (187 ms after Home,
+561 ms after the requested lock trial). The lock trial sampled locked state,
+not a proven sustained non-interactive interval. Owner readability acceptance
+is recorded separately. No further identical manual ping trial is needed.
+Production background handling, broader lifecycle/race reliability, other
+pending M2 checks and G2 are not established by this sequence; M2.2, M2.4 and
+G2 remain open.
+
+## Foreground recovery and owner layout review
+
+Owner reported `local request MATCHED` and confirmed the updated text looks
+cleaner and is readable on the phone and watch. This is owner visual acceptance
+for the current device layouts, not coverage of every screen size/font setting.
+
+New [watch snapshot](revision3-recovery-20261025T192225Z-pixel-watch-4.json)
+records a request at local elapsed 53,918,607 ms with `keepScreenOn=true`, followed
+by an incoming acknowledgment and `matched_ack` with `roundTripMs=187`, still
+active/interactive and with `keepScreenOn=false` after cleanup. There was no
+intervening pause. The [phone snapshot](revision3-recovery-20261025T192225Z-pixel-10-pro-xl.json)
+records foreground listener readiness, incoming ping and accepted acknowledgment
+send. Neither request tokens nor peer IDs were retained; exact cross-device
+packet matching cannot be independently reconstructed from these sanitized logs.
+The initiating watch's matched acknowledgment is the success criterion.
+
+Foreground recovery after the retained Home-state timeout is verified for this
+attempt, with no pairing/radio reset. Together these trials observe keep-awake
+release on timeout and matched acknowledgment; other cleanup paths are not
+physically established. Do not infer background support or all lifecycle-race
+coverage. No code or device settings changed during collection; Pixel 8 Pro
+received no probe interaction. Next separately check phone screen-off/locked
+state with the watch probe visible, then collect before reopening the phone.
+M2.2, M2.4 and G2 remain open.
+
+## Revision-3 requested screen-off trial: watch timeout, phone lock sampled
+
+After the owner reported `timeout`, collected
+[phone snapshot](revision3-screen-off-20261025T192743Z-pixel-10-pro-xl.json) and
+[watch snapshot](revision3-screen-off-20261025T192743Z-pixel-watch-4.json)
+without launching either activity or changing device settings.
+The latest watch request started at local elapsed 54,265,677 ms and timed out
+at 54,275,708 ms (10.031 seconds), active and interactive throughout the logged
+request endpoints, with no intervening pause. The keep-screen-on flag was true
+at start/send acceptance and false at timeout. No matched acknowledgment was
+recorded for that request.
+
+The phone's latest activity became ready, then paused, removed its listener
+(`removed=true`) and stopped. At stop, `keyguardLocked=true` and
+`deviceLocked=true`, but `interactive=true`. No incoming ping callback followed
+in the snapshot. Thus a locked state is sampled; non-interactive/display-off
+state during the watch request is not directly measured by these activity-only
+logs. Approximate wall-time ordering places phone stop before the watch request;
+cross-device clocks remain unsynchronized. Do not label this a proven sustained
+screen-off interval or infer radio disconnection/platform background limits.
+
+An additional earlier phone-initiated request timed out in this snapshot while
+the phone was active. It predates the final phone activity's pause/stop and the
+latest watch request; its remote listener state and cause are unresolved. Do
+not conflate it with the requested watch-initiated trial or assume the owner
+performed only the prescribed sequence.
+
+The current result is consistent with the foreground-only receiver's deliberate
+listener removal. Next unlock/reopen the phone, wait for `listener_ready`, then
+send one watch ping with both probes visible to check recovery after this trial.
+No repeated unchanged lock trial is needed. Pixel 8 Pro received no probe
+interaction. M2.2, M2.4 and G2 remain open.

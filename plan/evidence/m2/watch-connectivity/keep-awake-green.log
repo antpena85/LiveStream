@@ -1,0 +1,48 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :compileKotlin
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar
+> Task :compileTestKotlin UP-TO-DATE
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+
+> Task :test
+
+PendingProbeTest > keepAwakeEligibilityLastsOnlyUntilMatchingAcknowledgment PASSED
+
+PendingProbeTest > onlyExpectedPeerAndTokenCompletePendingRequestOnce PASSED
+
+DurableCommandProbeTest > processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry PASSED
+
+DurableCommandProbeTest > confirmedResetStartsDurableNewEpochWithZeroPointsAndRevision PASSED
+
+DurableCommandProbeTest > commandIdInNewEpochHasItsOwnDurableReceiptAndAppliesOnlyOnce PASSED
+
+DurableCommandProbeTest > canceledResetPreservesEpochPointsRevisionAndReceiptsAfterReopen PASSED
+
+DurableCommandProbeTest > simultaneousRetriesOfOnePointApplyOnceAndSurviveReopen PASSED
+
+DurableCommandProbeTest > oldPointCommandsCannotChangeResetMatchAfterReopenEvenWhenRevisionsCoincide PASSED
+
+DurableCommandProbeTest > processInterruptedDuringResetPreservesOldEpochAndAllowsConfirmedRetry PASSED
+
+DurableCommandProbeTest > committedPointWithLostAcknowledgmentRetainsOriginalReceiptWithoutReapplyingAfterReopen PASSED
+
+DurableCommandProbeTest > concurrentPointCommandsReceiveDistinctDurableRevisions PASSED
+
+DurableCommandProbeTest > acceptedPointSurvivesReopenAndRetryDoesNotApplyItAgain PASSED
+
+StreamSessionTest > confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped PASSED
+
+StreamSessionTest > unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission PASSED
+
+StreamSessionTest > confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped PASSED
+
+BUILD SUCCESSFUL in 12s
+4 actionable tasks: 3 executed, 1 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html

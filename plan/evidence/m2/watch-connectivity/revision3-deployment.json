@@ -1,0 +1,30 @@
+{
+  "apkSha256": "398b7bcf66a8520cdf846294cd8390062412e3ad9b078acc1427198b8a1ce5d8",
+  "devices": [
+    {
+      "model": "Pixel 10 Pro XL",
+      "install": "Performing Streamed Install\nSuccess",
+      "revision": 3,
+      "events": [
+        "activity_resumed",
+        "activity_paused",
+        "listener_remove_completed",
+        "activity_stopped",
+        "activity_destroyed"
+      ]
+    },
+    {
+      "model": "Pixel Watch 4",
+      "install": "Performing Streamed Install\nSuccess",
+      "revision": 3,
+      "events": [
+        "activity_created",
+        "activity_resumed",
+        "activity_paused",
+        "activity_stopped",
+        "listener_remove_completed"
+      ]
+    }
+  ],
+  "physicalKeepAwakeTrial": "pending owner action"
+}

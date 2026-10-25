@@ -1,0 +1,69 @@
+{
+  "probeVersion": "m2-watch-1",
+  "diagnosticRevision": 3,
+  "model": "Pixel Watch 4",
+  "buildId": "CP3A.260905.002",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "activity_created",
+      "detail": "",
+      "elapsedMs": 49801418,
+      "wallTimeMs": 1792951836075,
+      "activityInstance": "25b9600e-31b8-47e0-8d69-2d21b208adf9",
+      "activityActive": false,
+      "keepScreenOn": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_resumed",
+      "detail": "",
+      "elapsedMs": 49801504,
+      "wallTimeMs": 1792951836162,
+      "activityInstance": "25b9600e-31b8-47e0-8d69-2d21b208adf9",
+      "activityActive": true,
+      "keepScreenOn": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_paused",
+      "detail": "",
+      "elapsedMs": 49801801,
+      "wallTimeMs": 1792951836459,
+      "activityInstance": "25b9600e-31b8-47e0-8d69-2d21b208adf9",
+      "activityActive": false,
+      "keepScreenOn": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_stopped",
+      "detail": "",
+      "elapsedMs": 49801901,
+      "wallTimeMs": 1792951836559,
+      "activityInstance": "25b9600e-31b8-47e0-8d69-2d21b208adf9",
+      "activityActive": false,
+      "keepScreenOn": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "listener_remove_completed",
+      "detail": "removed=false",
+      "elapsedMs": 49802085,
+      "wallTimeMs": 1792951836742,
+      "activityInstance": "25b9600e-31b8-47e0-8d69-2d21b208adf9",
+      "activityActive": false,
+      "keepScreenOn": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    }
+  ]
+}

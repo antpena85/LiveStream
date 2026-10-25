@@ -56,3 +56,15 @@ the watch probe awake during each phone-state trial and wait at least ten
 seconds after sending. Do not interpret foreground-only diagnostic timeout as
 a production background-support decision. These are instrumentation changes,
 not new command-protocol behavior or a claimed host red/green cycle.
+
+## Bounded foreground keep-awake correction
+
+The repeated watch pause preempted the ten-second timeout. At confirmed T04,
+test that a request is pending until matched acknowledgment, or explicit
+completion for timeout/failure/pause; late acknowledgments after completion
+must not revive it. The Android adapter sets the activity keep-screen-on flag
+only for an active pending request, clears it on all terminal paths and pause,
+and records the flag with each event. This is a diagnostic intervention, not
+production power policy. Do not add a wake lock, background service or change
+system sleep settings. Use revision 3 and a separate report to preserve older
+evidence. Actual prevention of watch sleep still requires a physical trial.

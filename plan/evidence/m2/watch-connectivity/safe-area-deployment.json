@@ -1,0 +1,15 @@
+{
+  "apkSha256": "5873eeade74966d9a68f68d2be4790bc2ca5637c0c3c6a2e741a21fb336d47cc",
+  "devices": [
+    {
+      "model": "Pixel 10 Pro XL",
+      "installed": true
+    },
+    {
+      "model": "Pixel Watch 4",
+      "installed": true
+    }
+  ],
+  "visualConfirmation": "pending owner unlock/open; first phone screenshot showed lock screen",
+  "noPingsSent": true
+}

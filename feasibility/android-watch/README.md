@@ -48,3 +48,24 @@ five seconds, send one watch ping and wait at least ten seconds. Reopen the
 phone probe, wait for listener readiness, and send one watch ping to check
 recovery. Collect revision-2 metadata before repeating screen-off/lock as a
 separate trial. Listener behavior is unchanged; no background service is added.
+
+## Lifecycle diagnostic revision 3
+
+Revision 3 writes `files/link-lifecycle-v3-report.json`; both older report files
+are preserved. Events include `keepScreenOn`, the sampled activity window flag,
+not proof of actual display state. An active pending local request sets
+`FLAG_KEEP_SCREEN_ON`; matched acknowledgment, send failure, ten-second timeout
+or pause clears it. No wake lock, background service or system sleep-setting
+change is used. Listener registration/removal remains foreground-only.
+
+For the next trial, open both probes and wait for `listener_ready`. Put only
+the phone on Home, then open/keep the watch probe visible and send one ping.
+Wait twelve seconds without leaving the watch app or pressing its power button.
+Report the Local request result and leave the phone on Home for collection.
+Do not combine this with a locked-phone trial. Whether the window flag prevents
+the observed watch pause is still pending physical verification.
+
+The layout-only safe-area update retains revision 3: phone content respects
+system-bar/camera-cutout insets, and round displays use an inset, clipped
+scrolling viewport. Open both probes to confirm text is readable before the
+foreground recovery ping. No connectivity behavior changed.

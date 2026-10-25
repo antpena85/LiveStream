@@ -1,0 +1,63 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :compileKotlin
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar
+> Task :compileTestKotlin
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+
+> Task :test
+
+DurableCommandProbeTest > processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry PASSED
+
+DurableCommandProbeTest > confirmedResetStartsDurableNewEpochWithZeroPointsAndRevision PASSED
+
+DurableCommandProbeTest > commandIdInNewEpochHasItsOwnDurableReceiptAndAppliesOnlyOnce PASSED
+
+DurableCommandProbeTest > canceledResetPreservesEpochPointsRevisionAndReceiptsAfterReopen PASSED
+
+DurableCommandProbeTest > simultaneousRetriesOfOnePointApplyOnceAndSurviveReopen PASSED
+
+DurableCommandProbeTest > oldPointCommandsCannotChangeResetMatchAfterReopenEvenWhenRevisionsCoincide PASSED
+
+DurableCommandProbeTest > processInterruptedDuringResetPreservesOldEpochAndAllowsConfirmedRetry PASSED
+
+DurableCommandProbeTest > committedPointWithLostAcknowledgmentRetainsOriginalReceiptWithoutReapplyingAfterReopen PASSED
+
+DurableCommandProbeTest > concurrentPointCommandsReceiveDistinctDurableRevisions PASSED
+
+DurableCommandProbeTest > acceptedPointSurvivesReopenAndRetryDoesNotApplyItAgain PASSED
+
+PendingProbeTest > keepAwakeEligibilityLastsOnlyUntilMatchingAcknowledgment FAILED
+    value of: isPending()
+    expected to be true
+        at app//livestream.feasibility.PendingProbeTest.keepAwakeEligibilityLastsOnlyUntilMatchingAcknowledgment(PendingProbeTest.kt:13)
+
+PendingProbeTest > onlyExpectedPeerAndTokenCompletePendingRequestOnce PASSED
+
+StreamSessionTest > confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped PASSED
+
+StreamSessionTest > unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission PASSED
+
+StreamSessionTest > confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped PASSED
+
+15 tests completed, 1 failed
+
+> Task :test FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///D:/Playground/LiveStream/feasibility/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 13s
+4 actionable tasks: 4 executed

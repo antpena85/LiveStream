@@ -9,6 +9,8 @@ import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
 import android.util.AtomicFile
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -38,14 +40,17 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
     private val messages by lazy { Wearable.getMessageClient(this) }
     private val nodes by lazy { Wearable.getNodeClient(this) }
     private val timeout = Runnable {
-        if (pending != null) { pending = null; note("ack_timeout"); send.isEnabled = ready }
+        if (pending != null) { finishPending(); note("ack_timeout") }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val round = resources.configuration.isScreenRound
+        fun dp(value: Int) = (value * resources.displayMetrics.density + 0.5f).toInt()
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(28, 32, 28, 32)
+            val spacing = dp(if (round) 8 else 16)
+            setPadding(spacing, spacing, spacing, spacing)
         }
         status = TextView(this).apply { text = "M2 link check. Open this app on phone and watch. No match/media controls." }
         content.addView(status)
@@ -57,12 +62,36 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
             setOnClickListener { discoverAndSend() }
         }
         content.addView(send)
-        setContentView(ScrollView(this).apply { addView(content) })
+        val scroll = ScrollView(this).apply {
+            addView(content)
+            // Clip the scrolling viewport, not just its first row, to the safe area.
+            clipToPadding = true
+            setOnApplyWindowInsetsListener { view, insets ->
+                val safe = insets.getInsetsIgnoringVisibility(
+                    WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
+                )
+                // A centered 70%-width/height box fits inside a circular display.
+                val roundX = if (round) kotlin.math.ceil(view.width * 0.15).toInt() else 0
+                val roundY = if (round) kotlin.math.ceil(view.height * 0.15).toInt() else 0
+                view.setPadding(
+                    maxOf(safe.left, roundX), maxOf(safe.top, roundY),
+                    maxOf(safe.right, roundX), maxOf(safe.bottom, roundY)
+                )
+                insets
+            }
+            addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                if (right - left != oldRight - oldLeft || bottom - top != oldBottom - oldTop) {
+                    view.requestApplyInsets()
+                }
+            }
+        }
+        setContentView(scroll)
+        scroll.requestApplyInsets()
         val saved = lifecycleReport()
         try {
-            if (saved.baseFile.exists() || filesDir.resolve("link-lifecycle-report.json.bak").exists()) {
+            if (saved.baseFile.exists() || filesDir.resolve("link-lifecycle-v3-report.json.bak").exists()) {
                 val previous = JSONObject(saved.readFully().toString(Charsets.UTF_8))
-                if (previous.optInt("diagnosticRevision") == 2) events = previous.getJSONArray("events")
+                if (previous.optInt("diagnosticRevision") == 3) events = previous.getJSONArray("events")
             }
         } catch (failure: Exception) {
             note("history_read_failed", failure.javaClass.simpleName)
@@ -95,16 +124,17 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
             val token = UUID.randomUUID().toString()
             val request = PendingProbe(peer.id, token)
             pending = request
+            updateKeepAwake()
             started = SystemClock.elapsedRealtime()
             note("request_started")
             handler.postDelayed(timeout, 10000)
             messages.sendMessage(peer.id, "/m2/ping", token.toByteArray(Charsets.UTF_8))
                 .addOnSuccessListener { note("send_accepted_not_ack") }
                 .addOnFailureListener {
-                    note("send_failed", it.javaClass.simpleName)
                     if (pending === request) {
-                        pending = null; handler.removeCallbacks(timeout); send.isEnabled = ready
-                    }
+                        finishPending()
+                        note("send_failed", it.javaClass.simpleName)
+                    } else note("late_send_failed", it.javaClass.simpleName)
                 }
         }.addOnFailureListener { note("discovery_failed", it.javaClass.simpleName); send.isEnabled = ready }
     }
@@ -123,11 +153,25 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
             }
             "/m2/ack" -> {
                 if (pending?.acknowledge(event.sourceNodeId, event.data.toString(Charsets.UTF_8)) == true) {
+                    finishPending()
                     note("matched_ack", "roundTripMs=${SystemClock.elapsedRealtime() - started}")
-                    pending = null; handler.removeCallbacks(timeout); send.isEnabled = ready
                 } else note("unmatched_ack")
             }
         }
+    }
+
+    private fun updateKeepAwake() {
+        if (active && pending?.isPending() == true) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    private fun finishPending() {
+        pending?.complete()
+        pending = null
+        handler.removeCallbacks(timeout)
+        updateKeepAwake()
+        send.isEnabled = active && ready
     }
 
     private fun note(kind: String, detail: String = "") {
@@ -137,6 +181,7 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
             .put("elapsedMs", SystemClock.elapsedRealtime())
             .put("wallTimeMs", System.currentTimeMillis())
             .put("activityInstance", activityInstance).put("activityActive", active)
+            .put("keepScreenOn", window.attributes.flags and WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON != 0)
             .put("interactive", power.isInteractive)
             .put("keyguardLocked", keyguard.isKeyguardLocked)
             .put("deviceLocked", keyguard.isDeviceLocked))
@@ -150,7 +195,7 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
         }
         requestResult.text = lastRequestResult
         val report = JSONObject().put("probeVersion", "m2-watch-1")
-            .put("diagnosticRevision", 2)
+            .put("diagnosticRevision", 3)
             .put("model", Build.MODEL).put("buildId", Build.ID)
             .put("transportPath", "not_measured").put("events", events)
         val file = lifecycleReport()
@@ -164,17 +209,17 @@ class LinkActivity : Activity(), MessageClient.OnMessageReceivedListener {
         }
     }
 
-    private fun lifecycleReport() = AtomicFile(filesDir.resolve("link-lifecycle-report.json"))
+    private fun lifecycleReport() = AtomicFile(filesDir.resolve("link-lifecycle-v3-report.json"))
 
     override fun onPause() {
         active = false; ready = false
+        val wasPending = pending != null
+        finishPending()
         note("activity_paused")
         messages.removeListener(this)
             .addOnSuccessListener { note("listener_remove_completed", "removed=$it") }
             .addOnFailureListener { note("listener_remove_failed", it.javaClass.simpleName) }
-        handler.removeCallbacks(timeout)
-        if (pending != null) note("pending_cancelled_on_pause")
-        pending = null; send.isEnabled = false
+        if (wasPending) note("pending_cancelled_on_pause")
         super.onPause()
     }
 
