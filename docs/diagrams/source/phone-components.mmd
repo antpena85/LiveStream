@@ -1,0 +1,16 @@
+flowchart TB
+    UI["Local phone UI"] --> CMD["Authorized command processor"]
+    MOBILE["Android controller adapter"] --> CMD
+    WEAR["Wear Data Layer adapter"] --> CMD
+    CMD --> MATCH["Match rules and state"]
+    MATCH --> STORE[("Atomic local match store")]
+    MATCH --> PROJ["Committed match projection"]
+    PROJ --> UI
+    PROJ --> MOBILE
+    PROJ --> WEAR
+    PROJ --> MEDIA["Capture, overlay, encode and publish"]
+    CMD --> SESSION["Stream session coordinator"]
+    SESSION --> MEDIA
+    SESSION --> SETUP["Destination setup adapters"]
+    SETUP --> SECRETS[("Protected credential store")]
+    MEDIA -->|Metrics and health| SESSION

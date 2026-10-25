@@ -1,0 +1,7 @@
+flowchart LR
+    OWNER["Streamer / local scorekeeper"] -->|Local controls| PHONE["Streaming Android phone"]
+    REMOTE["Second Android phone or tablet"] <-->|Authorized commands and status| PHONE
+    WATCH["Wear OS watch"] <-->|Data Layer / direct companion pairing| PHONE
+    PHONE -->|One audio/video broadcast| DEST["YouTube, Twitch or manual destination"]
+    PHONE <-->|Optional sign-in and setup APIs| AUTH["YouTube / Twitch authorization and APIs"]
+    DEST -->|Platform playback| VIEW["Viewers"]

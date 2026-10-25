@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 939.9419999999999 499.4" width="939.9419999999999" height="499.4" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="UI" data-to="CMD" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="115.73399999999997,153.8 115.73399999999997,173.8 303.20799999999997,173.8 303.20799999999997,193.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MOBILE" data-to="CMD" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="303.20799999999997,153.8 303.20799999999997,173.8 303.20799999999997,173.8 303.20799999999997,193.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="WEAR" data-to="CMD" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="521.0629999999999,153.8 521.0629999999999,173.8 303.20799999999997,173.8 303.20799999999997,193.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CMD" data-to="MATCH" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="303.20799999999997,230.70000000000002 303.20799999999997,246.70000000000005 152.44366666666664,246.70000000000005 152.44366666666664,262.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MATCH" data-to="STORE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="152.44366666666667,299.6 152.44366666666667,339.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MATCH" data-to="PROJ" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="124.70399999999995,262.70000000000005 124.70399999999995,258.70000000000005 40.039999999999964,258.70000000000005 40.039999999999964,92.9 246.32466666666664,92.9 246.32466666666664,76.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PROJ" data-to="UI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="312.17799999999994,76.9 312.17799999999994,96.9 115.73399999999997,96.9 115.73399999999997,116.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PROJ" data-to="MOBILE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="312.17799999999994,76.9 312.17799999999994,96.9 303.20799999999997,96.9 303.20799999999997,116.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PROJ" data-to="WEAR" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="312.17799999999994,76.9 312.17799999999994,96.9 521.0629999999999,96.9 521.0629999999999,116.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PROJ" data-to="MEDIA" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="312.17799999999994,76.9 312.17799999999994,96.9 770.04,96.9 770.04,117.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CMD" data-to="SESSION" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="303.20799999999997,230.70000000000002 303.20799999999997,246.70000000000005 713.1593333333333,246.70000000000005 713.1593333333333,262.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SESSION" data-to="MEDIA" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="713.1593333333333,262.70000000000005 713.1593333333333,242.70000000000002 740.54,242.70000000000002 740.54,242.70000000000002 726.7393333333332,242.70000000000002 726.7393333333332,154.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SESSION" data-to="SETUP" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="713.1593333333333,299.6 713.1593333333333,339.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SETUP" data-to="SECRETS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="713.1593333333333,376.5 713.1593333333333,408.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MEDIA" data-to="SESSION" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Metrics and health" points="813.3406666666666,154.4 813.3406666666666,182.4 808.51,182.4 808.51,242.70000000000002 764.4018333333332,242.70000000000002 764.4018333333332,262.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="MEDIA" data-to="SESSION" data-label="Metrics and health">
+  <rect x="756.51" y="189.4" width="103.78000000000003" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="808.4" y="204.55" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Metrics and health</text>
+</g>
+<g class="node" data-id="UI" data-label="Local phone UI" data-shape="rectangle">
+  <rect x="51.039999999999964" y="116.9" width="129.388" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="115.73399999999997" y="135.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Local phone UI</text>
+</g>
+<g class="node" data-id="CMD" data-label="Authorized command processor" data-shape="rectangle">
+  <rect x="188.12599999999998" y="193.8" width="230.164" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="303.20799999999997" y="212.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Authorized command processor</text>
+</g>
+<g class="node" data-id="MOBILE" data-label="Android controller adapter" data-shape="rectangle">
+  <rect x="204.428" y="116.9" width="197.56" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="303.20799999999997" y="135.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Android controller adapter</text>
+</g>
+<g class="node" data-id="WEAR" data-label="Wear Data Layer adapter" data-shape="rectangle">
+  <rect x="425.98799999999994" y="116.9" width="190.14999999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="521.0629999999999" y="135.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Wear Data Layer adapter</text>
+</g>
+<g class="node" data-id="MATCH" data-label="Match rules and state" data-shape="rectangle">
+  <rect x="69.22466666666662" y="262.70000000000005" width="166.43800000000005" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="152.44366666666664" y="281.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Match rules and state</text>
+</g>
+<g class="node" data-id="STORE" data-label="Atomic local match store" data-shape="cylinder">
+  <rect x="62.185166666666646" y="346.6" width="180.517" height="36.900000000000006" fill="var(--_node-fill)" stroke="none" />
+  <line x1="62.185166666666646" y1="346.6" x2="62.185166666666646" y2="383.5" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="242.70216666666664" y1="346.6" x2="242.70216666666664" y2="383.5" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="152.44366666666664" cy="383.5" rx="90.2585" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="152.44366666666664" cy="346.6" rx="90.2585" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="152.44366666666664" y="365.05" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Atomic local match store</text>
+</g>
+<g class="node" data-id="PROJ" data-label="Committed match projection" data-shape="rectangle">
+  <rect x="213.39799999999997" y="40" width="197.55999999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="312.17799999999994" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Committed match projection</text>
+</g>
+<g class="node" data-id="MEDIA" data-label="Capture, overlay, encode and publish" data-shape="rectangle">
+  <rect x="640.1379999999999" y="117.5" width="259.804" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="770.04" y="135.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Capture, overlay, encode and publish</text>
+</g>
+<g class="node" data-id="SESSION" data-label="Stream session coordinator" data-shape="rectangle">
+  <rect x="610.6743333333333" y="262.70000000000005" width="204.96999999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="713.1593333333333" y="281.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Stream session coordinator</text>
+</g>
+<g class="node" data-id="SETUP" data-label="Destination setup adapters" data-shape="rectangle">
+  <rect x="614.3793333333333" y="339.6" width="197.56" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="713.1593333333333" y="358.05" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Destination setup adapters</text>
+</g>
+<g class="node" data-id="SECRETS" data-label="Protected credential store" data-shape="cylinder">
+  <rect x="615.8613333333333" y="415.5" width="194.59599999999998" height="36.900000000000006" fill="var(--_node-fill)" stroke="none" />
+  <line x1="615.8613333333333" y1="415.5" x2="615.8613333333333" y2="452.4" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="810.4573333333333" y1="415.5" x2="810.4573333333333" y2="452.4" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="713.1593333333333" cy="452.4" rx="97.29799999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="713.1593333333333" cy="415.5" rx="97.29799999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="713.1593333333333" y="433.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Protected credential store</text>
+</g>
+</svg>

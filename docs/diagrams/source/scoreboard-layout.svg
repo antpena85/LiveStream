@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1680" viewBox="0 0 1280 1680" role="img" aria-labelledby="title desc">
+  <title id="title">M1.6 configurable scoreboard placement examples</title>
+  <desc id="desc">Two schematic 1280 by 720 landscape frames show the same scoreboard at top-left and bottom-center. Eagles lead 24 to 22, sets 2 to 1, with 1 and 2 timeouts remaining. Eagles serve. Dashed safe-area guides and documentation labels are not broadcast content. Dimensions, colors, and typography remain proposals.</desc>
+  <defs>
+    <linearGradient id="venue" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c293a"/>
+      <stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <g id="court">
+      <rect width="1280" height="720" fill="url(#venue)"/>
+      <path d="M 145 215 L 1135 215 L 1250 675 L 30 675 Z" fill="#ae7443"/>
+      <path d="M 290 260 L 990 260 L 1070 610 L 210 610 Z" fill="#cd925c" stroke="#f8fafc" stroke-width="4"/>
+      <path d="M 260 385 L 1020 385 M 235 493 L 1045 493 M 250 440 L 1032 440" stroke="#f8fafc" stroke-width="3" fill="none"/>
+      <path d="M 175 438 L 1110 438" stroke="#192b3c" stroke-width="8"/>
+      <path d="M 175 432 L 1110 432" stroke="#e2e8f0" stroke-width="2"/>
+      <rect x="64" y="36" width="1152" height="648" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="12 8"/>
+    </g>
+    <g id="scoreboard" font-family="Arial, sans-serif" fill="#ffffff">
+      <rect width="620" height="132" rx="10" fill="#101824"/>
+      <line x1="256" y1="18" x2="256" y2="114" stroke="#64748b"/>
+      <line x1="364" y1="18" x2="364" y2="114" stroke="#64748b"/>
+      <circle cx="26" cy="38" r="7" fill="#ffffff"/>
+      <text x="46" y="48" font-size="30" font-weight="700">EAG</text>
+      <text x="228" y="59" text-anchor="end" font-size="52" font-weight="700">24</text>
+      <text x="46" y="103" font-size="25" font-weight="700">T/O 1</text>
+      <text x="310" y="37" text-anchor="middle" font-size="18" font-weight="700" fill="#e2e8f0">SETS</text>
+      <text x="310" y="84" text-anchor="middle" font-size="32" font-weight="700">2 - 1</text>
+      <text x="394" y="48" font-size="30" font-weight="700">PAN</text>
+      <text x="594" y="59" text-anchor="end" font-size="52" font-weight="700">22</text>
+      <text x="394" y="103" font-size="25" font-weight="700">T/O 2</text>
+    </g>
+  </defs>
+  <rect width="1280" height="1680" fill="#f8fafc"/>
+  <g font-family="Arial, sans-serif" fill="#17263b">
+    <text x="32" y="36" font-size="26" font-weight="700">M1.6 · placement examples</text>
+    <text x="32" y="66" font-size="19">Same committed values, one chosen placement at a time. Geometry and typography are proposals.</text>
+  </g>
+  <g transform="translate(0 88)">
+    <use href="#court"/>
+    <use href="#scoreboard" x="64" y="36"/>
+    <g font-family="Arial, sans-serif" font-size="21" fill="#ffffff">
+      <text x="754" y="70" font-weight="700">A · TOP-LEFT EXAMPLE</text>
+      <text x="754" y="102">1280 × 720 schematic frame</text>
+      <text x="80" y="657">Dashed guide: candidate 5% inset per axis</text>
+    </g>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#17263b">
+    <text x="32" y="846" font-size="20" font-weight="700">Only the dark scoreboard plate represents broadcast content. Court and labels are documentation.</text>
+  </g>
+  <g transform="translate(0 872)">
+    <use href="#court"/>
+    <use href="#scoreboard" x="330" y="552"/>
+    <g font-family="Arial, sans-serif" font-size="21" fill="#ffffff">
+      <text x="80" y="70" font-weight="700">B · BOTTOM-CENTER EXAMPLE</text>
+      <text x="80" y="102">Same values and team order</text>
+      <text x="80" y="138">Candidate insets: 64 px horizontal, 36 px vertical</text>
+    </g>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#17263b" font-size="19">
+    <text x="32" y="1631">Illustration only · not an app screenshot, encoded frame, or received broadcast.</text>
+    <text x="32" y="1661">No quality floor, minimum font size, or final block dimensions are selected by this artwork.</text>
+  </g>
+</svg>

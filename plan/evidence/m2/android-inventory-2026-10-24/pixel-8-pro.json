@@ -1,0 +1,140 @@
+{
+  "probeVersion": "m2-inventory-1",
+  "model": "Pixel 8 Pro",
+  "androidRelease": "17",
+  "api": 37,
+  "buildId": "CP31.260608.007",
+  "securityPatch": "2026-06-05",
+  "cameraPermission": true,
+  "audioPermission": true,
+  "cameraCapture": "not_run",
+  "audioCapture": "not_run",
+  "encoding": "not_run",
+  "publishing": "not_run",
+  "cameras": [
+    {
+      "cameraId": "0",
+      "facing": 1,
+      "focalLengths": [
+        6.9
+      ],
+      "physicalCameraIds": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "advertises720pSurfaceTexture": true
+    },
+    {
+      "cameraId": "1",
+      "facing": 0,
+      "focalLengths": [
+        2.74
+      ],
+      "physicalCameraIds": [
+        "7",
+        "8"
+      ],
+      "advertises720pSurfaceTexture": true
+    }
+  ],
+  "encoders": [
+    {
+      "name": "c2.android.aac.encoder",
+      "mime": "audio\/mp4a-latm",
+      "hardwareAccelerated": false
+    },
+    {
+      "name": "OMX.google.aac.encoder",
+      "mime": "audio\/mp4a-latm",
+      "hardwareAccelerated": false
+    },
+    {
+      "name": "c2.exynos.h264.encoder",
+      "mime": "video\/avc",
+      "hardwareAccelerated": true,
+      "advertises720p30": true,
+      "advertisesSurfaceInput": true
+    },
+    {
+      "name": "c2.android.xheaac.encoder",
+      "mime": "audio\/mp4a-latm",
+      "hardwareAccelerated": false
+    },
+    {
+      "name": "c2.android.avc.encoder",
+      "mime": "video\/avc",
+      "hardwareAccelerated": false,
+      "advertises720p30": true,
+      "advertisesSurfaceInput": true
+    },
+    {
+      "name": "OMX.google.h264.encoder",
+      "mime": "video\/avc",
+      "hardwareAccelerated": false,
+      "advertises720p30": true,
+      "advertisesSurfaceInput": true
+    }
+  ],
+  "advertisedAudioInputs": [
+    {
+      "type": 15,
+      "sampleRates": [
+        48000
+      ],
+      "channelCounts": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "type": 18,
+      "sampleRates": [
+        48000
+      ],
+      "channelCounts": [
+        1
+      ]
+    },
+    {
+      "type": 15,
+      "sampleRates": [
+        48000
+      ],
+      "channelCounts": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "type": 25,
+      "sampleRates": [
+        8000,
+        16000,
+        32000,
+        48000,
+        11025,
+        192000,
+        44100
+      ],
+      "channelCounts": [
+        2
+      ]
+    },
+    {
+      "type": 28,
+      "sampleRates": [
+        48000
+      ],
+      "channelCounts": [
+        2
+      ]
+    }
+  ]
+}

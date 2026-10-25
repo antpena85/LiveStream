@@ -1,0 +1,16 @@
+{
+  "diagnosticRevision": 2,
+  "apkSha256": "f4493f467815913e2468a02a55f5e93a36827fa6bd956efae50520410d1efbf1",
+  "devices": [
+    {
+      "model": "Pixel 10 Pro XL",
+      "installed": true,
+      "launchAccepted": true
+    },
+    {
+      "model": "Pixel Watch 4",
+      "installed": true,
+      "launchAccepted": true
+    }
+  ]
+}

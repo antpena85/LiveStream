@@ -1,0 +1,24 @@
+{
+    "recordedDate":  "2026-10-24",
+    "buildCommand":  "powershell -NoProfile -ExecutionPolicy Bypass -File tools/m2/run-android-inventory.ps1 assembleDebug --offline",
+    "buildExitCode":  0,
+    "package":  "livestream.feasibility.inventory",
+    "version":  "m2-inventory-1",
+    "apkRelativePath":  "feasibility\\android-inventory\\build\\outputs\\apk\\debug\\livestream-m2-android-inventory-debug.apk",
+    "apkBytes":  2490034,
+    "apkSha256":  "dcaa62e105d12b99c7f3e14f43786c5631bd58272d5abaff30c7abe075d52e38",
+    "agp":  "9.2.0",
+    "gradle":  "9.4.1",
+    "jdkMajor":  17,
+    "compileSdk":  37,
+    "targetSdk":  37,
+    "probeMinSdk":  31,
+    "signing":  "Project-local diagnostic debug key; not a release signing identity",
+    "installCommand":  "powershell -NoProfile -ExecutionPolicy Bypass -File tools/m2/device-capability-probe.ps1 -Action Install",
+    "installedAndOpenedOn":  [
+                                 "Pixel 8 Pro",
+                                 "Pixel 10 Pro XL"
+                             ],
+    "capture":  "not_run",
+    "publishing":  "not_run"
+}

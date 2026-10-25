@@ -1,0 +1,42 @@
+{
+  "probeVersion": "m2-watch-1",
+  "diagnosticRevision": 2,
+  "model": "Pixel 10 Pro XL",
+  "buildId": "CP3A.261005.005",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "activity_created",
+      "detail": "",
+      "elapsedMs": 423481555,
+      "wallTimeMs": 1792945689506,
+      "activityInstance": "4b786030-657d-460c-9e5d-b5e2d0c1265c",
+      "activityActive": false,
+      "interactive": true,
+      "keyguardLocked": true,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_resumed",
+      "detail": "",
+      "elapsedMs": 423481564,
+      "wallTimeMs": 1792945689514,
+      "activityInstance": "4b786030-657d-460c-9e5d-b5e2d0c1265c",
+      "activityActive": true,
+      "interactive": true,
+      "keyguardLocked": true,
+      "deviceLocked": false
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 423481630,
+      "wallTimeMs": 1792945689580,
+      "activityInstance": "4b786030-657d-460c-9e5d-b5e2d0c1265c",
+      "activityActive": true,
+      "interactive": true,
+      "keyguardLocked": true,
+      "deviceLocked": false
+    }
+  ]
+}

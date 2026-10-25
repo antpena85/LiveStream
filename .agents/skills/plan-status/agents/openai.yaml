@@ -1,0 +1,3 @@
+interface:
+  display_name: "Plan Status"
+  short_description: "Show plan progress, gates, blockers, and next tasks"

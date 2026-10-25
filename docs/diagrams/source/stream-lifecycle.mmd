@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> Stopped
+    Stopped --> Preparing: Confirm start and check readiness
+    Preparing --> Connecting: Capture and destination ready
+    Preparing --> Error: Permission or setup failure
+    Connecting --> Streaming: Publisher confirms active output
+    Connecting --> Reconnecting: Transient connection failure
+    Connecting --> Error: Permanent failure
+    Streaming --> Reconnecting: Upload connection lost
+    Reconnecting --> Streaming: Publishing resumed
+    Reconnecting --> Error: Retry budget exhausted
+    Error --> Preparing: New confirmed start
+    Preparing --> Stopped: Confirm stop or cancel
+    Connecting --> Stopped: Confirm stop
+    Streaming --> Stopped: Confirm stop
+    Reconnecting --> Stopped: Confirm stop cancels retries

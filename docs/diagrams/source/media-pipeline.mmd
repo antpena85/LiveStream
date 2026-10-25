@@ -1,0 +1,12 @@
+flowchart LR
+    CAMERA["Detected camera / lens"] --> COMPOSE["16:9 video compositor"]
+    MATCH["Committed scoreboard model"] --> COMPOSE
+    COMPOSE --> PREVIEW["Local preview"]
+    COMPOSE --> VIDEO["Video encoder"]
+    MIC["Detected audio input"] --> AUDIO["Audio capture and mute"]
+    AUDIO --> AENC["Audio encoder"]
+    VIDEO --> PUB["Single publisher"]
+    AENC --> PUB
+    PUB --> DEST["Selected ingest endpoint"]
+    PUB -->|Send / queue feedback| QUALITY["Quality controller"]
+    QUALITY -->|Supported quality adjustment| VIDEO

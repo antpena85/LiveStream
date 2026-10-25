@@ -1,0 +1,323 @@
+{
+  "probeVersion": "m2-watch-1",
+  "model": "Pixel 10 Pro XL",
+  "buildId": "CP3A.261005.005",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 420409298
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421849654
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421849669
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421852001
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421852017
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421886122
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421886135
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421889171
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421889192
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421890148
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421890158
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421891026
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421891042
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421891829
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421891841
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421894409
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421894427
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421896188
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421896206
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421896921
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421896934
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421897688
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421897703
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421914427
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421914442
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421915520
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421915533
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421916264
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421916283
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421917191
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421917208
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421917826
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421917844
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421918641
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421918655
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421919306
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421919320
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421920008
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421920028
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421920639
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421920650
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421921170
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421921187
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 421965815
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 421965829
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 422056562
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422060228
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422060238
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422068175
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422068186
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422069987
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422069997
+    },
+    {
+      "event": "ack_timeout",
+      "detail": "",
+      "elapsedMs": 422070233
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422073059
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422073067
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=178",
+      "elapsedMs": 422073239
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422075191
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422075205
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422076094
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422076101
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=142",
+      "elapsedMs": 422076237
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422077420
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422077428
+    }
+  ]
+}

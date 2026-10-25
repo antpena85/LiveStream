@@ -1,0 +1,458 @@
+{
+  "probeVersion": "m2-watch-1",
+  "model": "Pixel Watch 4",
+  "buildId": "CP3A.260905.002",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 40808438
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42020874
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42022440
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42022490
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=449",
+      "elapsedMs": 42022929
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42025162
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42025178
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=112",
+      "elapsedMs": 42025277
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42057905
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42058976
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42058993
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=398",
+      "elapsedMs": 42059377
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42062350
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42062366
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=108",
+      "elapsedMs": 42062460
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42063284
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42063300
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=158",
+      "elapsedMs": 42063445
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42064188
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42064203
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=93",
+      "elapsedMs": 42064285
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42065004
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42065020
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=58",
+      "elapsedMs": 42065067
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42067541
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42067557
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=136",
+      "elapsedMs": 42067681
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42069344
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42069360
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=107",
+      "elapsedMs": 42069454
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42070095
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42070111
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=78",
+      "elapsedMs": 42070178
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42070846
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42070862
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=106",
+      "elapsedMs": 42070956
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42084814
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42086173
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42087262
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42087277
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=429",
+      "elapsedMs": 42087696
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42088680
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42088697
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=75",
+      "elapsedMs": 42088759
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42089415
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42089431
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=112",
+      "elapsedMs": 42089531
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42090335
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42090349
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=117",
+      "elapsedMs": 42090457
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42091000
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42091017
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=89",
+      "elapsedMs": 42091094
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42091818
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42091834
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=61",
+      "elapsedMs": 42091884
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42092470
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42092486
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=95",
+      "elapsedMs": 42092570
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42093171
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42093187
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=94",
+      "elapsedMs": 42093270
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42093805
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42093821
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=86",
+      "elapsedMs": 42093896
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42094322
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42094338
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=138",
+      "elapsedMs": 42094467
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42115758
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42135416
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42138917
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42138933
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=146",
+      "elapsedMs": 42139068
+    },
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 42239702
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42241305
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42241321
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=143",
+      "elapsedMs": 42241454
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42243123
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42243140
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=96",
+      "elapsedMs": 42243225
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 42246314
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 42246328
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42248315
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42248331
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=128",
+      "elapsedMs": 42248449
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 42249359
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 42249370
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 42250569
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 42250585
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=76",
+      "elapsedMs": 42250651
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+erDiagram
+    MATCH ||--|| MATCH_CONFIG : snapshots
+    MATCH ||--|{ TEAM_STATE : contains
+    MATCH ||--o{ SET_RESULT : retains
+    MATCH ||--o{ COMMAND_RECEIPT : commits
+    MATCH {
+        string match_id PK
+        int revision
+        int current_set_number
+        string serving_team_id
+        bool display_order_swapped
+        string phase
+    }
+    MATCH_CONFIG {
+        string match_id PK
+        int regular_target
+        int deciding_target
+        int winning_margin
+        int sets_to_win
+        int timeout_allowance
+        int optional_point_cap
+    }
+    TEAM_STATE {
+        string team_id PK
+        string match_id FK
+        string full_name
+        string abbreviation
+        int current_points
+        int timeouts_remaining
+    }
+    SET_RESULT {
+        string set_id PK
+        string match_id FK
+        int set_number
+        int points_team_a
+        int points_team_b
+        bool confirmed
+    }
+    COMMAND_RECEIPT {
+        string command_id PK
+        string match_id FK
+        string controller_id
+        int committed_revision
+        string outcome
+    }

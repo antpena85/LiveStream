@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1230.7649999999999 267.90000000000003" width="1230.7649999999999" height="267.90000000000003" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="CAMERA" data-to="COMPOSE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="231.632,58.45 271.15874999999994,58.45 271.15874999999994,88.9 275.11749999999995,88.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MATCH" data-to="COMPOSE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="267.19999999999993,119.35000000000001 271.15874999999994,119.35000000000001 271.15874999999994,88.9 275.11749999999995,88.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="COMPOSE" data-to="PREVIEW" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="440.07349999999997,88.9 463.22275,88.9 463.22275,58.45 486.372,58.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="COMPOSE" data-to="VIDEO" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="440.07349999999997,88.9 463.22275,88.9 463.22275,119.35000000000001 486.372,119.35000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MIC" data-to="AUDIO" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="216.812,188.175 275.11749999999995,188.175" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AUDIO" data-to="AENC" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="452.6704999999999,188.175 486.372,188.175" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VIDEO" data-to="PUB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="615.019,119.35000000000001 631.019,119.35000000000001 631.019,182.02500000000003 647.019,182.02500000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AENC" data-to="PUB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="615.019,188.175 631.019,188.175 631.019,182.02500000000003 647.019,182.02500000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PUB" data-to="DEST" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="784.558,175.875 812.558,175.875 812.558,155.3 824.558,155.3" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PUB" data-to="QUALITY" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Send / queue feedback" points="784.558,188.175 896.2099999999999,188.175 896.2099999999999,208.75000000000003 1036.78,208.75000000000003 1036.78,160.8 1048.78,160.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="QUALITY" data-to="VIDEO" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Supported quality adjustment" points="1048.78,148.5 1036.78,148.5 1036.78,113.2 615.019,113.20000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="PUB" data-to="QUALITY" data-label="Send / queue feedback">
+  <rect x="904.2099999999999" y="192.75000000000003" width="124.57000000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="966.4949999999999" y="207.90000000000003" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Send / queue feedback</text>
+</g>
+<g class="edge-label" data-from="QUALITY" data-to="VIDEO" data-label="Supported quality adjustment">
+  <rect x="876.886" y="97.20000000000002" width="151.894" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="952.833" y="112.35000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Supported quality adjustment</text>
+</g>
+<g class="node" data-id="CAMERA" data-label="Detected camera / lens" data-shape="rectangle">
+  <rect x="57.78399999999998" y="40" width="173.848" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="144.70799999999997" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Detected camera / lens</text>
+</g>
+<g class="node" data-id="COMPOSE" data-label="16:9 video compositor" data-shape="rectangle">
+  <rect x="275.11749999999995" y="70.45" width="164.95600000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="357.59549999999996" y="88.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">16:9 video compositor</text>
+</g>
+<g class="node" data-id="MATCH" data-label="Committed scoreboard model" data-shape="rectangle">
+  <rect x="57.78399999999998" y="100.9" width="209.41599999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="162.49199999999996" y="119.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Committed scoreboard model</text>
+</g>
+<g class="node" data-id="PREVIEW" data-label="Local preview" data-shape="rectangle">
+  <rect x="486.372" y="40" width="125.68299999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="549.2135" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Local preview</text>
+</g>
+<g class="node" data-id="VIDEO" data-label="Video encoder" data-shape="rectangle">
+  <rect x="486.372" y="100.9" width="128.647" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="550.6955" y="119.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Video encoder</text>
+</g>
+<g class="node" data-id="MIC" data-label="Detected audio input" data-shape="rectangle">
+  <rect x="57.78399999999998" y="169.725" width="159.02800000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="137.298" y="188.175" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Detected audio input</text>
+</g>
+<g class="node" data-id="AUDIO" data-label="Audio capture and mute" data-shape="rectangle">
+  <rect x="275.11749999999995" y="169.725" width="177.55299999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="363.89399999999995" y="188.175" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Audio capture and mute</text>
+</g>
+<g class="node" data-id="AENC" data-label="Audio encoder" data-shape="rectangle">
+  <rect x="486.372" y="169.725" width="128.647" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="550.6955" y="188.175" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Audio encoder</text>
+</g>
+<g class="node" data-id="PUB" data-label="Single publisher" data-shape="rectangle">
+  <rect x="647.019" y="163.57500000000002" width="137.539" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="715.7885" y="182.02500000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Single publisher</text>
+</g>
+<g class="node" data-id="DEST" data-label="Selected ingest endpoint" data-shape="rectangle">
+  <rect x="824.558" y="136.85000000000002" width="184.22199999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="916.669" y="155.3" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Selected ingest endpoint</text>
+</g>
+<g class="node" data-id="QUALITY" data-label="Quality controller" data-shape="rectangle">
+  <rect x="1048.78" y="136.2" width="141.985" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1119.7725" y="154.64999999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Quality controller</text>
+</g>
+</svg>

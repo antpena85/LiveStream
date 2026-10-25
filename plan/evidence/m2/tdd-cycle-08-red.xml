@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="7" skipped="0" failures="1" errors="0" timestamp="2026-10-24T02:40:27.552Z" hostname="local-host" time="8.63">
+  <properties/>
+  <testcase name="processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="8.437"/>
+  <testcase name="confirmedResetStartsDurableNewEpochWithZeroPointsAndRevision" classname="livestream.feasibility.DurableCommandProbeTest" time="0.02"/>
+  <testcase name="commandIdInNewEpochHasItsOwnDurableReceiptAndAppliesOnlyOnce" classname="livestream.feasibility.DurableCommandProbeTest" time="0.061">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: ProbeSnapshot(points=1, revision=1, epoch=1)&#10;but was : ProbeSnapshot(points=8, revision=1, epoch=0)" type="com.google.common.truth.ComparisonFailureWithFacts">expected: ProbeSnapshot(points=1, revision=1, epoch=1)
+but was : ProbeSnapshot(points=8, revision=1, epoch=0)
+	at livestream.feasibility.DurableCommandProbeTest.commandIdInNewEpochHasItsOwnDurableReceiptAndAppliesOnlyOnce(DurableCommandProbeTest.kt:75)
+</failure>
+  </testcase>
+  <testcase name="simultaneousRetriesOfOnePointApplyOnceAndSurviveReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.028"/>
+  <testcase name="oldPointCommandsCannotChangeResetMatchAfterReopenEvenWhenRevisionsCoincide" classname="livestream.feasibility.DurableCommandProbeTest" time="0.031"/>
+  <testcase name="concurrentPointCommandsReceiveDistinctDurableRevisions" classname="livestream.feasibility.DurableCommandProbeTest" time="0.037"/>
+  <testcase name="acceptedPointSurvivesReopenAndRetryDoesNotApplyItAgain" classname="livestream.feasibility.DurableCommandProbeTest" time="0.014"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

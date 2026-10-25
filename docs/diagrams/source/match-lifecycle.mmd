@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> Setup
+    Setup --> Playing: Confirm match setup
+    Playing --> PotentialWinner: Target and margin met
+    Playing --> CapConflict: Active cap reached without margin
+    CapConflict --> Playing: Confirm continuation for this set
+    CapConflict --> Playing: Correction removes cap conflict
+    CapConflict --> PotentialWinner: Correction meets target and margin
+    PotentialWinner --> Playing: Correct or undo candidate result
+    PotentialWinner --> BetweenSets: Confirm nonfinal set
+    BetweenSets --> Playing: Start next set and reset points/timeouts
+    PotentialWinner --> Complete: Confirm final set and match
+    Complete --> Playing: Q30 correction removes both win thresholds
+    Playing --> Setup: Confirm match reset
+    BetweenSets --> Setup: Confirm match reset
+    Complete --> Setup: Confirm new match or reset

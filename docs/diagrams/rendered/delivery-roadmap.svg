@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 712.2216666666666 977.3619999999999" width="712.2216666666666" height="977.3619999999999" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="P0" data-to="P1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="310.50725,76.9 310.50725,116.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P1" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="310.50725,153.8 310.50725,193.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="G" data-to="HOLD" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="270.86358333333334,392.0183333333334 270.86358333333334,459.66200000000003 199.542,459.66200000000003 199.54199999999997,531.962" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="G" data-to="P2" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Yes" points="350.15091666666666,392.0183333333333 350.15091666666666,459.66200000000003 421.47249999999997,459.66200000000003 421.47249999999997,531.962" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P2" data-to="P3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.47249999999997,568.862 421.47249999999997,588.862 159.8985,588.862 159.8985,608.862" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P2" data-to="P4" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.47249999999997,568.862 421.47249999999997,588.862 421.47249999999997,588.862 421.47249999999997,608.862" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P2" data-to="P5" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.47249999999997,568.862 421.47249999999997,588.862 571.9596666666666,588.862 571.9596666666666,754.6619999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P3" data-to="P6" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="159.8985,645.762 159.8985,685.762" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P4" data-to="P6" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.47249999999997,645.762 421.47249999999997,665.762 200.11166666666668,665.762 200.11166666666668,685.762" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P6" data-to="P7" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="200.11166666666668,722.6619999999999 200.11166666666668,754.6619999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P4" data-to="P8" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.47249999999997,645.762 421.47249999999997,665.762 482.0932916666667,665.762 482.0932916666667,823.5619999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P5" data-to="P8" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="571.9596666666666,791.5619999999999 571.9596666666666,807.5619999999999 482.0932916666667,807.5619999999999 482.0932916666667,823.5619999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P7" data-to="P8" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="200.11166666666668,791.5619999999999 200.11166666666668,807.5619999999999 482.0932916666667,807.5619999999999 482.0932916666667,823.5619999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P8" data-to="R" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="482.09329166666663,860.4619999999999 482.09329166666663,900.4619999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="G" data-to="HOLD" data-label="No">
+  <rect x="184.042" y="466.66200000000003" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="199.401" y="481.812" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="edge-label" data-from="G" data-to="P2" data-label="Yes">
+  <rect x="402.97249999999997" y="466.66200000000003" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="421.3015" y="481.812" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Yes</text>
+</g>
+<g class="node" data-id="P0" data-label="M0: Approved PRD" data-shape="rectangle">
+  <rect x="233.58675" y="40" width="153.84099999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="310.50725" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M0: Approved PRD</text>
+</g>
+<g class="node" data-id="P1" data-label="M1: Planning and open decisions" data-shape="rectangle">
+  <rect x="195.79575" y="116.9" width="229.423" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="310.50725" y="135.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M1: Planning and open decisions</text>
+</g>
+<g class="node" data-id="G" data-label="G1: Implementation requested?" data-shape="diamond">
+  <polygon points="310.50725,193.8 429.43825,312.731 310.50725,431.662 191.57625000000002,312.731" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="310.50725" y="312.731" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">G1: Implementation requested?</text>
+</g>
+<g class="node" data-id="HOLD" data-label="Remain in planning" data-shape="rectangle">
+  <rect x="124.47399999999999" y="531.962" width="150.136" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="199.54199999999997" y="550.412" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Remain in planning</text>
+</g>
+<g class="node" data-id="P2" data-label="M2: Feasibility and stack decisions" data-shape="rectangle">
+  <rect x="298.61" y="531.962" width="245.72499999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="421.47249999999997" y="550.412" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M2: Feasibility and stack decisions</text>
+</g>
+<g class="node" data-id="P3" data-label="M3: Match and local scoring / TDD" data-shape="rectangle">
+  <rect x="40" y="608.862" width="239.797" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="159.8985" y="627.312" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M3: Match and local scoring / TDD</text>
+</g>
+<g class="node" data-id="P4" data-label="M4: Capture and publishing / TDD" data-shape="rectangle">
+  <rect x="303.797" y="608.862" width="235.35099999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="421.47249999999997" y="627.312" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M4: Capture and publishing / TDD</text>
+</g>
+<g class="node" data-id="P5" data-label="M5: Destination setup / TDD" data-shape="rectangle">
+  <rect x="471.6976666666667" y="754.6619999999999" width="200.524" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="571.9596666666666" y="773.112" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M5: Destination setup / TDD</text>
+</g>
+<g class="node" data-id="P6" data-label="M6: Android remote controls / TDD" data-shape="rectangle">
+  <rect x="79.47216666666668" y="685.762" width="241.27899999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="200.11166666666668" y="704.212" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M6: Android remote controls / TDD</text>
+</g>
+<g class="node" data-id="P7" data-label="M7: Wear OS controls / TDD" data-shape="rectangle">
+  <rect x="98.36766666666668" y="754.6619999999999" width="203.48799999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="200.11166666666668" y="773.112" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M7: Wear OS controls / TDD</text>
+</g>
+<g class="node" data-id="P8" data-label="M8: System acceptance and regression" data-shape="rectangle">
+  <rect x="345.15179166666667" y="823.5619999999999" width="273.883" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="482.0932916666667" y="842.012" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">M8: System acceptance and regression</text>
+</g>
+<g class="node" data-id="R" data-label="Personal release and documented limits" data-shape="rectangle">
+  <rect x="345.52229166666666" y="900.4619999999999" width="273.14199999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="482.09329166666663" y="918.9119999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Personal release and documented limits</text>
+</g>
+</svg>

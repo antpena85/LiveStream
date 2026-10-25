@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="2" skipped="0" failures="1" errors="0" timestamp="2026-10-23T17:06:17.649Z" hostname="local-host" time="8.699">
+  <properties/>
+  <testcase name="processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="8.676">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: ProbeSnapshot(points=8, revision=1)&#10;but was : ProbeSnapshot(points=9, revision=2)" type="com.google.common.truth.ComparisonFailureWithFacts">expected: ProbeSnapshot(points=8, revision=1)
+but was : ProbeSnapshot(points=9, revision=2)
+	at livestream.feasibility.DurableCommandProbeTest.processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry(DurableCommandProbeTest.kt:57)
+</failure>
+  </testcase>
+  <testcase name="acceptedPointSurvivesReopenAndRetryDoesNotApplyItAgain" classname="livestream.feasibility.DurableCommandProbeTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "f5aa855c-25a6-4768-9e48-bb40557217ef",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\candidate.json",
+  "output": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\livestream-progression.html",
+  "specification": {
+    "sha256": "7c9c95d83fb2b4f94e2d3bb1b91a0fc9afae2020e6e82a2a64343ccbdbe72c94",
+    "bytes": 6106
+  },
+  "artifact": {
+    "sha256": "9c7f3da17bf0cf56de3c382abe9ba18d16af31c9f22e98cf45b1453719266092",
+    "bytes": 818715
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "probeVersion": "m2-watch-1",
+  "model": "Pixel 10 Pro XL",
+  "buildId": "CP3A.261005.005",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 420409298
+    }
+  ]
+}

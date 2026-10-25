@@ -1,0 +1,15 @@
+flowchart TB
+    P0["M0: Approved PRD"] --> P1["M1: Planning and open decisions"]
+    P1 --> G{"G1: Implementation requested?"}
+    G -->|No| HOLD["Remain in planning"]
+    G -->|Yes| P2["M2: Feasibility and stack decisions"]
+    P2 --> P3["M3: Match and local scoring / TDD"]
+    P2 --> P4["M4: Capture and publishing / TDD"]
+    P2 --> P5["M5: Destination setup / TDD"]
+    P3 --> P6["M6: Android remote controls / TDD"]
+    P4 --> P6
+    P6 --> P7["M7: Wear OS controls / TDD"]
+    P4 --> P8["M8: System acceptance and regression"]
+    P5 --> P8
+    P7 --> P8
+    P8 --> R["Personal release and documented limits"]

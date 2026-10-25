@@ -1,0 +1,34 @@
+package livestream.feasibility
+
+import java.nio.file.Path
+import java.sql.DriverManager
+
+data class ProbeSnapshot(val points: Int, val revision: Long)
+
+/** Isolated SQLite feasibility fixture, not the application's match schema. */
+class DurableCommandProbe(database: Path) : AutoCloseable {
+    private val connection = DriverManager.getConnection("jdbc:sqlite:${database.toAbsolutePath()}")
+
+    init {
+        connection.createStatement().use { statement ->
+            statement.execute("PRAGMA synchronous=FULL")
+            statement.execute("CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY CHECK(id=1), points INTEGER NOT NULL, revision INTEGER NOT NULL)")
+            statement.execute("CREATE TABLE IF NOT EXISTS receipts (command_id TEXT PRIMARY KEY, points INTEGER NOT NULL, revision INTEGER NOT NULL)")
+            statement.execute("INSERT OR IGNORE INTO state VALUES (1, 7, 0)")
+        }
+    }
+
+    fun snapshot(): ProbeSnapshot = connection.createStatement().use { statement ->
+        statement.executeQuery("SELECT points, revision FROM state WHERE id=1").use { rows ->
+            check(rows.next())
+            ProbeSnapshot(rows.getInt(1), rows.getLong(2))
+        }
+    }
+
+    fun recordPoint(commandId: String): ProbeSnapshot {
+        val current = snapshot()
+        return ProbeSnapshot(current.points + 1, current.revision + 1)
+    }
+
+    override fun close() = connection.close()
+}

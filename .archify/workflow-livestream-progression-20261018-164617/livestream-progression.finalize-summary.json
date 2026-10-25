@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\candidate.json",
+    "sha256": "7c9c95d83fb2b4f94e2d3bb1b91a0fc9afae2020e6e82a2a64343ccbdbe72c94",
+    "bytes": 6106
+  },
+  "artifact": {
+    "path": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\livestream-progression.html",
+    "sha256": "9c7f3da17bf0cf56de3c382abe9ba18d16af31c9f22e98cf45b1453719266092",
+    "bytes": 818715
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\livestream-progression.finalize.json",
+    "summaryReceipt": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\livestream-progression.finalize-summary.json",
+    "browserCheckReceipt": "D:\\Playground\\LiveStream\\.archify\\workflow-livestream-progression-20261018-164617\\livestream-progression.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.1.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-18T17:41:56.228Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 3810,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

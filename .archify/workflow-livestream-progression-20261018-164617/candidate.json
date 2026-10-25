@@ -1,0 +1,228 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "LiveStream · Plan progression",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": ".archify/workflow-livestream-progression-20261018-164617/livestream-progression.html",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Delivery milestone"
+        },
+        "external": {
+          "label": "Release outcome"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "delivery",
+      "label": "Proposed progression · gates are conditions, not completed approvals"
+    }
+  ],
+  "mainPath": [
+    "baseline",
+    "planning",
+    "feasibility",
+    "features",
+    "acceptance",
+    "release"
+  ],
+  "nodes": [
+    {
+      "id": "baseline",
+      "lane": "delivery",
+      "col": 0,
+      "type": "backend",
+      "icon": "success",
+      "label": "M0 · Requirements",
+      "sublabel": "1 / 1 complete",
+      "tag": "G0 passed"
+    },
+    {
+      "id": "planning",
+      "lane": "delivery",
+      "col": 1,
+      "type": "backend",
+      "icon": "active",
+      "label": "M1 · Planning",
+      "sublabel": "3 / 6 complete",
+      "tag": "CURRENT PHASE"
+    },
+    {
+      "id": "feasibility",
+      "lane": "delivery",
+      "col": 2,
+      "type": "backend",
+      "icon": "waiting",
+      "label": "M2 · Feasibility",
+      "sublabel": "0 / 8 complete",
+      "tag": "G1 not opened"
+    },
+    {
+      "id": "features",
+      "lane": "delivery",
+      "col": 3,
+      "type": "backend",
+      "icon": "waiting",
+      "label": "M3–M7 · Features",
+      "sublabel": "0 / 27 complete",
+      "tag": "TDD required"
+    },
+    {
+      "id": "acceptance",
+      "lane": "delivery",
+      "col": 4,
+      "type": "backend",
+      "icon": "waiting",
+      "label": "M8 · Acceptance",
+      "sublabel": "0 / 11 complete",
+      "tag": "V01–V10 pending"
+    },
+    {
+      "id": "release",
+      "lane": "delivery",
+      "col": 5,
+      "type": "external",
+      "icon": "flag",
+      "label": "Personal release",
+      "sublabel": "Supported limits recorded",
+      "tag": "Not reached"
+    }
+  ],
+  "edges": [
+    {
+      "id": "baseline-planning",
+      "from": "baseline",
+      "to": "planning",
+      "role": "main"
+    },
+    {
+      "id": "implementation-request",
+      "from": "planning",
+      "to": "feasibility",
+      "label": "M1 + G1 request",
+      "variant": "security",
+      "role": "main"
+    },
+    {
+      "id": "feasible-design",
+      "from": "feasibility",
+      "to": "features",
+      "label": "G2 feasible",
+      "variant": "security",
+      "role": "main"
+    },
+    {
+      "id": "integrated-coverage",
+      "from": "features",
+      "to": "acceptance",
+      "label": "G3 coverage",
+      "variant": "security",
+      "role": "main"
+    },
+    {
+      "id": "release-readiness",
+      "from": "acceptance",
+      "to": "release",
+      "label": "G4 ready",
+      "variant": "security",
+      "role": "main"
+    }
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "baseline"
+    ],
+    "allowedTerminals": [
+      "release"
+    ],
+    "requiredPaths": [
+      {
+        "from": "planning",
+        "to": "feasibility"
+      },
+      {
+        "from": "feasibility",
+        "to": "features"
+      },
+      {
+        "from": "features",
+        "to": "acceptance"
+      },
+      {
+        "from": "acceptance",
+        "to": "release"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "STATUS.md brief · 18 October 2026",
+      "items": [
+        "M1 planning; application implementation has not started.",
+        "4 of 53 tasks complete; 0 in progress; 49 not started.",
+        "13 decision records open; no committed delivery date.",
+        "Counts are unweighted tasks, not effort or release readiness."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Completed evidence",
+      "items": [
+        "M0.1: PRD approved on 17 October 2026.",
+        "M1.1: planning-package review passed on 18 October.",
+        "M1.2: five-phone / four-watch owner inventory recorded.",
+        "M1.3: built-in-only availability recorded; accessory cases pending.",
+        "Installed OS/builds and physical compatibility remain unverified."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Next planning work ? M1.4?M1.6",
+      "items": [
+        "M1.4: collect venue Wi-Fi and mobile upload observations.",
+        "M1.5: draft corrections, cap and undo examples — recommended next.",
+        "M1.6: specify abbreviations, layout and readability."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Feature delivery · M3–M7",
+      "items": [
+        "M3 match, persistence and local controls: 0 / 9 complete.",
+        "M4 capture, overlay, publishing and adaptation: 0 / 7.",
+        "M5 YouTube and Twitch sign-in: 0 / 4.",
+        "M6 Android remotes: 0 / 4; M7 Wear OS controls: 0 / 3.",
+        "Grouped here for a high-level view; subplans retain actual dependencies."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Gate conditions still ahead",
+      "items": [
+        "G1: explicit implementation request; finish the M1 entry inputs.",
+        "G2: feasibility evidence and dispositions for D01–D13.",
+        "G3: all M3–M7 behaviors and integrated requirement coverage.",
+        "G4: passing system acceptance and documented supported configurations.",
+        "TDD is confirmed; public test boundaries and tools remain proposed."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Snapshot scope and source documents",
+      "items": [
+        "Brief: plan/STATUS.md · as of 18 October 2026, America/New_York.",
+        "Authority: PRD.md; gates and sequence: plan/MASTER_PLAN.md.",
+        "Task evidence: plan/subplans/README.md and its 53 task plans.",
+        "Static documentation snapshot; no schedule or hardware guarantees.",
+        "CameraX and Wear Compose M3 skills are installed; stack decisions remain open.",
+        "Only built-in microphones are available now; accessory support remains in release scope."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="3" skipped="0" failures="1" errors="0" timestamp="2026-10-25T00:09:23.380Z" hostname="local-host" time="0.069">
+  <properties/>
+  <testcase name="confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.069">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: MicrophonePermissionRequired&#10;but was : Accepted" type="com.google.common.truth.ComparisonFailureWithFacts">expected: MicrophonePermissionRequired
+but was : Accepted
+	at livestream.feasibility.StreamSessionTest.confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped(StreamSessionTest.kt:20)
+</failure>
+  </testcase>
+  <testcase name="unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission" classname="livestream.feasibility.StreamSessionTest" time="0.0"/>
+  <testcase name="confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

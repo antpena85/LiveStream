@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant C as Controller
+    participant P as Phone command processor
+    participant S as Atomic local store
+    participant O as Overlay
+    C->>P: Authenticate and request snapshot
+    P-->>C: Current session, revision and capabilities
+    C->>P: Command ID, expected revision, team ID, edit
+    P->>P: Authorize, deduplicate, validate and order
+    P->>S: Commit state, next revision and receipt
+    S-->>P: Durable commit
+    P->>O: Publish committed render model
+    P-->>C: Accepted command and committed snapshot
+    Note over C,P: If acknowledgment is lost, reuse the same command ID
+    C->>P: Retry identical command ID
+    P->>S: Read original receipt
+    S-->>P: Original accepted result
+    P-->>C: Original result and current snapshot

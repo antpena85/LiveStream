@@ -1,0 +1,273 @@
+{
+  "probeVersion": "m2-watch-1",
+  "model": "Pixel 10 Pro XL",
+  "buildId": "CP3A.261005.005",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 422452258
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422453470
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422453478
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=279",
+      "elapsedMs": 422453750
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422456300
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422456317
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422457031
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422457037
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=104",
+      "elapsedMs": 422457136
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422457788
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422457796
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422458296
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422458304
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=66",
+      "elapsedMs": 422458363
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422459089
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422459097
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422459390
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422459407
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422459657
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422459670
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422459940
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422459946
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422460112
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422460121
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422460418
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422460425
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422460648
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422460658
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422461305
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422461314
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=121",
+      "elapsedMs": 422461427
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422461609
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422461615
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=87",
+      "elapsedMs": 422461698
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422461882
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422461890
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=94",
+      "elapsedMs": 422461978
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422462180
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422462191
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=133",
+      "elapsedMs": 422462314
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422462473
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422462485
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=136",
+      "elapsedMs": 422462612
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422463170
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422463182
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422463672
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422463680
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=107",
+      "elapsedMs": 422463780
+    },
+    {
+      "event": "ping_received",
+      "detail": "",
+      "elapsedMs": 422464311
+    },
+    {
+      "event": "ack_send_accepted",
+      "detail": "",
+      "elapsedMs": 422464317
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422464756
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422464763
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=67",
+      "elapsedMs": 422464825
+    }
+  ]
+}

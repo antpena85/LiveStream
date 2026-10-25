@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PendingProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-10-25T15:31:13.243Z" hostname="PENA-DESK" time="0.073">
+  <properties/>
+  <testcase name="onlyExpectedPeerAndTokenCompletePendingRequestOnce" classname="livestream.feasibility.PendingProbeTest" time="0.071">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: value of: acknowledge(...)&#10;expected to be true" type="com.google.common.truth.AssertionErrorWithFacts">value of: acknowledge(...)
+expected to be true
+	at livestream.feasibility.PendingProbeTest.onlyExpectedPeerAndTokenCompletePendingRequestOnce(PendingProbeTest.kt:16)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,28 @@
+{
+  "probeVersion": "m2-watch-1",
+  "model": "Pixel 10 Pro XL",
+  "buildId": "CP3A.261005.005",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "listener_ready",
+      "detail": "",
+      "elapsedMs": 422763024
+    },
+    {
+      "event": "discovery",
+      "detail": "count=1;nearby=1",
+      "elapsedMs": 422763840
+    },
+    {
+      "event": "send_accepted_not_ack",
+      "detail": "",
+      "elapsedMs": 422763851
+    },
+    {
+      "event": "matched_ack",
+      "detail": "roundTripMs=109",
+      "elapsedMs": 422763950
+    }
+  ]
+}

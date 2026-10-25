@@ -1,0 +1,12 @@
+package livestream.feasibility
+
+import java.nio.file.Path
+
+/** Child-process fault fixture for the isolated M2 storage probe. */
+fun main(arguments: Array<String>) {
+    require(arguments.size == 3 && arguments[2] == "interrupt-before-commit")
+    DurableCommandProbe(Path.of(arguments[0])).use { probe ->
+        probe.recordPoint(arguments[1])
+        Runtime.getRuntime().halt(23)
+    }
+}

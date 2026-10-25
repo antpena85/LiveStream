@@ -1,0 +1,19 @@
+package livestream.feasibility
+
+enum class StartResult { Accepted, CameraPermissionRequired, MicrophonePermissionRequired, Cancelled }
+enum class StreamStatus { Stopped, Connecting }
+
+/** Isolated M2 T02 probe; this does not control Android capture or publishing. */
+class StreamSession {
+    private var currentStatus = StreamStatus.Stopped
+
+    fun status(): StreamStatus = currentStatus
+
+    fun requestStart(confirmed: Boolean, cameraPermission: Boolean, microphonePermission: Boolean = true): StartResult {
+        if (!confirmed) return StartResult.Cancelled
+        if (!cameraPermission) return StartResult.CameraPermissionRequired
+        if (!microphonePermission) return StartResult.MicrophonePermissionRequired
+        currentStatus = StreamStatus.Connecting
+        return StartResult.Accepted
+    }
+}

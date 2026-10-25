@@ -1,0 +1,26 @@
+{
+    "observedAtUtc":  "2026-10-24T23:58:38.6989941Z",
+    "scope":  "ADB availability and allowlisted model/OS facts only; no capture, pairing or streaming validation",
+    "devices":  [
+                    {
+                        "label":  "usb-device-1",
+                        "adbState":  "device",
+                        "model":  "Pixel 8 Pro",
+                        "manufacturer":  "Google",
+                        "androidRelease":  "17",
+                        "api":  "37",
+                        "buildId":  "CP31.260608.007",
+                        "securityPatch":  "2026-06-05"
+                    },
+                    {
+                        "label":  "usb-device-2",
+                        "adbState":  "device",
+                        "model":  "Pixel 10 Pro XL",
+                        "manufacturer":  "Google",
+                        "androidRelease":  "17",
+                        "api":  "37",
+                        "buildId":  "CP3A.261005.005",
+                        "securityPatch":  "2026-10-05"
+                    }
+                ]
+}

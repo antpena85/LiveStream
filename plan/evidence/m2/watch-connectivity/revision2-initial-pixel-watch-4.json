@@ -1,0 +1,64 @@
+{
+  "probeVersion": "m2-watch-1",
+  "diagnosticRevision": 2,
+  "model": "Pixel Watch 4",
+  "buildId": "CP3A.260905.002",
+  "transportPath": "not_measured",
+  "events": [
+    {
+      "event": "activity_created",
+      "detail": "",
+      "elapsedMs": 43659827,
+      "wallTimeMs": 1792945694484,
+      "activityInstance": "cdc891c3-a40c-4936-9dca-cb74ed366918",
+      "activityActive": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_resumed",
+      "detail": "",
+      "elapsedMs": 43659931,
+      "wallTimeMs": 1792945694588,
+      "activityInstance": "cdc891c3-a40c-4936-9dca-cb74ed366918",
+      "activityActive": true,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_paused",
+      "detail": "",
+      "elapsedMs": 43660122,
+      "wallTimeMs": 1792945694779,
+      "activityInstance": "cdc891c3-a40c-4936-9dca-cb74ed366918",
+      "activityActive": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "activity_stopped",
+      "detail": "",
+      "elapsedMs": 43660214,
+      "wallTimeMs": 1792945694872,
+      "activityInstance": "cdc891c3-a40c-4936-9dca-cb74ed366918",
+      "activityActive": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    },
+    {
+      "event": "listener_remove_completed",
+      "detail": "removed=false",
+      "elapsedMs": 43660305,
+      "wallTimeMs": 1792945694962,
+      "activityInstance": "cdc891c3-a40c-4936-9dca-cb74ed366918",
+      "activityActive": false,
+      "interactive": false,
+      "keyguardLocked": false,
+      "deviceLocked": false
+    }
+  ]
+}
