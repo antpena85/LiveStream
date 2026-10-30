@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-10-30T23:21:02.320Z" hostname="redacted" time="0.255">
+  <properties/>
+  <testcase name="missingFitAssessmentAfterStopConfirmationCannotStart" classname="livestream.feasibility.StreamSessionTest" time="0.253">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: NumericFitUnresolved&#10;but was : Accepted" type="com.google.common.truth.ComparisonFailureWithFacts">expected: NumericFitUnresolved
+but was : Accepted
+	at livestream.feasibility.StreamSessionTest.missingFitAssessmentAfterStopConfirmationCannotStart(StreamSessionTest.kt:24)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

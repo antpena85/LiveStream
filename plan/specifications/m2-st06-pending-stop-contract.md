@@ -161,5 +161,61 @@ fails rather than reporting no pending stop when multiple markers exist; callers
 must use the set accessor for that case. This host result does not implement
 start gating, authenticate confirmations, prove provider termination, test
 identifier reuse or independent writers, or resolve how many old sessions a
-real recovery protocol must retain. Next investigate a T02 start gate based on
-durable pending stops and unresolved fit before publisher-dependent recovery.
+real recovery protocol must retain. The next section investigates the pending
+stop portion of a T02 start gate; unresolved fit remains separate.
+
+## T02 pending-stop start gate — 2026-10-30
+
+With a real temporary store reopened after a fit-failure point, a newly created
+session denies a confirmed, permission-ready Start while a durable stop marker
+exists, remains stopped, and leaves the point and marker unchanged. The
+[red result](../evidence/m2/st06-start-pending-red.xml) returned Accepted instead
+of PendingStop with the [pre-fix session](../evidence/m2/st06-start-pending-red-source.txt).
+The [green session suite](../evidence/m2/st06-start-pending-green.xml) passed four
+tests; a forced full offline run passed 38 tests. The session queries the real
+reopened probe store; it does not replace it with a mock.
+
+This is one modeled initial Start request, not a complete concurrent session
+protocol. The optional store preserves older standalone fixture behavior, and
+therefore does not enforce recovery for callers constructed without a store.
+Storage read failures, concurrent marker creation, later requests while already
+connecting, actual publisher state, and operator notice are untested. Most
+importantly, clearing a pending stop does not establish that numeric fit is
+resolved: at this checkpoint the probe had no separate fit-readiness gate.
+
+## T02 explicitly supplied numeric-fit readiness — 2026-10-30
+
+A separate T02 test records a fit-failure point, supplies a stop confirmation,
+reopens the real store, and requests confirmed Start with numeric fit explicitly
+reported unresolved. The store has no pending marker, yet Start is denied,
+status remains stopped and the accepted point survives. The
+[red result](../evidence/m2/st06-start-fit-red.xml) returned Accepted rather than
+NumericFitUnresolved with the [pre-fix session](../evidence/m2/st06-start-fit-red-source.txt).
+The [green session suite](../evidence/m2/st06-start-fit-green.xml) passes five
+tests; a forced full offline run passes 39 tests.
+
+At this checkpoint readiness was supplied by the caller and defaulted to ready.
+The fixture did not determine fit, bind it to a match revision, persist it or
+validate rendered output.
+Stop confirmation is simulated, not proof of publisher termination. Successful
+restart after a fresh fit assessment, unknown readiness, concurrent changes,
+real capture, notices and recovery remain untested. Next investigate a fail-closed,
+revision-bound readiness contract before treating this gate as recovery evidence.
+
+## T02 missing assessment — 2026-10-30
+
+After a fit-failure point and simulated stop confirmation, reopening the real
+store and requesting Start without a fit assessment now returns
+NumericFitUnresolved, stays stopped, and preserves the 8/1/0 match. The
+[red result](../evidence/m2/st06-start-unknown-red.xml) returned Accepted with
+the [pre-fix session](../evidence/m2/st06-start-unknown-red-source.txt). The
+[green session suite](../evidence/m2/st06-start-unknown-green.xml) passes six
+tests; a forced offline full run passes 40 tests. The probe now defaults the
+modeled readiness input to false rather than assuming readiness.
+
+This only fails closed for an omitted boolean. An explicitly supplied true
+value can still be stale or unrelated to the current match, and the optional
+store can still be omitted. Actual fit detection, revision/epoch binding,
+concurrent changes, and publisher recovery remain open. Next test a stale
+assessment against a changed real-store revision before implementing any
+revision-bound mechanism.

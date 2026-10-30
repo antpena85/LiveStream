@@ -105,8 +105,11 @@ cycles and four first-run verifications are retained.
 The [ST06 proposed contract and interruption checkpoints](m2-st06-pending-stop-contract.md)
 specify an isolated T01/T02 experiment. Its host T01 normal reopen/retry and
 before/after-commit child interruption cases, session-matched confirmation and
-distinct pending-marker retention pass; publisher-dependent ST06 checks and
-observations remain pending. Q45's policy is confirmed; final
+distinct pending-marker retention pass; a modeled T02 initial Start now denies
+a durable pending stop after reopen. A separate caller-supplied unresolved-fit
+condition also denies Start after simulated stop confirmation; omitted modeled
+readiness now denies Start too. Fit detection, revision-bound readiness and
+publisher-dependent ST06 checks remain pending. Q45's policy is confirmed; final
 stop/recovery mechanisms remain open.
 
 This remains a points-only fixture, not the full match/Undo schema or Room

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-30T23:16:24.719Z" hostname="redacted" time="0.22">
+  <properties/>
+  <testcase name="confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.011"/>
+  <testcase name="unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission" classname="livestream.feasibility.StreamSessionTest" time="0.0"/>
+  <testcase name="confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.001"/>
+  <testcase name="confirmedStartWithDurablePendingStopAfterReopenIsDenied" classname="livestream.feasibility.StreamSessionTest" time="0.183"/>
+  <testcase name="stopConfirmationDoesNotClearUnresolvedNumericFitForStart" classname="livestream.feasibility.StreamSessionTest" time="0.022"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
