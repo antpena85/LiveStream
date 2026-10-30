@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-30T15:46:29.338Z" hostname="PENA-DESK" time="2.402">
+  <properties/>
+  <testcase name="processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="1.057"/>
+  <testcase name="confirmedResetStartsDurableNewEpochWithZeroPointsAndRevision" classname="livestream.feasibility.DurableCommandProbeTest" time="0.028"/>
+  <testcase name="commandIdInNewEpochHasItsOwnDurableReceiptAndAppliesOnlyOnce" classname="livestream.feasibility.DurableCommandProbeTest" time="0.041"/>
+  <testcase name="canceledResetPreservesEpochPointsRevisionAndReceiptsAfterReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.026"/>
+  <testcase name="simultaneousRetriesOfOnePointApplyOnceAndSurviveReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.024"/>
+  <testcase name="oldPointCommandsCannotChangeResetMatchAfterReopenEvenWhenRevisionsCoincide" classname="livestream.feasibility.DurableCommandProbeTest" time="0.033"/>
+  <testcase name="processInterruptedDuringResetPreservesOldEpochAndAllowsConfirmedRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="0.553"/>
+  <testcase name="committedPointWithLostAcknowledgmentRetainsOriginalReceiptWithoutReapplyingAfterReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.557"/>
+  <testcase name="concurrentPointCommandsReceiveDistinctDurableRevisions" classname="livestream.feasibility.DurableCommandProbeTest" time="0.06"/>
+  <testcase name="acceptedPointSurvivesReopenAndRetryDoesNotApplyItAgain" classname="livestream.feasibility.DurableCommandProbeTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

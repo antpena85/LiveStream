@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DiagnosticPingDecoderTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-30T15:31:38.042Z" hostname="PENA-DESK" time="0.029">
+  <properties/>
+  <testcase name="unknownMessageTypeIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.001"/>
+  <testcase name="unsupportedVersionIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="undersizedAdvertisedBodyIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.001"/>
+  <testcase name="validV1PingPreservesEveryRequestIdByteAndLeavesNextFrameUnread" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.025"/>
+  <testcase name="oversizedV1BodyWithinEnvelopeIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.001"/>
+  <testcase name="acknowledgmentFrameIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

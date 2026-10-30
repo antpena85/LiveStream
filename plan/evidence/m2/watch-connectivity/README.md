@@ -367,3 +367,102 @@ listener removal. Next unlock/reopen the phone, wait for `listener_ready`, then
 send one watch ping with both probes visible to check recovery after this trial.
 No repeated unchanged lock trial is needed. Pixel 8 Pro received no probe
 interaction. M2.2, M2.4 and G2 remain open.
+
+## Lock-trial recovery evidence reviewed on 2026-10-29
+
+The already-retained October 25 [phone recovery snapshot](revision3-lock-recovery-20261025T195500Z-pixel-10-pro-xl.json)
+and [watch recovery snapshot](revision3-lock-recovery-20261025T195500Z-pixel-watch-4-retry.json)
+complete the preceding foreground-recovery handoff. The phone records an unlocked,
+active activity with `listener_ready`, followed by a received ping and accepted
+acknowledgment send. The watch discovers one nearby peer, starts a request and
+records `matched_ack` with `roundTripMs=561`. Its keep-screen-on flag is true
+while pending and false at completion; no pause intervenes before that result.
+This is one successful foreground recovery attempt, not background delivery or
+proof of the underlying radio route. Sanitized reports do not allow independent
+cross-device packet correlation, and device clocks are not assumed synchronized.
+These are historical observations, not a new October 29 physical test.
+
+On October 29, ADB lists one authorized Pixel 10 Pro XL and no watch. Read-only
+inspection confirms the phone probe remains installed and its revision-3 report
+is readable. No activity was launched or device setting changed. Reconnect and
+authorize the paired Pixel Watch 4 before further physical watch validation;
+the next remaining topology work includes controlled disconnect/reconnect and
+second-Android-controller coexistence with the internet uplink. Do not repeat
+the completed foreground-recovery trial merely because its narrative was absent.
+
+Host regression was explicitly rerun using
+`powershell -NoProfile -ExecutionPolicy Bypass -File tools/m2/run-feasibility.ps1 test --offline --rerun-tasks`:
+all sixteen tests passed (ten storage, three session-readiness and three pending
+request cases), with four Gradle tasks executed and build exit 0. The initial
+up-to-date invocation was not counted as fresh execution. The planning-package
+checker also passed with 99 documents, 1,565 local links, 302 anchor links,
+53 tasks and 159 dependency edges before this documentation update. No probe
+code, application-stack decision, task completion or G2 disposition changed.
+
+## Fresh foreground baseline on 2026-10-29 (America/New_York)
+
+Both Pro XL and paired Pixel Watch 4 were authorized in ADB. The existing
+diagnostic activities were brought to the foreground; the owner reported a
+matched acknowledgment after initiating one watch ping. The retained
+[watch report](foreground-baseline-20261030T002904Z-pixel-watch-4.json)
+records one nearby peer and `matched_ack` with `roundTripMs=541`, active and
+interactive at request/completion, with no intervening pause. The pending
+keep-screen-on flag clears on completion. The [phone report](foreground-baseline-20261030T002904Z-pixel-10-pro-xl.json)
+records listener readiness, received ping and accepted acknowledgment send.
+UTC filenames fall on October 30; the local observation date is October 29.
+This is foreground diagnostic delivery only; transport route, application
+authorization and disconnect/reconnect remain unverified. No radio setting
+was changed by the agent. Next perform one operator-controlled Bluetooth
+interruption, collecting its result before restoring Bluetooth and testing
+fresh discovery/recovery. A successful interruption-phase ping does not prove
+a full disconnection occurred or identify the fallback route.
+
+## Operator-controlled Bluetooth interruption on 2026-10-29
+
+Following the foreground baseline, the operator was asked to disable Bluetooth
+on the Pro XL only, leave Wi-Fi/mobile data unchanged, reopen both probes and
+send one watch ping. The owner selected the timeout/no-peer response; collected
+[watch metadata](bluetooth-interruption-20261030T003721Z-pixel-watch-4.json)
+resolves that ambiguity: discovery records `count=1;nearby=0`, followed by send
+acceptance and `ack_timeout`. Request elapsed time is 10,044 ms, from
+418,426,448 to 418,436,492 ms. The activity remains active/interactive without
+an intervening pause; keep-screen-on clears at timeout. No matched reply is
+recorded for this request. This is not a zero-peer observation.
+
+The [phone metadata](bluetooth-interruption-20261030T003721Z-pixel-10-pro-xl.json)
+contains a foreground ping callback and accepted acknowledgment send in the
+trial's approximate wall-time interval. Without retained request tokens or
+synchronized clocks, exact cross-device correlation cannot be independently
+established. Send acceptance is not watch receipt, and the failure cause is
+unresolved. A subsequent read-only `settings get global bluetooth_on` returned
+`0`; this samples the collection-time setting, not continuous radio state.
+The underlying network route and complete transport disconnection are not
+established by this Bluetooth interruption. No radio was changed by the agent.
+
+Next restore phone Bluetooth, reopen both probes, wait for listener readiness
+and fresh discovery, then initiate one watch ping to assess recovery. Recovery
+is pending; do not count this trial as a completed disconnect/reconnect case
+or as evidence of production background support. M2.4 and G2 remain open.
+
+## Bluetooth-restored foreground recovery on 2026-10-29
+
+The owner restored phone Bluetooth and reported a matched acknowledgment after
+reopening both probes and initiating one watch ping. The retained
+[watch recovery report](bluetooth-recovery-20261030T003951Z-pixel-watch-4.json)
+records fresh discovery `count=1;nearby=1`, request start at 418,585,459 ms
+and `matched_ack` at 418,585,729 ms with the probe-reported
+`roundTripMs=271`. No pause intervenes; the activity is active/interactive
+and keep-screen-on clears on completion. Subtracting the recorded event
+timestamps gives 270 ms; the retained probe round-trip field is 271 ms and is
+reported as recorded rather than replaced by that subtraction.
+The [phone recovery report](bluetooth-recovery-20261030T003951Z-pixel-10-pro-xl.json)
+records a foreground ping and accepted acknowledgment send. A read-only phone
+setting query returned `bluetooth_on=1` at collection. The agent did not change
+radios, pairing or network settings. The owner-controlled setting is restored.
+
+This establishes one foreground recovery after a Bluetooth-off trial with a
+watch acknowledgment timeout; it does not establish a total Data Layer
+disconnection, Bluetooth-only routing, a timeout cause, sustained reliability,
+fresh authoritative match snapshots or production authorization. The broader
+RT04 protocol case and Android-controller/uplink coexistence remain unverified.
+No probe code, technology decision, task completion or gate disposition changed.

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PendingProbeTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-30T16:28:05.462Z" hostname="PENA-DESK" time="0.001">
+  <properties/>
+  <testcase name="terminalCancellationReleasesPendingStateAndRejectsLateAcknowledgment" classname="livestream.feasibility.PendingProbeTest" time="0.001"/>
+  <testcase name="keepAwakeEligibilityLastsOnlyUntilMatchingAcknowledgment" classname="livestream.feasibility.PendingProbeTest" time="0.0"/>
+  <testcase name="onlyExpectedPeerAndTokenCompletePendingRequestOnce" classname="livestream.feasibility.PendingProbeTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

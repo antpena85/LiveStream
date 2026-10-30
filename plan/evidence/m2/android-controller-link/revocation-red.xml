@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.ControllerLinkProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-10-30T01:46:21.993Z" hostname="PENA-DESK" time="0.1">
+  <properties/>
+  <testcase name="revokedControllerCannotObtainAcknowledgmentForANewRequest" classname="livestream.feasibility.ControllerLinkProbeTest" time="0.096">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: value of: ping(...)&#10;expected: Result(status=DENIED, requestId=null)&#10;but was : Result(status=ACKNOWLEDGED, requestId=request-2)" type="com.google.common.truth.ComparisonFailureWithFacts">value of: ping(...)
+expected: Result(status=DENIED, requestId=null)
+but was : Result(status=ACKNOWLEDGED, requestId=request-2)
+	at livestream.feasibility.ControllerLinkProbeTest.revokedControllerCannotObtainAcknowledgmentForANewRequest(ControllerLinkProbeTest.kt:20)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

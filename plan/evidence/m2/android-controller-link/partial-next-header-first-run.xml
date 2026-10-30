@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DiagnosticPingDecoderTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-30T16:35:13.889Z" hostname="PENA-DESK" time="0.035">
+  <properties/>
+  <testcase name="partialNextHeaderAfterPingIsTruncationNotCleanEof" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.033"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

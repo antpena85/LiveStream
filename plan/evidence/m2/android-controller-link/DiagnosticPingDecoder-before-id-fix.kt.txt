@@ -1,0 +1,13 @@
+package livestream.feasibility
+
+import java.io.InputStream
+
+/** Host-only v1 ping decoding; no transport, authentication or deadline handling. */
+object DiagnosticPingDecoder {
+    data class Ping(val requestId: List<Byte>)
+
+    fun read(input: InputStream): Ping {
+        DiagnosticFrameHeader.readBodyLength(input)
+        return Ping(emptyList())
+    }
+}

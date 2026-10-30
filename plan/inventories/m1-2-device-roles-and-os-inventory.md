@@ -8,6 +8,22 @@ Decision: [D01](../MASTER_PLAN.md#7-open-decision-register), device/role portion
 
 ## Evidence and provenance
 
+Subsequent owner clarification: the Pixel 8 Pro previously observed on Android
+16 / CP1A.260505.005 is updating. Its post-update OS/build and availability for
+testing remain pending; pause checks on that unit until completion is reported
+and installed properties are re-read. Earlier measurements remain pre-update
+evidence only. No destination version or update completion is assumed.
+
+Update 2026-10-29: the owner confirmed **two** connected Pixel 8 Pro phones
+belong to them and are available, with Android 16 tested first and Android 17
+separately afterward. The [dated controller preflight](../evidence/m2/android-controller-preflight-2026-10-29.md)
+retains observed OS/build/patch values and read-only network observations.
+This supersedes the single-Pixel-8-Pro quantity below; the original October 18
+table remains a historical snapshot, not a current installed-build inventory.
+Other device quantities are unchanged; this adds one phone to that earlier
+five-phone inventory. Availability and installed facts do not establish app
+compatibility, stable-release enrollment or controller/uplink feasibility.
+
 Session update 2026-10-24: the owner reports devices are available but are not
 connected to this workstation. The request to complete M2 remains active.
 No new installed build, physical capability or watch-companion observation

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DiagnosticPingDecoderTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-30T16:28:03.306Z" hostname="PENA-DESK" time="0.043">
+  <properties/>
+  <testcase name="truncatedLengthHeaderCannotProduceAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.002"/>
+  <testcase name="unknownMessageTypeIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="unsupportedVersionIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="undersizedAdvertisedBodyIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="truncatedRequestIdCannotProduceAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="validV1PingPreservesEveryRequestIdByteAndLeavesNextFrameUnread" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.034"/>
+  <testcase name="cleanEofBeforeHeaderReturnsNull" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="validPingPreservesIdWhenStreamReturnsShortReads" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.0"/>
+  <testcase name="oversizedV1BodyWithinEnvelopeIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.001"/>
+  <testcase name="acknowledgmentFrameIsRejectedInsteadOfReturningAPing" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

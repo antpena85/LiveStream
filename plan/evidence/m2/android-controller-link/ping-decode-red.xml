@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DiagnosticPingDecoderTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-10-30T02:11:13.047Z" hostname="PENA-DESK" time="0.082">
+  <properties/>
+  <testcase name="validV1PingPreservesEveryRequestIdByteAndLeavesNextFrameUnread" classname="livestream.feasibility.DiagnosticPingDecoderTest" time="0.08">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: missing (16): 0, 17, 34, 51, 68, 85, 102, 119, -128, -111, -94, -77, -60, -43, -26, -1&#10;---&#10;expected    : [0, 17, 34, 51, 68, 85, 102, 119, -128, -111, -94, -77, -60, -43, -26, -1]&#10;but was     : []" type="com.google.common.truth.AssertionErrorWithFacts">missing (16): 0, 17, 34, 51, 68, 85, 102, 119, -128, -111, -94, -77, -60, -43, -26, -1
+---
+expected    : [0, 17, 34, 51, 68, 85, 102, 119, -128, -111, -94, -77, -60, -43, -26, -1]
+but was     : []
+	at livestream.feasibility.DiagnosticPingDecoderTest.validV1PingPreservesEveryRequestIdByteAndLeavesNextFrameUnread(DiagnosticPingDecoderTest.kt:23)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

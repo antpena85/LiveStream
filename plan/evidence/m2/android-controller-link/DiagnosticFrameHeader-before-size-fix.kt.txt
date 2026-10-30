@@ -1,0 +1,12 @@
+package livestream.feasibility
+
+import java.io.DataInputStream
+import java.io.InputStream
+
+/** Host-only header inspection, not a full frame decoder or network adapter. */
+object DiagnosticFrameHeader {
+    fun readBodyLength(input: InputStream): Long {
+        val length = DataInputStream(input).readInt().toLong() and 0xffffffffL
+        return length
+    }
+}

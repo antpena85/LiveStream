@@ -1,0 +1,21 @@
+package livestream.feasibility
+
+import java.io.DataInputStream
+import java.io.InputStream
+import java.net.ProtocolException
+
+/** Host-only v1 ping decoding; no transport, authentication or deadline handling. */
+object DiagnosticPingDecoder {
+    data class Ping(val requestId: List<Byte>)
+
+    fun read(input: InputStream): Ping {
+        val length = DiagnosticFrameHeader.readBodyLength(input)
+        if (length != 18L) throw ProtocolException("V1 ping body must contain eighteen bytes")
+        val body = DataInputStream(input)
+        if (body.readUnsignedByte() != 1) throw ProtocolException("Unsupported diagnostic version")
+        if (body.readUnsignedByte() != 1) throw ProtocolException("Expected diagnostic ping")
+        val requestId = ByteArray(16)
+        body.readFully(requestId)
+        return Ping(requestId.toList())
+    }
+}

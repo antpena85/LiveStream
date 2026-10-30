@@ -1,0 +1,22 @@
+package livestream.feasibility
+
+/** Host-only T04 permission gate; caller labels are not authenticated identities. */
+class ControllerLinkProbe {
+    enum class Status { ACKNOWLEDGED, DENIED }
+
+    data class Result(val status: Status, val requestId: String? = null)
+
+    private val authorizedControllers = mutableSetOf<String>()
+
+    fun authorize(controller: String) {
+        authorizedControllers.add(controller)
+    }
+
+    fun revoke(controller: String) {
+        authorizedControllers.contains(controller)
+    }
+
+    fun ping(controller: String, requestId: String): Result =
+        if (controller in authorizedControllers) Result(Status.ACKNOWLEDGED, requestId)
+        else Result(Status.DENIED)
+}

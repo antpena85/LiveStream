@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-30T15:55:10.212Z" hostname="PENA-DESK" time="0.002">
+  <properties/>
+  <testcase name="confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.002"/>
+  <testcase name="unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission" classname="livestream.feasibility.StreamSessionTest" time="0.0"/>
+  <testcase name="confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

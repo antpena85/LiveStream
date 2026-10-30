@@ -1,0 +1,54 @@
+{
+  "scope": "Shell ICMP prerequisite only; not app connectivity or selected publishing route",
+  "collectedAtUtc": "2026-10-30T01:35:18.578Z",
+  "targets": [
+    {
+      "model": "Pixel 10 Pro XL",
+      "android": "17",
+      "build": "CP3A.261005.005",
+      "wifiIpv4Present": true,
+      "prefixLength": 24
+    },
+    {
+      "model": "Pixel 8 Pro",
+      "android": "17",
+      "build": "DP11.261002.005",
+      "wifiIpv4Present": true,
+      "prefixLength": 24
+    }
+  ],
+  "trials": [
+    {
+      "fromModel": "Pixel 8 Pro",
+      "fromBuild": "DP11.261002.005",
+      "toModel": "Pixel 10 Pro XL",
+      "toBuild": "CP3A.261005.005",
+      "interface": "wlan0",
+      "exitCode": 0,
+      "transmitted": 3,
+      "received": 3,
+      "packetLossPercent": 0,
+      "roundTripMs": {
+        "min": 41.963,
+        "avg": 189.414,
+        "max": 310.755
+      }
+    },
+    {
+      "fromModel": "Pixel 10 Pro XL",
+      "fromBuild": "CP3A.261005.005",
+      "toModel": "Pixel 8 Pro",
+      "toBuild": "DP11.261002.005",
+      "interface": "wlan0",
+      "exitCode": 0,
+      "transmitted": 3,
+      "received": 3,
+      "packetLossPercent": 0,
+      "roundTripMs": {
+        "min": 60.185,
+        "avg": 230.405,
+        "max": 407.632
+      }
+    }
+  ]
+}
