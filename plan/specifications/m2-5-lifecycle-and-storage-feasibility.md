@@ -103,8 +103,10 @@ passes twelve tests: ten SQLite and two session cases. Eight observed red/green
 cycles and four first-run verifications are retained.
 
 The [ST06 proposed contract and interruption checkpoints](m2-st06-pending-stop-contract.md)
-specify a next isolated T01/T02 experiment. This is a proposal only: no ST06
-test or publisher observation has run. Q45's policy is confirmed; final
+specify an isolated T01/T02 experiment. Its host T01 normal reopen/retry and
+before/after-commit child interruption cases, session-matched confirmation and
+distinct pending-marker retention pass; publisher-dependent ST06 checks and
+observations remain pending. Q45's policy is confirmed; final
 stop/recovery mechanisms remain open.
 
 This remains a points-only fixture, not the full match/Undo schema or Room

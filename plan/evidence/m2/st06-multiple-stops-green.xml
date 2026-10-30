@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-30T20:10:23.887Z" hostname="redacted" time="2.437">
+  <properties/>
+  <testcase name="processInterruptedBeforeCommitPreservesAcceptedStateAndAllowsOneRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="0.568"/>
+  <testcase name="fitFailureRetainsAcceptedPointReceiptAndPendingStopAfterReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.026"/>
+  <testcase name="confirmedResetStartsDurableNewEpochWithZeroPointsAndRevision" classname="livestream.feasibility.DurableCommandProbeTest" time="0.021"/>
+  <testcase name="commandIdInNewEpochHasItsOwnDurableReceiptAndAppliesOnlyOnce" classname="livestream.feasibility.DurableCommandProbeTest" time="0.028"/>
+  <testcase name="canceledResetPreservesEpochPointsRevisionAndReceiptsAfterReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.021"/>
+  <testcase name="interruptedFitFailureBeforeCommitPreservesPriorStateAndAllowsOneRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="0.403"/>
+  <testcase name="simultaneousRetriesOfOnePointApplyOnceAndSurviveReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.026"/>
+  <testcase name="delayedStopConfirmationCannotClearNewerSessionsPendingStop" classname="livestream.feasibility.DurableCommandProbeTest" time="0.026"/>
+  <testcase name="oldPointCommandsCannotChangeResetMatchAfterReopenEvenWhenRevisionsCoincide" classname="livestream.feasibility.DurableCommandProbeTest" time="0.023"/>
+  <testcase name="processInterruptedDuringResetPreservesOldEpochAndAllowsConfirmedRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="0.385"/>
+  <testcase name="committedPointWithLostAcknowledgmentRetainsOriginalReceiptWithoutReapplyingAfterReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.397"/>
+  <testcase name="distinctUnresolvedStopsSurviveScoringAndReopenUntilIndividuallyConfirmed" classname="livestream.feasibility.DurableCommandProbeTest" time="0.027"/>
+  <testcase name="concurrentPointCommandsReceiveDistinctDurableRevisions" classname="livestream.feasibility.DurableCommandProbeTest" time="0.042"/>
+  <testcase name="committedFitFailureWithLostAcknowledgmentRetainsReceiptAndStopMarker" classname="livestream.feasibility.DurableCommandProbeTest" time="0.427"/>
+  <testcase name="acceptedPointSurvivesReopenAndRetryDoesNotApplyItAgain" classname="livestream.feasibility.DurableCommandProbeTest" time="0.016"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

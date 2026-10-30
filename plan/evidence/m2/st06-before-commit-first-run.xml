@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-30T19:27:09.566Z" hostname="redacted" time="0.833">
+  <properties/>
+  <testcase name="interruptedFitFailureBeforeCommitPreservesPriorStateAndAllowsOneRetry" classname="livestream.feasibility.DurableCommandProbeTest" time="0.831"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

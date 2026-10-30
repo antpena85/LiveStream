@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-10-30T19:20:25.160Z" hostname="redacted" time="0.233">
+  <properties/>
+  <testcase name="fitFailureRetainsAcceptedPointReceiptAndPendingStopAfterReopen" classname="livestream.feasibility.DurableCommandProbeTest" time="0.231">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: expected: session-a&#10;but was : null" type="com.google.common.truth.AssertionErrorWithFacts">expected: session-a
+but was : null
+	at livestream.feasibility.DurableCommandProbeTest.fitFailureRetainsAcceptedPointReceiptAndPendingStopAfterReopen(DurableCommandProbeTest.kt:29)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -19,6 +19,7 @@ class DurableCommandProbe(
             statement.execute("PRAGMA synchronous=FULL")
             statement.execute("CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY CHECK(id=1), points INTEGER NOT NULL, revision INTEGER NOT NULL, epoch INTEGER NOT NULL)")
             statement.execute("CREATE TABLE IF NOT EXISTS receipts (command_id TEXT NOT NULL, points INTEGER NOT NULL, revision INTEGER NOT NULL, epoch INTEGER NOT NULL, PRIMARY KEY (epoch, command_id))")
+            statement.execute("CREATE TABLE IF NOT EXISTS pending_stops (session TEXT PRIMARY KEY NOT NULL)")
             statement.execute("INSERT OR IGNORE INTO state VALUES (1, 7, 0, 0)")
         }
     }
@@ -54,7 +55,29 @@ class DurableCommandProbe(
     }
 
     @Synchronized
-    fun recordPoint(commandId: String, expectedEpoch: Long): ProbeSnapshot {
+    fun pendingStopSession(): String? {
+        val sessions = pendingStopSessions()
+        check(sessions.size <= 1) { "Multiple pending stops require pendingStopSessions" }
+        return sessions.singleOrNull()
+    }
+
+    @Synchronized
+    fun pendingStopSessions(): Set<String> = connection.createStatement().use { statement ->
+        statement.executeQuery("SELECT session FROM pending_stops").use { rows ->
+            buildSet { while (rows.next()) add(rows.getString(1)) }
+        }
+    }
+
+    @Synchronized
+    fun confirmStopped(session: String): Boolean = connection.prepareStatement(
+        "DELETE FROM pending_stops WHERE session=?"
+    ).use { statement ->
+        statement.setString(1, session)
+        statement.executeUpdate() == 1
+    }
+
+    @Synchronized
+    fun recordPoint(commandId: String, expectedEpoch: Long, fitFailureSession: String? = null): ProbeSnapshot {
         connection.autoCommit = false
         try {
             val current = snapshot()
@@ -80,6 +103,12 @@ class DurableCommandProbe(
                 statement.setLong(3, accepted.revision)
                 statement.setLong(4, accepted.epoch)
                 statement.executeUpdate()
+            }
+            if (fitFailureSession != null) {
+                connection.prepareStatement("INSERT OR IGNORE INTO pending_stops VALUES (?)").use { statement ->
+                    statement.setString(1, fitFailureSession)
+                    statement.executeUpdate()
+                }
             }
             beforeCommit()
             connection.commit()

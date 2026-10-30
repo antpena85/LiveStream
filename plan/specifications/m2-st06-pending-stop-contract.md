@@ -2,7 +2,8 @@
 
 Recorded: 2026-10-30
 
-Status: Specification only; no ST06 test or publisher observation has run.
+Status: Host T01 reopen/retry and before/after-commit interruptions pass;
+publisher-dependent checkpoints and observations remain pending.
 
 Task: [M2.5](../subplans/m2-5-lifecycle-and-storage-feasibility.md)
 
@@ -71,3 +72,94 @@ notice. Session identity, idempotence and reconciliation with a real provider,
 bounded recovery, storage schema and safe handling of frames in flight remain
 open under D04/D08/D10/D11. Do not infer an application stack or close G2 from
 this proposal. Physical and received-broadcast evidence remains necessary.
+
+## First host slice — 2026-10-30
+
+In a real temporary SQLite store, one point with a simulated fit failure commits
+8 points/revision 1/epoch 0 and the marker `session-a`. After a normal close and
+reopen, the public snapshot and marker remain; retry returns the original receipt
+without applying another point. The [red result](../evidence/m2/st06-pending-stop-red.xml)
+expected `session-a` but observed null with the [pre-fix probe](../evidence/m2/st06-pending-stop-red-source.txt).
+The [green store suite](../evidence/m2/st06-pending-stop-green.xml) contains
+11 passing tests. A forced full offline JVM run passed 33 tests. The earlier
+compilation error caused by an editing error was not a behavioral red.
+
+This is a normal close/reopen check, not an interruption or proof of atomicity
+under failure. At this checkpoint the fixture permitted replacing its single marker and had
+no publisher, stop confirmation, fit re-evaluation, notification or start gate;
+it must not be used as a complete session-safety design.
+
+## Before-commit interruption — 2026-10-30
+
+The child executes a fit-failure point in the real temporary SQLite store and
+prints a checkpoint immediately before the deliberate `halt(23)`, after the
+candidate point, receipt and stop marker writes but before commit. The parent
+observes the checkpoint and exit 23 without an acknowledgment. On reopening,
+the previous accepted 8/1/0 and its receipt remain, with no stop marker. A
+retry accepts 9/2/0 with marker `session-a`; a duplicate returns the same
+receipt, and a second reopen retains the new state and marker.
+
+This [targeted test](../evidence/m2/st06-before-commit-first-run.xml) passed on
+its first run using unchanged store logic; the child fault fixture was extended
+for this scenario. It is a verification, not a new red/green cycle. A forced
+full offline run passed 34 tests, including the [12 store cases](../evidence/m2/st06-before-commit-full-store.xml).
+Reports redact the host name only. This covers one abrupt host-process checkpoint,
+not all timings, power loss, Android, publishing, or received output. Next,
+investigate the post-commit lost-acknowledgment checkpoint and session replacement
+separately; stop dispatch and recovery remain unimplemented.
+
+## Post-commit lost acknowledgment — 2026-10-30
+
+After an earlier accepted 8/1/0, a child submits a fit-failure point and emits
+only a checkpoint after the command returns from commit, then halts with exit 23
+before sending its receipt or closing the store. Reopening exposes 9/2/0 and
+marker `session-a`. Retrying returns the original 9/2/0 receipt. A subsequent
+point reaches 10/3/0; retries still return 9/2/0 without replacing the newer
+snapshot or marker, including after another reopen.
+
+The [targeted test](../evidence/m2/st06-after-commit-first-run.xml) passed on
+its first run with unchanged store logic; only the child fault mode and test
+were extended. This is verification, not a new red/green cycle. A forced offline
+full run passed 35 tests, including [13 store cases](../evidence/m2/st06-after-commit-full-store.xml).
+Host names in retained reports are redacted. The checkpoint is not a receipt or
+publisher acknowledgment, and this host experiment does not establish Android
+recovery, power-loss durability, stop dispatch or actual broadcast termination.
+Next, investigate session replacement and stale completion safety before
+attempting publisher-dependent stop/reconciliation checkpoints.
+
+## Session-matched confirmation — 2026-10-30
+
+The isolated store now accepts an externally supplied stop confirmation for a
+session and removes a pending marker only if its session matches. The test
+confirms A, creates B, reopens, and verifies a delayed A confirmation leaves B
+intact; a matching B confirmation clears it and a duplicate does nothing.
+Points and revision remain 9/2/0. The [red test](../evidence/m2/st06-stale-stop-red.xml)
+failed because the [pre-fix probe](../evidence/m2/st06-stale-stop-red-source.txt)
+could not clear even A. The [green store suite](../evidence/m2/st06-stale-stop-green.xml)
+passed 14 cases; the forced full offline JVM run passed 36 tests.
+
+This tests a supplied confirmation, not whether a publisher really stopped.
+It assumes distinct session identifiers and does not test identifier reuse,
+independent writers, a crash during marker clearance, or callback authentication.
+At this checkpoint the single-marker fixture still permitted an unconfirmed A
+marker to be replaced by B; it did not enforce the proposed Start gate.
+
+## Distinct unresolved stop markers — 2026-10-30
+
+The host fixture now retains distinct unresolved session markers together while
+accepting the second point. After reopen, both A and B remain, retrying B returns
+its 9/2/0 receipt without another point, and confirming A leaves B intact across
+another reopen until B is confirmed. This is a defensive recovery experiment,
+not permission for multiple simultaneous broadcasts. The [red result](../evidence/m2/st06-multiple-stops-red.xml)
+observed B but lost A with the [pre-fix probe](../evidence/m2/st06-multiple-stops-red-source.txt).
+The [green store suite](../evidence/m2/st06-multiple-stops-green.xml) passed
+15 cases; the forced full offline JVM run passed 37 tests.
+
+The probe uses a new table and fresh temporary files; **no migration from the
+prior single-marker probe schema is provided or tested**. The singular accessor
+fails rather than reporting no pending stop when multiple markers exist; callers
+must use the set accessor for that case. This host result does not implement
+start gating, authenticate confirmations, prove provider termination, test
+identifier reuse or independent writers, or resolve how many old sessions a
+real recovery protocol must retain. Next investigate a T02 start gate based on
+durable pending stops and unresolved fit before publisher-dependent recovery.

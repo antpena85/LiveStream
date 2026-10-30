@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-10-30T19:33:41.633Z" hostname="redacted" time="0.283">
+  <properties/>
+  <testcase name="delayedStopConfirmationCannotClearNewerSessionsPendingStop" classname="livestream.feasibility.DurableCommandProbeTest" time="0.279">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: expected to be true" type="com.google.common.truth.AssertionErrorWithFacts">expected to be true
+	at livestream.feasibility.DurableCommandProbeTest.delayedStopConfirmationCannotClearNewerSessionsPendingStop(DurableCommandProbeTest.kt:25)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

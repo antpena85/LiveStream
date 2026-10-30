@@ -18,6 +18,128 @@ class DurableCommandProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun distinctUnresolvedStopsSurviveScoringAndReopenUntilIndividuallyConfirmed() {
+        val database = temporaryFolder.root.toPath().resolve("multiple-stops.sqlite")
+        DurableCommandProbe(database).use { probe ->
+            assertThat(probe.recordPoint("a", 0, "session-a"))
+                .isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(probe.recordPoint("b", 0, "session-b"))
+                .isEqualTo(ProbeSnapshot(9, 2, 0))
+            assertThat(probe.pendingStopSessions()).containsExactly("session-a", "session-b")
+        }
+        DurableCommandProbe(database).use { probe ->
+            assertThat(probe.pendingStopSessions()).containsExactly("session-a", "session-b")
+            assertThat(probe.recordPoint("b", 0, "session-b")).isEqualTo(ProbeSnapshot(9, 2, 0))
+            assertThat(probe.confirmStopped("session-a")).isTrue()
+            assertThat(probe.pendingStopSessions()).containsExactly("session-b")
+            assertThat(probe.snapshot()).isEqualTo(ProbeSnapshot(9, 2, 0))
+        }
+        DurableCommandProbe(database).use { probe ->
+            assertThat(probe.pendingStopSessions()).containsExactly("session-b")
+            assertThat(probe.confirmStopped("session-b")).isTrue()
+            assertThat(probe.pendingStopSessions()).isEmpty()
+        }
+    }
+
+    @Test
+    fun delayedStopConfirmationCannotClearNewerSessionsPendingStop() {
+        val database = temporaryFolder.root.toPath().resolve("stale-stop.sqlite")
+        DurableCommandProbe(database).use { probe ->
+            probe.recordPoint("first", expectedEpoch = 0, fitFailureSession = "session-a")
+            assertThat(probe.confirmStopped("session-a")).isTrue()
+            assertThat(probe.pendingStopSession()).isNull()
+            probe.recordPoint("second", expectedEpoch = 0, fitFailureSession = "session-b")
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.confirmStopped("session-a")).isFalse()
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-b")
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-b")
+            assertThat(reopened.confirmStopped("session-b")).isTrue()
+            assertThat(reopened.confirmStopped("session-b")).isFalse()
+            assertThat(reopened.pendingStopSession()).isNull()
+        }
+    }
+
+    @Test
+    fun committedFitFailureWithLostAcknowledgmentRetainsReceiptAndStopMarker() {
+        val database = temporaryFolder.root.toPath().resolve("lost-fit-ack.sqlite")
+        DurableCommandProbe(database).use { probe ->
+            assertThat(probe.recordPoint("previous", expectedEpoch = 0))
+                .isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+        }
+        assertThat(interruptProcess(database, "fit-point", "interrupt-fit-after-commit").trim())
+            .isEqualTo("fit-after-commit")
+
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-a")
+            assertThat(reopened.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.recordPoint("later", expectedEpoch = 0))
+                .isEqualTo(ProbeSnapshot(points = 10, revision = 3, epoch = 0))
+            assertThat(reopened.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 10, revision = 3, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-a")
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 10, revision = 3, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-a")
+        }
+    }
+
+    @Test
+    fun interruptedFitFailureBeforeCommitPreservesPriorStateAndAllowsOneRetry() {
+        val database = temporaryFolder.root.toPath().resolve("interrupted-fit.sqlite")
+        DurableCommandProbe(database).use { probe ->
+            assertThat(probe.recordPoint("previous", expectedEpoch = 0))
+                .isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+            assertThat(probe.pendingStopSession()).isNull()
+        }
+
+        val output = interruptProcess(database, "fit-point", "interrupt-fit-before-commit")
+        assertThat(output.trim()).isEqualTo("fit-before-commit")
+
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isNull()
+            assertThat(reopened.recordPoint("previous", expectedEpoch = 0))
+                .isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+            assertThat(reopened.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-a")
+            assertThat(reopened.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 9, revision = 2, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-a")
+        }
+    }
+
+    @Test
+    fun fitFailureRetainsAcceptedPointReceiptAndPendingStopAfterReopen() {
+        val database = temporaryFolder.root.toPath().resolve("pending-stop.sqlite")
+        DurableCommandProbe(database).use { probe ->
+            assertThat(probe.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+            assertThat(reopened.pendingStopSession()).isEqualTo("session-a")
+            assertThat(reopened.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a"))
+                .isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(points = 8, revision = 1, epoch = 0))
+        }
+    }
+
+    @Test
     fun confirmedResetStartsDurableNewEpochWithZeroPointsAndRevision() {
         val database = temporaryFolder.root.toPath().resolve("reset-match.sqlite")
         DurableCommandProbe(database).use { probe ->
