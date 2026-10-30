@@ -8,6 +8,14 @@ Decision: [D01](../MASTER_PLAN.md#7-open-decision-register), device/role portion
 
 ## Evidence and provenance
 
+On 2026-10-30 the owner confirmed the update completed and the phone is connected.
+[Read-only ADB reinspection](../evidence/m2/android-controller-preflight-2026-10-29.md#post-update-adb-reinspection--2026-10-30)
+found two authorized Pixel 8 Pro phones, both on Android 17 but with distinct
+builds, plus an authorized Pixel 10 Pro XL and Pixel Watch 4. The owner identified
+the previously updating Pixel 8 Pro by its displayed build, CP3A.261005.005.
+Earlier update pause notes below are historical; do not infer stable/beta
+enrollment from build strings alone.
+
 Subsequent owner clarification: the Pixel 8 Pro previously observed on Android
 16 / CP1A.260505.005 is updating. Its post-update OS/build and availability for
 testing remain pending; pause checks on that unit until completion is reported

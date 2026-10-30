@@ -1,0 +1,71 @@
+{
+  "probeVersion": "m2-media-1",
+  "model": "Pixel 8 Pro",
+  "buildId": "CP3A.261005.005",
+  "targetWidth": 1280,
+  "targetHeight": 720,
+  "targetFps": 30,
+  "requestedVideoBitrate": 2000000,
+  "requestedAudioSampleRate": 48000,
+  "requestedAudioBitrate": 128000,
+  "requestedVideoCodecMode": "hardware",
+  "publishing": "not_run",
+  "scoreboardFixture": "ABC 99 S2 T\/O2 serve; XYZ 100 S1 T\/O1",
+  "experiment": "front_rear_mute_20s",
+  "controlEvents": [
+    {
+      "action": "mute",
+      "elapsedMs": 4084,
+      "apiState": "muted=true"
+    },
+    {
+      "action": "unmute",
+      "elapsedMs": 8084,
+      "apiState": "muted=false"
+    },
+    {
+      "action": "switch_front",
+      "elapsedMs": 12084,
+      "apiState": "cameraId=1"
+    },
+    {
+      "action": "switch_rear",
+      "elapsedMs": 16085,
+      "apiState": "cameraId=0"
+    }
+  ],
+  "builtinPreferenceAccepted": true,
+  "startedElapsedMs": 15043395,
+  "logicalCameraId": "0",
+  "observedAudioInputTypes": [
+    15
+  ],
+  "stopReason": "twenty_second_timer",
+  "stoppedElapsedMs": 15063481,
+  "fileBytes": 5232250,
+  "tracks": [
+    {
+      "mime": "video\/avc",
+      "width": 1280,
+      "height": 720,
+      "samples": 572,
+      "encodedBytes": 4906005,
+      "firstTimeUs": 0,
+      "lastTimeUs": 19726933,
+      "maximumSampleGapUs": 371944,
+      "sampleRatePerSecond": 28.945198931835982
+    },
+    {
+      "mime": "audio\/mp4a-latm",
+      "sample-rate": 48000,
+      "channel-count": 2,
+      "samples": 920,
+      "encodedBytes": 313887,
+      "firstTimeUs": 22708,
+      "lastTimeUs": 19644000,
+      "maximumSampleGapUs": 28687,
+      "sampleRatePerSecond": 46.836874962158454
+    }
+  ],
+  "decodedFrameAvailable": true
+}

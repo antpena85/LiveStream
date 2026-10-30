@@ -69,6 +69,7 @@ Key storage, public identity encoding, certificate/endpoint policy, authenticate
 out-of-band comparison and test fixture provisioning are unresolved. Select none
 by default and do not fabricate credentials for retained evidence. If a proposed
 mechanism cannot verify the intended peer without a permissive trust or hostname
-shortcut, stop rather than weaken authentication. Owner confirmation of the
-updating Pixel 8 Pro is still required before querying that unit, followed by
-read-only ADB build verification. This document alone does not pass M2.4 or G2.
+shortcut, stop rather than weaken authentication. The owner subsequently confirmed
+the Pixel 8 Pro update completed and identified its installed build; see the
+[post-update reinspection](../evidence/m2/android-controller-preflight-2026-10-29.md#post-update-adb-reinspection--2026-10-30).
+This document alone does not pass M2.4 or G2.

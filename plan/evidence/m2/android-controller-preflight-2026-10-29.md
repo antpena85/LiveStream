@@ -1,5 +1,35 @@
 # Android controller/uplink preflight — 2026-10-29
 
+## Post-update ADB reinspection — 2026-10-30
+
+The owner confirmed that the previously updating Pixel 8 Pro completed its
+update and is connected. A subsequent read-only ADB device and `getprop` check
+reported four authorized (`device`) targets. Serial numbers and connection
+addresses were not retained. Both connected Pixel 8 Pro phones now report
+Android 17. The owner subsequently identified the just-updated phone by its
+displayed build number, CP3A.261005.005; it is the formerly Android 16 unit.
+
+| Target | Android / API | Build (incremental) | Security patch |
+| --- | --- | --- | --- |
+| Pixel 8 Pro, build A | 17 / 37 | DP11.261016.003 (16708287) | 2026-10-05 |
+| Pixel 8 Pro, build B | 17 / 37 | CP3A.261005.005 (16271449) | 2026-10-05 |
+| Pixel 10 Pro XL | 17 / 37 | CP3A.261005.005 (16271449) | 2026-10-05 |
+| Pixel Watch 4 | 17 / 37 | CP3A.260905.002 (15989242) | 2026-08-05 |
+
+The owner's update-completion and build-identification reports remove the prior
+update pause and identify the previously updating phone. Neither build string alone establishes stable/beta
+enrollment. No APK, network setting or role was changed, and no media, LAN,
+watch protocol or broadcast validation was performed by this reinspection.
+The October 29 measurements below remain historical pre-update observations.
+
+Following the owner's report that the media test app was absent and request to
+push it, the existing diagnostic media APK was installed and launched on the
+uniquely matched authorized Pixel 8 Pro with build CP3A.261005.005. APK SHA-256:
+`9AFB0B57B9D18DB2C39CCA103FD237650BF042EDB0FE2FF0DE2A7483C42CFC81`.
+No capture was started by the deployment. The multi-device helper was not used:
+it targets all matching models and cannot distinguish the two Pixel 8 Pros.
+Post-update capture and owner playback review remain pending.
+
 Scope: M2.4 physical prerequisites only. No Android-phone LAN controller harness
 or publishing test was executed. See the [topology specification](../../specifications/m2-4-remote-topology-feasibility.md).
 

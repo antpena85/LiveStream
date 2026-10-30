@@ -46,6 +46,13 @@ selection, publishing, live bitrate changes and sustained-load results remain
 pending. No application media dependency is selected and no preview-only or JVM
 result satisfies this task. M2.1's remaining physical prerequisites stay open.
 
+On 2026-10-30 the owner repeated and reviewed the local switch/mute experiment on
+the previously updating Pixel 8 Pro after its update to Android 17. The
+[post-update evidence](../evidence/m2/media-transitions-post-update-2026-10-30.md)
+records the owner's positive playback report and separate metadata, including a
+371.944 ms maximum video timestamp gap. It does not establish received output,
+measured synchronization or seamless switching; task status and G2 remain open.
+
 Record the [M1.3 audio case ID](../inventories/m1-3-representative-audio-accessories.md)
 with media observations. Begin with the available built-in baseline; accessory
 path feasibility remains pending for cases whose equipment is unavailable.
