@@ -102,9 +102,10 @@ then halts before sending its receipt or closing the store. Reopening preserves
 passes twelve tests: ten SQLite and two session cases. Eight observed red/green
 cycles and four first-run verifications are retained.
 
-Recommended next independent host work is to specify ST06's durable pending-stop
-contract/checkpoints at T01/T02 before an isolated TDD experiment. Q45's policy
-is confirmed; final stop/recovery mechanisms remain D10 proposals.
+The [ST06 proposed contract and interruption checkpoints](m2-st06-pending-stop-contract.md)
+specify a next isolated T01/T02 experiment. This is a proposal only: no ST06
+test or publisher observation has run. Q45's policy is confirmed; final
+stop/recovery mechanisms remain open.
 
 This remains a points-only fixture, not the full match/Undo schema or Room
 integration. These controlled host process interruptions do not establish every
