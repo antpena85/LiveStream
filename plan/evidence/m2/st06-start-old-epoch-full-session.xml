@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-31T00:15:11.684Z" hostname="redacted" time="0.155">
+  <properties/>
+  <testcase name="confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.003"/>
+  <testcase name="unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission" classname="livestream.feasibility.StreamSessionTest" time="0.001"/>
+  <testcase name="confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.001"/>
+  <testcase name="confirmedStartWithDurablePendingStopAfterReopenIsDenied" classname="livestream.feasibility.StreamSessionTest" time="0.022"/>
+  <testcase name="priorEpochFitAssessmentCannotAuthorizeStartWhenValuesAndRevisionCoincide" classname="livestream.feasibility.StreamSessionTest" time="0.026"/>
+  <testcase name="staleFitAssessmentCannotAuthorizeStartAfterMatchRevisionChanges" classname="livestream.feasibility.StreamSessionTest" time="0.028"/>
+  <testcase name="confirmedStartWithMatchingFitAssessmentAfterReopenBeginsConnecting" classname="livestream.feasibility.StreamSessionTest" time="0.025"/>
+  <testcase name="missingFitAssessmentAfterStopConfirmationCannotStart" classname="livestream.feasibility.StreamSessionTest" time="0.023"/>
+  <testcase name="stopConfirmationDoesNotClearUnresolvedNumericFitForStart" classname="livestream.feasibility.StreamSessionTest" time="0.025"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

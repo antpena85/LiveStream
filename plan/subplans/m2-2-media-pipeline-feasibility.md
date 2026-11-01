@@ -59,3 +59,35 @@ path feasibility remains pending for cases whose equipment is unavailable.
 
 Record actual outcomes, configuration, and unresolved limitations. A written plan is not evidence that the task passed. Update the [task index](README.md) and master plan when real evidence changes status.
 
+## Runtime dependency inventory — 2026-11-01
+
+The isolated media probe's offline `debugRuntimeClasspath` dependency report
+completed successfully; the [full Gradle output](../evidence/m2/android-media-runtime-dependencies-2026-11-01.txt)
+records the resolved graph. RootEncoder 2.8.1 pulls in more than the RTMP path,
+including RTSP, SRT, UDP and WHIP modules and Bouncy Castle, alongside Ktor,
+Kotlin, coroutine and AndroidX dependencies. This is the diagnostic debug
+configuration's dependency graph, not proof of what a release APK contains.
+Artifact-specific license texts and notices, packaged contents and any selected
+production graph still require review; this inventory alone does not establish
+license compliance, select the pipeline, complete M2.2 or pass G2. No camera,
+microphone, device capture or network publishing was started for this check.
+
+Command (from the workspace root):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File D:/Playground/LiveStream/tools/m2/run-android-inventory.ps1 -Probe media dependencies --configuration debugRuntimeClasspath --offline
+```
+
+### Preliminary cached-metadata and APK inspection
+
+The cached POMs for the resolved RootEncoder 2.8.1 modules, Ktor 3.5.2,
+Kotlin stdlib 2.3.21, listed Kotlinx components, AndroidX annotation 1.10.0
+and JetBrains annotations 23.0.0 declare Apache 2.0. The cached POMs for the
+four Bouncy Castle 1.84 modules and `slf4j-api` 2.0.18 contain no direct
+license declaration; this is a metadata gap, not a conclusion that they have
+no license. Parent metadata and authoritative artifact license texts remain to
+be checked. A filename search of the existing diagnostic debug APK found only
+`META-INF/androidx/annotation/annotation/LICENSE.txt` containing LICENSE,
+NOTICE or DEPENDENCIES in its name. This is not a complete analysis of embedded
+notices or a release APK. Do not treat these observations as license clearance.
+

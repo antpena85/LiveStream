@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.LocalCaptureReadinessTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-01T16:20:12.048Z" hostname="PENA-DESK" time="0.058">
+  <properties/>
+  <testcase name="confirmedLocalCaptureWithoutMicrophonePermissionReportsMicrophoneRequired" classname="livestream.feasibility.LocalCaptureReadinessTest" time="0.056">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: MicrophonePermissionRequired&#10;but was : Cancelled" type="com.google.common.truth.ComparisonFailureWithFacts">expected: MicrophonePermissionRequired
+but was : Cancelled
+	at livestream.feasibility.LocalCaptureReadinessTest.confirmedLocalCaptureWithoutMicrophonePermissionReportsMicrophoneRequired(LocalCaptureReadinessTest.kt:13)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

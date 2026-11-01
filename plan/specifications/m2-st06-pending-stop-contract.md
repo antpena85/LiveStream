@@ -219,3 +219,103 @@ store can still be omitted. Actual fit detection, revision/epoch binding,
 concurrent changes, and publisher recovery remain open. Next test a stale
 assessment against a changed real-store revision before implementing any
 revision-bound mechanism.
+
+## T02 stale snapshot assessment — 2026-10-30
+
+In a fresh real store, a modeled ready assessment references 8/1/0; a second
+point advances the match to 9/2/0. After reopening, Start with the earlier
+snapshot is denied and the session stays stopped. The [red result](../evidence/m2/st06-start-stale-red.xml)
+returned Accepted with the [pre-fix session](../evidence/m2/st06-start-stale-red-source.txt).
+The [green session suite](../evidence/m2/st06-start-stale-green.xml) passes seven
+tests; a forced offline full run passes 41 tests. The probe now requires an
+explicit ready flag, a store and a supplied snapshot equal to the current
+points/revision/epoch snapshot. Missing values fail closed.
+
+This is a host-only snapshot comparison, not verified rendering or a complete
+revision-bound authorization protocol. The test covers a changed revision, not
+epoch reset, file replacement, a matching-assessment success path at that checkpoint, or changes
+between checking and connecting. It does not establish atomicity with publishing,
+assessment provenance, other layout inputs, real stop confirmation or Android
+recovery. No application identity, concurrency or media decisions are settled.
+Next verify deliberate Start with a matching assessment and all prerequisites,
+then separately examine stale epoch and concurrent-change safety.
+
+## T02 matching snapshot assessment — 2026-10-30
+
+After a fit-failure point and simulated stop confirmation, the test models a
+fresh ready assessment of the 8/1/0 snapshot, reopens the real store, and
+requests Start with confirmation and both permissions. The session returns
+Accepted and enters Connecting; the snapshot and empty pending-stop set remain
+unchanged. The [targeted result](../evidence/m2/st06-start-matching-first-run.xml)
+passed on its first run with unchanged session logic, so it is verification,
+not a new red/green cycle. The [full session suite](../evidence/m2/st06-start-matching-full-session.xml)
+passed eight cases; the forced full offline run passed 42 tests.
+
+This verifies the modeled transition only: Connecting is not a live broadcast,
+and the test supplies rather than measures readiness or stop confirmation. It
+does not cover stale epochs, snapshot reuse after file replacement, other layout
+inputs, changes between the check and connection, or real publisher behavior.
+Next verify rejection of a prior epoch assessment even when the revision and
+point values coincide; concurrency and publisher reconciliation remain separate.
+
+## T02 prior-epoch assessment — 2026-10-30
+
+Two confirmed resets in a fresh real store produce 0 points/revision 0 in both
+epoch 1 and epoch 2. After reopening in epoch 2, the modeled session rejects a
+ready assessment for epoch 1 and stays stopped. The [targeted test](../evidence/m2/st06-start-old-epoch-first-run.xml)
+passed on its first run with unchanged session and store logic; this is
+verification, not a new red/green cycle. The [full session suite](../evidence/m2/st06-start-old-epoch-full-session.xml)
+passed nine cases and a forced full offline run passed 43 tests.
+
+The epoch is local to this probe file, not a selected application identity.
+This result does not cover file replacement or rollback, concurrent state
+changes between assessment and connection, rendered fit, actual publishing or
+Android recovery. Next investigate that check-to-connect race with a deterministic
+host experiment; no hardware or provider result is implied.
+
+## Proposed check-to-connect race experiment — 2026-10-30
+
+Status: design only; no race test or fix has run. Existing T01 match commands
+and T02 session control remain the owner-confirmed public boundaries. Model an
+external publisher as a controllable boundary, not a mock match/store. The
+current T02 probe only changes an in-memory status and has no publisher adapter,
+so it cannot yet observe or prevent a real connection attempt.
+
+The safety question is not whether a snapshot matched at some earlier instant:
+a point, reset, fit failure, or pending stop may be committed after that check
+and before an external publisher begins accepting output. A host-only lock
+around a status assignment would not by itself protect asynchronous callbacks,
+another store instance or a publisher already connecting. SQLite cannot roll
+back the external effect. The exact serialization and reconciliation mechanism
+remains proposed and must not be treated as a settled D04/D08/D10 decision.
+
+Proposed first deterministic scenario:
+
+1. Use a fresh real store and a supplied ready assessment for snapshot 8/1/0,
+   with no pending stop. Request confirmed Start through T02. Arrange the
+   controllable external publisher to pause before its connection takes effect;
+   observe that the request has reached that boundary without using sleeps.
+2. While paused, accept a different point through T01, yielding 9/2/0 with a
+   simulated fit failure and a durable pending stop for the affected session.
+   Verify the accepted receipt and marker through the public store interface.
+3. Release the publisher boundary. The proposed invariant is that an obsolete
+   Start must not result in unsafe publication or an authoritative live state.
+   It must either be canceled before the effect or, if an effect cannot be
+   canceled, enter an explicit stopping/unknown state and reconcile that exact
+   session while retaining the match and stop marker. Do not report stopped
+   merely because a stop was requested.
+4. Inspect only T01/T02 results and externally observed publisher requests;
+   bound waits and clean up the worker on failure. Record the actual timeline,
+   failure mode and red result before the smallest corrective change. An
+   infrastructure timeout is not a behavioral red.
+
+The scenario needs an explicit simulated publisher contract: session identity,
+when a connection or cancellation takes effect, callbacks after cancellation,
+and what evidence counts as stop confirmation. A fake must permit late or
+failed effects rather than making cancellation automatically succeed. A second
+case should cover an ordinary revision change without a fit failure and specify
+whether fresh assessment cancels or restarts the attempt. Also investigate
+independent writers and changes after the eventual connection; neither is covered
+by the first interleaving. The host probe must not claim that production can
+guarantee no unreadable frame or that a provider has stopped. Actual publisher,
+Android lifecycle, received-video and operator-notice evidence remain required.

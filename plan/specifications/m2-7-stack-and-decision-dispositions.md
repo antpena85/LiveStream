@@ -46,22 +46,22 @@ and the specific unresolved work; a blocker disposition does not pass G2.
 
 | ID | Evidence / proposed direction | Remaining condition |
 | --- | --- | --- |
-| D01 | [Capability matrix and C01–C06](m2-1-capability-validation.md); no connected devices. | Actual installed builds, lenses, encoder/audio routes, accessories, pairing and upload observations. |
+| D01 | [Capability matrix and C01–C06](m2-1-capability-validation.md); [phone capability observations](../evidence/m2/phone-capabilities-2026-10-24.md) and [subsequent device/build observations](../evidence/m2/android-controller-preflight-2026-10-29.md) are retained. | Complete the device/build-specific usable lens, encoder and built-in microphone matrix, direct watch pairing, and upload observations; external microphones are deferred until after v1 under Q48. |
 | D02 | Local Kotlin JVM compiler runs; native phone Compose proposed. | Select/resolve Android/UI/minimum SDK graph and confirm it against device OS inventory. |
 | D03 | [Three media candidates and MP01–MP07](m2-2-media-pipeline-feasibility.md). | Demonstrate encoded overlay/audio, switches, cellular routing, bitrate changes and sustained load; review resolved licenses. |
 | D04 | [SQLite/Room versus atomic document](m2-5-lifecycle-and-storage-feasibility.md); host reopen/retry, before/post-commit interruption, shared-store concurrency and reset-generation isolation passed. | Select application storage; demonstrate full match/Undo/receipt recovery, remaining failure timings, migration and concurrency on the required platform. |
 | D05 | [LAN/hotspot alternatives and RT01–RT07](m2-4-remote-topology-feasibility.md). | Physical topology, LAN permissions, trust bootstrap and simultaneous cellular uplink evidence. |
-| D06 | [Provider workflows](m2-3-provider-setup-feasibility.md); owner reports registrations exist, details unknown. | Inspect nonsecret client/scopes/signing/audience/eligibility, resolve Twitch discrepancies, run actual grants/renewals. |
+| D06 | [Provider workflows and owner-reported registration details](m2-3-provider-setup-feasibility.md#owner-reported-registration-details--2026-11-01): YouTube Data API v3 enabled, Google Android OAuth client, External/Testing audience and intended account listed as a test user; Twitch public client. | Verify scopes, signing and current channel eligibility; resolve Twitch discrepancies and run actual grants/renewals. |
 | D07 | [AQ01–AQ08 and experimental numbers](m2-6-adaptive-quality-policy.md). | Measured operating bounds, readable floor, routing/fallback and retry/handoff decisions. |
 | D08 | [Lifecycle table and ST01–ST07](m2-5-lifecycle-and-storage-feasibility.md); isolated readiness probe only. | Physical background/lock/call/permission/thermal outcomes by OS/build. |
 | D09 | Q7 retained; Wear M3 proposed and direct Data Layer constraints reviewed. | Exact artifacts/SDKs, matching signing identity and direct-watch physical evidence. |
 | D10 | Q19–Q21/Q37–Q45 confirmed; [numeric-fit cases](d10-numeric-fit-and-overflow-policy-review.md). | Safe bounds/coverage/type, numeric capacity, durable stop/recovery and encoded/received readability. |
 | D11 | Confirmed [match policies](m1-5-match-correction-specification.md); atomic protocol proposal; [file-local epoch experiment](../evidence/m2/st05-reset-isolation.md) passed. | Final revision/reset/store-replacement identity, retention/expiry, application receipts and Q45 external-effect recovery. |
-| D12 | Propose private signed phone/watch APK installation with one stable signing plan. | Owner distribution decision, provider registration/signing compatibility and validated support matrix. |
+| D12 | PRD Q49 confirms private installation of signed phone/watch APKs on the owner's devices; one stable signing plan remains proposed. | Resolve signing and updates, provider registration/signing compatibility and validated support matrix. The distribution preference alone does not close D12. |
 | D13 | T01–T06 owner-confirmed; local JVM runner and T01/T02 cycles retained. | Final Android/watch/instrumentation graph and remaining real-store/device failure coverage. Boundary confirmation itself is settled. |
 
-Before a personal distribution decision, review the chosen platform's current
-installation/signing requirements. No store submission, account change, APK
+Before finalizing the personal distribution implementation, review the chosen
+platform's current installation/signing requirements. No store submission, account change, APK
 installation, release key generation or publication occurred. The proposal uses
 the [Android signing model](https://developer.android.com/studio/publish/app-signing)
 without claiming that personal installation bypasses platform requirements.
@@ -69,3 +69,22 @@ without claiming that personal installation bypasses platform requirements.
 M2.7 remains In progress because M2.2–M2.6 lack required demonstrated evidence.
 The ledger completes consolidation/preparation only; it selects no product
 scope reduction and does not open G2.
+
+## Connection check for decision work — 2026-10-31
+
+A read-only `adb devices -l` check showed one authorized Pixel 8 Pro and one
+authorized Pixel Watch 4. The Pixel 10 Pro XL used in the retained direct-watch
+experiment was not listed. Device identifiers and connection addresses were not
+retained here. This is a momentary ADB visibility check, not evidence that the
+visible watch is paired with the visible phone, that either device can run the
+required scenario, or that any D01–D13 decision is complete. Recheck the
+required devices and their roles before each dependent experiment.
+
+After the owner connected the requested phone, a second read-only ADB check
+listed the Pixel 8 Pro, Pixel 10 Pro XL and Pixel Watch 4 as authorized. The
+Pro XL reported build `CP3A.261005.005` and the watch reported
+`CP3A.260905.002`; the watch diagnostic package was present on both. Package
+presence and ADB authorization do not verify direct pairing, matching installed
+signatures, current listener readiness, or any new round trip. Prior retained
+round trips and their limitations are documented in the
+[watch execution record](../evidence/m2/watch-connectivity/README.md).

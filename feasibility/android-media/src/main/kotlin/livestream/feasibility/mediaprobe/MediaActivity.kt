@@ -33,8 +33,8 @@ import com.pedro.encoder.input.sources.video.Camera2Source
 import com.pedro.encoder.utils.CodecUtil
 import com.pedro.library.base.recording.RecordController
 import com.pedro.library.generic.GenericStream
-import livestream.feasibility.StartResult
-import livestream.feasibility.StreamSession
+import livestream.feasibility.LocalCaptureReadiness
+import livestream.feasibility.LocalCaptureResult
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -127,10 +127,10 @@ class MediaActivity : Activity() {
 
     private fun startCapture() {
         if (capture != null) return
-        val gate = StreamSession().requestStart(true,
+        val gate = LocalCaptureReadiness().request(true,
             checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED,
             checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
-        if (gate != StartResult.Accepted) { status.text = "Capture did not start: $gate"; return }
+        if (gate != LocalCaptureResult.Ready) { status.text = "Capture did not start: $gate"; return }
         if (!preview.holder.surface.isValid) { status.text = "Preview surface is not ready; try again."; return }
         runButton.isEnabled = false
         transitionButton.isEnabled = false

@@ -35,6 +35,34 @@ P01–P12 remain unrun; no token, stream key, provider resource, ingest or recei
 broadcast evidence exists. [M2 readiness](../reviews/m2-readiness-and-execution.md)
 tracks the physical/account handoff. M2.3/D06/D12 remain In progress/open.
 
+## Owner-reported registration details — 2026-11-01
+
+The owner reports YouTube Data API v3 is enabled, an API key exists, and an
+Android-type OAuth 2.0 client is listed in Google Cloud credentials. The owner also reports a Twitch
+application client ID and confirms its client type is public. These are
+nonsecret owner reports; no console was independently inspected and no
+credential values were requested or recorded. The owner streams on YouTube
+and has streamed on Twitch; current channel eligibility remains to be checked.
+
+The owner supplied a screenshot of Google Auth Platform **Audience** showing
+publishing status **Testing**, user type **External**, and a count of two test
+users. The screenshot does not identify the test users; the owner separately
+confirmed that the Google account used for YouTube streaming is listed as a
+test user. No account identity was recorded. Google's [audience documentation](https://support.google.com/cloud/answer/15549945)
+describes testing restrictions. For external apps in Testing, Google's
+[OAuth documentation](https://developers.google.com/identity/protocols/oauth2)
+documents seven-day refresh-token expiry with an exception for basic identity-only scopes;
+verify actual authorization, scopes and renewal behavior for
+the selected integration. Do not change publishing status based on this record.
+
+An API key and a client ID are not user authorization. Actual authorization,
+scopes, package/signing match, quota/review and current
+channel readiness remain unverified. Twitch authorization configuration,
+grant, token renewal and current eligibility also remain unverified. P01 is
+partially informed, not complete; P02–P12 have not been demonstrated by these
+reports. D06 and D12 remain open, and no account setting or credential was
+changed by this update.
+
 ## Outcome and evidence limits
 
 Official documentation supplies candidate automatic-setup paths for both

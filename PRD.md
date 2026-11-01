@@ -720,6 +720,7 @@ retain their configured cap.
 | Q46 | M2 execution scope | Confirmed 2026-10-23: resume and execute all M2 feasibility/preparation, including its isolated probe/harness work. The owner subsequently reported no physical devices available now and directed continued research/preparation with measured feasibility pending. This does not establish M2 completion or pass G2. |
 | Q47 | Public test boundaries | Confirmed 2026-10-23: approve T01–T06 as documented: match commands/real-store recovery, session/status/quality requests, provider setup results, authorized controller commands/results, overlay input/rendered output, and visible phone/watch interactions. Tests observe public behavior; physical compatibility and real broadcasts require separate evidence. |
 | Q48 | Version 1 audio and external microphones | Confirmed 2026-10-24: use the phone's built-in microphone for version 1; defer external wired/Bluetooth microphone support and testing until after version 1. External microphone checks do not block M2 or version 1. Built-in audio, camera/watch/network and provider validation remain required. |
+| Q49 | Personal distribution | Confirmed 2026-10-31: privately install signed phone and watch APKs on the owner's devices, subject to signing and provider compatibility checks. Exact signing, update handling, provider configuration and validated device coverage remain open under D12. |
 
 ### 5.4 Details to Confirm Before Implementation
 
@@ -812,9 +813,16 @@ retain their configured cap.
   On 2026-10-23 the owner reported existing registrations but unknown nonsecret
   client/API/consent/signing/quota/review/eligibility facts. The
   [provider execution update](plan/specifications/m2-3-provider-setup-feasibility.md#execution-update-2026-10-23)
-  records those gaps without assuming a configured or authorized client.
-- Technology selections and the distribution method; the user has imposed no
-  additional constraints on these choices.
+  records those historical gaps. On 2026-11-01 the owner reported a YouTube
+  Data API v3 enabled, an API key, an Android OAuth client, project publishing
+  status Testing with External user type, the intended streaming account listed
+  as a test user, and a public Twitch client;
+  [the follow-up record](plan/specifications/m2-3-provider-setup-feasibility.md#owner-reported-registration-details--2026-11-01)
+  distinguishes these reports from independently verified configuration, signing,
+  authorization, renewal and current eligibility.
+- Technology selections and the remaining distribution details. Q49 confirms
+  private signed APK installation; signing, updates, provider compatibility and
+  supported configurations remain open.
   The [M2 ledger](plan/specifications/m2-7-stack-and-decision-dispositions.md)
   distinguishes a working isolated JVM toolchain from the proposed application
   stack. T01–T06 are now confirmed under Q47; final Android/watch tool selection,

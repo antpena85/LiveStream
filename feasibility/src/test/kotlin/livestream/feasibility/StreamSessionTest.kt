@@ -12,6 +12,112 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun canceledStopLeavesConnectingSessionUnchanged() {
+        val database = temporaryFolder.root.toPath().resolve("canceled-stop.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(true, true, true, true, store.snapshot())).isEqualTo(StartResult.Accepted)
+            session.requestStop(confirmed = false)
+            assertThat(session.status()).isEqualTo(StreamStatus.Connecting)
+        }
+    }
+
+    @Test
+    fun startWhileStopIsUnconfirmedCannotBeginConnecting() {
+        val database = temporaryFolder.root.toPath().resolve("start-during-stop.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            val snapshot = store.snapshot()
+            assertThat(session.requestStart(true, true, true, true, snapshot)).isEqualTo(StartResult.Accepted)
+            session.requestStop(confirmed = true)
+            assertThat(session.requestStart(true, true, true, true, snapshot)).isNotEqualTo(StartResult.Accepted)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
+    fun confirmedStopWhileConnectingDoesNotClaimStoppedBeforePublisherConfirmation() {
+        val database = temporaryFolder.root.toPath().resolve("stop-connecting.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(true, true, true, true, store.snapshot())).isEqualTo(StartResult.Accepted)
+            session.requestStop(confirmed = true)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
+    fun repeatedStartWhileConnectingIsNotAccepted() {
+        val database = temporaryFolder.root.toPath().resolve("duplicate-start.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            val snapshot = store.snapshot()
+            assertThat(session.requestStart(true, true, true, true, snapshot)).isEqualTo(StartResult.Accepted)
+            assertThat(session.requestStart(true, true, true, true, snapshot)).isNotEqualTo(StartResult.Accepted)
+            assertThat(session.status()).isEqualTo(StreamStatus.Connecting)
+        }
+    }
+
+    @Test
+    fun priorEpochFitAssessmentCannotAuthorizeStartWhenValuesAndRevisionCoincide() {
+        val database = temporaryFolder.root.toPath().resolve("stale-epoch-fit.sqlite")
+        val assessment = DurableCommandProbe(database).use { store ->
+            val old = store.reset(confirmed = true, expectedEpoch = 0)
+            assertThat(old).isEqualTo(ProbeSnapshot(0, 0, 1))
+            assertThat(store.reset(confirmed = true, expectedEpoch = 1))
+                .isEqualTo(ProbeSnapshot(0, 0, 2))
+            old
+        }
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(confirmed = true, cameraPermission = true,
+                numericFitReady = true, assessedSnapshot = assessment))
+                .isEqualTo(StartResult.NumericFitUnresolved)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+            assertThat(store.snapshot()).isEqualTo(ProbeSnapshot(0, 0, 2))
+        }
+    }
+
+    @Test
+    fun confirmedStartWithMatchingFitAssessmentAfterReopenBeginsConnecting() {
+        val database = temporaryFolder.root.toPath().resolve("ready-fit.sqlite")
+        val assessment = DurableCommandProbe(database).use { store ->
+            store.recordPoint("fit-point", expectedEpoch = 0, fitFailureSession = "session-a")
+            assertThat(store.confirmStopped("session-a")).isTrue()
+            assertThat(store.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            store.snapshot()
+        }
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(confirmed = true, cameraPermission = true,
+                microphonePermission = true, numericFitReady = true, assessedSnapshot = assessment))
+                .isEqualTo(StartResult.Accepted)
+            assertThat(session.status()).isEqualTo(StreamStatus.Connecting)
+            assertThat(store.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(store.pendingStopSessions()).isEmpty()
+        }
+    }
+
+    @Test
+    fun staleFitAssessmentCannotAuthorizeStartAfterMatchRevisionChanges() {
+        val database = temporaryFolder.root.toPath().resolve("stale-fit.sqlite")
+        val assessment = DurableCommandProbe(database).use { store ->
+            val assessed = store.recordPoint("first", expectedEpoch = 0)
+            assertThat(assessed).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(store.recordPoint("second", expectedEpoch = 0)).isEqualTo(ProbeSnapshot(9, 2, 0))
+            assessed
+        }
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(confirmed = true, cameraPermission = true,
+                numericFitReady = true, assessedSnapshot = assessment))
+                .isEqualTo(StartResult.NumericFitUnresolved)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+            assertThat(store.snapshot()).isEqualTo(ProbeSnapshot(9, 2, 0))
+        }
+    }
+
+    @Test
     fun missingFitAssessmentAfterStopConfirmationCannotStart() {
         val database = temporaryFolder.root.toPath().resolve("unknown-fit.sqlite")
         DurableCommandProbe(database).use { store ->

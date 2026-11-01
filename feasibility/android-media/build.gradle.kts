@@ -13,14 +13,15 @@ abstract class CopySessionProbe : DefaultTask() {
     @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
 
     @TaskAction fun copySource() {
-        val target = outputDirectory.get().file("livestream/feasibility/StreamSession.kt").asFile
+        outputDirectory.get().asFile.deleteRecursively()
+        val target = outputDirectory.get().file("livestream/feasibility/LocalCaptureReadiness.kt").asFile
         target.parentFile.mkdirs()
         sessionSource.get().asFile.copyTo(target, overwrite = true)
     }
 }
 
 val copySessionProbe = tasks.register<CopySessionProbe>("copySessionProbe") {
-    sessionSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/StreamSession.kt"))
+    sessionSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/LocalCaptureReadiness.kt"))
     outputDirectory.set(layout.buildDirectory.dir("generated/session-probe"))
 }
 

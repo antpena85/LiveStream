@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.LocalCaptureReadinessTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-01T16:19:16.513Z" hostname="PENA-DESK" time="0.061">
+  <properties/>
+  <testcase name="confirmedLocalCaptureWithoutCameraPermissionReportsCameraRequired" classname="livestream.feasibility.LocalCaptureReadinessTest" time="0.059">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: CameraPermissionRequired&#10;but was : Cancelled" type="com.google.common.truth.ComparisonFailureWithFacts">expected: CameraPermissionRequired
+but was : Cancelled
+	at livestream.feasibility.LocalCaptureReadinessTest.confirmedLocalCaptureWithoutCameraPermissionReportsCameraRequired(LocalCaptureReadinessTest.kt:13)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

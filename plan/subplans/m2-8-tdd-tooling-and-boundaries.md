@@ -29,7 +29,7 @@ For repeatable application behavior, follow the [TDD agreement](../MASTER_PLAN.m
 - [x] D13 records selected local tools and actual T01–T06 boundary confirmations; final Android/watch tools remain pending.
 - [x] An observed missing-behavior failure precedes its minimal implementation; harness errors are recorded separately.
 - [x] Probe/harness work stays within the owner's newly authorized M2 scope; M3–M8 delivery is not begun.
-- [x] M2.7's final stack handoff and the required Android/watch/real-store tooling are completed and evidenced.
+- [ ] M2.7's final stack handoff and the required Android/watch/real-store tooling are completed and evidenced.
 
 ## Evidence to retain
 

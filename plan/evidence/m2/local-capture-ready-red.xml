@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.LocalCaptureReadinessTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-01T16:18:21.960Z" hostname="PENA-DESK" time="0.077">
+  <properties/>
+  <testcase name="confirmedLocalCaptureWithPermissionsIsReady" classname="livestream.feasibility.LocalCaptureReadinessTest" time="0.074">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: Ready&#10;but was : Cancelled" type="com.google.common.truth.ComparisonFailureWithFacts">expected: Ready
+but was : Cancelled
+	at livestream.feasibility.LocalCaptureReadinessTest.confirmedLocalCaptureWithPermissionsIsReady(LocalCaptureReadinessTest.kt:14)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

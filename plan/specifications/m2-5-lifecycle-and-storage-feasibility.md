@@ -108,7 +108,10 @@ before/after-commit child interruption cases, session-matched confirmation and
 distinct pending-marker retention pass; a modeled T02 initial Start now denies
 a durable pending stop after reopen. A separate caller-supplied unresolved-fit
 condition also denies Start after simulated stop confirmation; omitted modeled
-readiness now denies Start too. Fit detection, revision-bound readiness and
+readiness now denies Start too, one stale-snapshot assessment is denied, and
+a matching assessment permits a modeled confirmed Start after reopening, while
+a prior-epoch assessment is rejected when points and revision coincide.
+Actual fit detection, complete revision/epoch and concurrency safety, and
 publisher-dependent ST06 checks remain pending. Q45's policy is confirmed; final
 stop/recovery mechanisms remain open.
 
