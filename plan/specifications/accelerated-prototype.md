@@ -50,3 +50,11 @@ adoption and complete the release dependency/license review before release.
 
 No fixed time-box duration or test provider has been selected. Choose these with
 the owner when needed rather than treating a proposed value as confirmed.
+
+## Local scoreboard checkpoint — 2026-11-01
+
+The owner reviewed a local Pixel 10 Pro XL recording and reported that both
+score buttons worked and audio/video were good. [Sanitized evidence](../evidence/m2/local-score-controls-2026-11-01.md)
+distinguishes this observation from metadata. This completes neither publishing
+nor the prototype gate: the local diagnostic does not implement numeric-fit
+safety, real match scoring, or an Android publisher.

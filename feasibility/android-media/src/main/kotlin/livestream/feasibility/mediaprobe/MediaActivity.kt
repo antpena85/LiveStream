@@ -35,6 +35,7 @@ import com.pedro.library.base.recording.RecordController
 import com.pedro.library.generic.GenericStream
 import livestream.feasibility.LocalCaptureReadiness
 import livestream.feasibility.LocalCaptureResult
+import livestream.feasibility.DiagnosticScoreboard
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -45,6 +46,8 @@ class MediaActivity : Activity() {
     private var pendingCapture = false
     private var transitionTest = false
     private var capture: GenericStream? = null
+    private var scoreFilter: ImageFilterRender? = null
+    private var diagnosticScore = DiagnosticScoreboard()
     private var report = JSONObject()
     private var decodedFrame: Bitmap? = null
     private lateinit var preview: SurfaceView
@@ -75,6 +78,16 @@ class MediaActivity : Activity() {
             }
         }
         controls.addView(runButton)
+        val scoreControls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        scoreControls.addView(Button(this).apply {
+            text = "+ ABC"
+            setOnClickListener { if (capture != null && !transitionTest) { diagnosticScore.pointLeft(); updateScoreFilter() } }
+        })
+        scoreControls.addView(Button(this).apply {
+            text = "+ XYZ"
+            setOnClickListener { if (capture != null && !transitionTest) { diagnosticScore.pointRight(); updateScoreFilter() } }
+        })
+        controls.addView(scoreControls)
         controls.addView(Button(this).apply {
             text = "Stop"
             setOnClickListener { stopCapture("operator_stopped") }
@@ -136,12 +149,13 @@ class MediaActivity : Activity() {
         transitionButton.isEnabled = false
         decodedFrame?.recycle()
         decodedFrame = null
+        diagnosticScore = DiagnosticScoreboard()
         report = JSONObject().put("probeVersion", "m2-media-1").put("model", Build.MODEL)
             .put("buildId", Build.ID).put("targetWidth", 1280).put("targetHeight", 720)
             .put("targetFps", 30).put("requestedVideoBitrate", 2_000_000)
             .put("requestedAudioSampleRate", 48000).put("requestedAudioBitrate", 128000)
             .put("requestedVideoCodecMode", "hardware").put("publishing", "not_run")
-            .put("scoreboardFixture", "ABC 99 S2 T/O2 serve; XYZ 100 S1 T/O1")
+            .put("scoreboardFixture", if (transitionTest) "ABC 99 S2 T/O2 serve; XYZ 100 S1 T/O1" else "local score controls; ABC and XYZ")
             .put("experiment", if (transitionTest) "front_rear_mute_20s" else "baseline_10s")
             .put("controlEvents", JSONArray())
         try {
@@ -164,10 +178,11 @@ class MediaActivity : Activity() {
             val builtin = audio.getDevices(AudioManager.GET_DEVICES_INPUTS).firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC }
             report.put("builtinPreferenceAccepted", builtin != null && microphone.setPreferredDevice(builtin))
             val filter = ImageFilterRender().apply {
-                setImage(scoreboard())
+                setImage(if (transitionTest) scoreboard() else dynamicScoreboard())
                 setScale(40f, 18f)
                 setPosition(5f, 5f)
             }
+            scoreFilter = filter
             stream.getGlInterface().addFilter(filter)
             stream.startPreview(preview)
             report.put("startedElapsedMs", SystemClock.elapsedRealtime())
@@ -221,6 +236,7 @@ class MediaActivity : Activity() {
     private fun stopCapture(reason: String) {
         val stream = capture ?: return
         capture = null
+        scoreFilter = null
         handler.removeCallbacksAndMessages(null)
         report.put("stopReason", reason).put("stoppedElapsedMs", SystemClock.elapsedRealtime())
         try { if (stream.isRecording) stream.stopRecord() }
@@ -287,6 +303,15 @@ class MediaActivity : Activity() {
     }
 
     private fun saveReport() { filesDir.resolve("media-report.json").writeText(report.toString(2)) }
+
+    private fun updateScoreFilter() { scoreFilter?.setImage(dynamicScoreboard()) }
+
+    private fun dynamicScoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
+        val canvas = Canvas(this)
+        canvas.drawColor(Color.argb(235, 0, 0, 0))
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 32f; typeface = Typeface.MONOSPACE }
+        canvas.drawText(diagnosticScore.display(), 16f, 72f, paint)
+    }
 
     private fun scoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
         val canvas = Canvas(this)

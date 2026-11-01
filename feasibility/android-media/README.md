@@ -34,8 +34,13 @@ activity interrupts the test. The clip stays in this app's private storage.
 The next test replaces the prior diagnostic clip. No destination is configured
 and this activity never calls `startStream`.
 
-Use **Review clip** and **Decoded frame** to check orientation, complete fixture
-values (ABC 99/S2/T/O2/serve and XYZ 100/S1/T/O1), readability and audible audio.
+During the 10-second local test, **+ ABC** and **+ XYZ** update a simplified
+diagnostic score. Use **Review clip** to inspect whether both updates appear in
+the encoded video, and check orientation and audible audio. The 20-second
+switch/mute test retains the asymmetric fixture (ABC 99/S2/T/O2/serve and XYZ
+100/S1/T/O1). **Decoded frame** shows a single frame, not the whole sequence.
+The simplified score is not match logic, does not implement numeric-fit safety,
+and must not be used for a broadcast or real match.
 Metadata alone cannot establish those human/received-output observations.
 
 After a completed run, collect only metadata:
