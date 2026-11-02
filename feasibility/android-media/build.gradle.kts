@@ -11,6 +11,7 @@ plugins {
 abstract class CopySessionProbe : DefaultTask() {
     @get:InputFile abstract val sessionSource: RegularFileProperty
     @get:InputFile abstract val scoreboardSource: RegularFileProperty
+    @get:InputFile abstract val destinationSource: RegularFileProperty
     @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
 
     @TaskAction fun copySource() {
@@ -19,12 +20,14 @@ abstract class CopySessionProbe : DefaultTask() {
         target.parentFile.mkdirs()
         sessionSource.get().asFile.copyTo(target, overwrite = true)
         scoreboardSource.get().asFile.copyTo(target.parentFile.resolve("DiagnosticScoreboard.kt"), overwrite = true)
+        destinationSource.get().asFile.copyTo(target.parentFile.resolve("ManualDestination.kt"), overwrite = true)
     }
 }
 
 val copySessionProbe = tasks.register<CopySessionProbe>("copySessionProbe") {
     sessionSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/LocalCaptureReadiness.kt"))
     scoreboardSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/DiagnosticScoreboard.kt"))
+    destinationSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/ManualDestination.kt"))
     outputDirectory.set(layout.buildDirectory.dir("generated/session-probe"))
 }
 

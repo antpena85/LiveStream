@@ -20,8 +20,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.text.InputType
 import android.view.SurfaceView
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -36,6 +38,8 @@ import com.pedro.library.generic.GenericStream
 import livestream.feasibility.LocalCaptureReadiness
 import livestream.feasibility.LocalCaptureResult
 import livestream.feasibility.DiagnosticScoreboard
+import livestream.feasibility.ManualDestination
+import livestream.feasibility.DestinationResult
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -78,6 +82,10 @@ class MediaActivity : Activity() {
             }
         }
         controls.addView(runButton)
+        controls.addView(Button(this).apply {
+            text = "Check test destination (no broadcast)"
+            setOnClickListener { showDestinationCheck() }
+        })
         val scoreControls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scoreControls.addView(Button(this).apply {
             text = "+ ABC"
@@ -131,6 +139,36 @@ class MediaActivity : Activity() {
         preview = SurfaceView(this)
         content.addView(preview, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(content)
+    }
+
+    private fun showDestinationCheck() {
+        val fields = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val server = EditText(this).apply {
+            hint = "RTMP(S) server address"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
+            isSaveEnabled = false
+            importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO
+        }
+        val key = EditText(this).apply {
+            hint = "Stream key"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            isSaveEnabled = false
+            importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO
+        }
+        fields.addView(server)
+        fields.addView(key)
+        val dialog = AlertDialog.Builder(this).setTitle("Local format check only")
+            .setMessage("This does not connect, verify the destination, or start a stream.")
+            .setView(fields).setPositiveButton("Check") { _, _ ->
+                status.text = when (ManualDestination.validate(server.text.toString(), key.text.toString())) {
+                    DestinationResult.Ready -> "Basic format accepted; destination not verified and publishing disabled."
+                    DestinationResult.InvalidServer -> "Invalid server address; use an RTMP(S) address with a host."
+                    DestinationResult.MissingKey -> "Enter a stream key."
+                }
+            }.setNegativeButton("Cancel", null).create()
+        dialog.window?.setFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE, android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        dialog.setOnDismissListener { server.text.clear(); key.text.clear() }
+        dialog.show()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, requested: Array<out String>, results: IntArray) {

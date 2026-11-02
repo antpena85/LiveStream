@@ -12,6 +12,72 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun changedMatchDuringConnectionRequiresStoppingInsteadOfLive() {
+        val database = temporaryFolder.root.toPath().resolve("changed-during-connect.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            val assessed = store.snapshot()
+            assertThat(session.requestStart(true, true, true, true, assessed)).isEqualTo(StartResult.Accepted)
+            assertThat(store.recordPoint("new-point", expectedEpoch = assessed.epoch)).isEqualTo(ProbeSnapshot(8, 1, 0))
+            session.connectionSucceeded()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
+    fun connectionAfterFitFailureIsNotReportedLive() {
+        val database = temporaryFolder.root.toPath().resolve("fit-failure-during-connect.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            val assessed = store.snapshot()
+            assertThat(session.requestStart(true, true, true, true, assessed)).isEqualTo(StartResult.Accepted)
+            val updated = store.recordPoint("fit-failure", expectedEpoch = assessed.epoch, fitFailureSession = "session-a")
+            assertThat(updated).isEqualTo(ProbeSnapshot(8, 1, 0))
+            session.connectionSucceeded()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
+    fun anotherStartWhileLiveIsRejectedWithoutChangingStatus() {
+        val database = temporaryFolder.root.toPath().resolve("start-live.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            val snapshot = store.snapshot()
+            assertThat(session.requestStart(true, true, true, true, snapshot)).isEqualTo(StartResult.Accepted)
+            session.connectionSucceeded()
+            assertThat(session.requestStart(true, true, true, true, snapshot)).isNotEqualTo(StartResult.Accepted)
+            assertThat(session.status()).isEqualTo(StreamStatus.Live)
+        }
+    }
+
+    @Test
+    fun confirmedStopOfLiveSessionRemainsStoppingUntilConfirmed() {
+        val database = temporaryFolder.root.toPath().resolve("stop-live.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(true, true, true, true, store.snapshot())).isEqualTo(StartResult.Accepted)
+            session.connectionSucceeded()
+            assertThat(session.status()).isEqualTo(StreamStatus.Live)
+            session.requestStop(confirmed = true)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
+    fun lateConnectionAfterStopKeepsSessionStopping() {
+        val database = temporaryFolder.root.toPath().resolve("late-connection.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            assertThat(session.requestStart(true, true, true, true, store.snapshot())).isEqualTo(StartResult.Accepted)
+            session.requestStop(confirmed = true)
+            session.connectionSucceeded()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
     fun canceledStopLeavesConnectingSessionUnchanged() {
         val database = temporaryFolder.root.toPath().resolve("canceled-stop.sqlite")
         DurableCommandProbe(database).use { store ->

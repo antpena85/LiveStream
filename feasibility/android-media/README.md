@@ -20,6 +20,17 @@ the generated file. This local-only gate never authorizes publishing; the separa
 `StreamSession` retains its pending-stop and numeric-fit requirements.
 [Built-in Kotlin guidance](https://developer.android.com/build/migrate-to-built-in-kotlin).
 
+**Check test destination (no broadcast)** opens a temporary format-only dialog.
+Use fictional values during testing: it checks RTMP(S), a host, and a nonblank
+key, but does not verify a service, save a destination, connect, or authorize
+publishing. Embedded URL user-info is rejected; other URL forms and provider
+compatibility remain unverified. Do not enter real credentials for this check.
+On 2026-11-01 the debug APK was installed and opened on an authorized Pixel 10
+Pro XL. An ADB-driven check with a fictional RTMPS address and fictional key
+displayed the basic-format-accepted message; a check without a key displayed
+the missing-key message. This is a UI smoke check, not proof of destination
+reachability, credential security, publishing, or received media.
+
 From the workspace root:
 
 ```powershell
