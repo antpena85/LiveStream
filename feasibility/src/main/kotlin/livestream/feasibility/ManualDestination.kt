@@ -17,6 +17,7 @@ object ManualDestination {
         val uri = try { URI(server) } catch (_: IllegalArgumentException) { return DestinationResult.InvalidServer }
         catch (_: java.net.URISyntaxException) { return DestinationResult.InvalidServer }
         if (uri.host.isNullOrBlank()) return DestinationResult.InvalidServer
+        if (uri.port > 65535) return DestinationResult.InvalidServer
         if (uri.userInfo != null) return DestinationResult.InvalidServer
         if (uri.rawQuery != null) return DestinationResult.InvalidServer
         if (uri.rawFragment != null) return DestinationResult.InvalidServer

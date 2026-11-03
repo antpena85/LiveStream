@@ -1,5 +1,9 @@
 # M2 JVM feasibility probe
 
+For a later destination-validation continuation and fresh suite result, see the
+[2026-11-02 review](../plan/evidence/m2/manual-destination-port-review-2026-11-02.md).
+The test counts in the original baseline description below are historical.
+
 The independent [Android inventory tool](android-inventory/README.md) now has
 an actual API 37 APK build/deployment workflow. It lists capability metadata
 on the two connected phones and is not the streaming application or the JVM

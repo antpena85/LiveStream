@@ -5,6 +5,14 @@ import org.junit.Test
 
 class ManualDestinationTest {
     @Test
+    fun serverPortAboveTcpRangeIsRejectedBeforeEndpointCanBeUsed() {
+        var called = false
+        val result = ManualDestination.withEndpoint("rtmps://example.test:65536/live", "fixture-key") { called = true }
+        assertThat(result).isEqualTo(DestinationResult.InvalidServer)
+        assertThat(called).isFalse()
+    }
+
+    @Test
     fun serverFragmentIsRejectedBeforeEndpointCanBeUsed() {
         var called = false
         val result = ManualDestination.withEndpoint("rtmps://example.test/live#fragment", "fixture-key") { called = true }
