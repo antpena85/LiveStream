@@ -10,6 +10,23 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun connectionRequestFailureRequiresStopAndBlocksNewStart() {
+        val database = temporaryFolder.root.toPath().resolve("connect-failed.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher(failConnect = true)
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            val assessed = store.snapshot()
+
+            assertThrows(IllegalStateException::class.java) { session.start("session-a", assessed) }
+
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a")
+            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(publisher.connectRequests).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun confirmedRetryAfterStopRequestFailureTargetsSameSessionAndRemainsStopping() {
         val database = temporaryFolder.root.toPath().resolve("retry-failed-stop.sqlite")
         DurableCommandProbe(database).use { store ->
@@ -104,7 +121,7 @@ class PublisherSessionProbeTest {
         }
     }
 
-    private class HeldPublisher(var failStop: Boolean = false) : ProbePublisher {
+    private class HeldPublisher(var failStop: Boolean = false, private val failConnect: Boolean = false) : ProbePublisher {
         val connectRequests = mutableListOf<String>()
         val stopRequests = mutableListOf<String>()
         private var callback: (() -> Unit)? = null
@@ -112,6 +129,7 @@ class PublisherSessionProbeTest {
         override fun connect(sessionId: String, onConnected: () -> Unit) {
             connectRequests.add(sessionId)
             callback = onConnected
+            if (failConnect) throw IllegalStateException("simulated connect failure")
         }
 
         override fun stop(sessionId: String) {

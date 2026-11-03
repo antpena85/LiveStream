@@ -26,9 +26,19 @@ class PublisherSessionProbe(
         val result = session.requestStart(true, true, true, true, assessedSnapshot)
         if (result == StartResult.Accepted) {
             activeSessionId = sessionId
-            publisher.connect(sessionId) {
-                session.connectionSucceeded()
-                if (session.status() == StreamStatus.Stopping) publisher.stop(sessionId)
+            try {
+                publisher.connect(sessionId) {
+                    session.connectionSucceeded()
+                    if (session.status() == StreamStatus.Stopping) publisher.stop(sessionId)
+                }
+            } catch (failure: Exception) {
+                session.requestStop(true)
+                try {
+                    publisher.stop(sessionId)
+                } catch (stopFailure: Exception) {
+                    failure.addSuppressed(stopFailure)
+                }
+                throw failure
             }
         }
         return result

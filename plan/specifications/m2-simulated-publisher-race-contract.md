@@ -164,3 +164,24 @@ exception sanitization, asynchronous failure, acknowledgment, durable ordinary
 stop marker, concurrent callback or Android/provider integration is implemented.
 In particular, accepting a call is not proof of stopping. This probe must not be
 used to publish.
+
+## Synchronous connect-request failure — host slice
+
+The fake records a connect request for `session-a` and throws before returning;
+the connection effect is treated as unknown. The test expects the exception to
+propagate, the session to remain `Stopping`, a same-session stop request, and a
+new start to be rejected without another connection. The [pre-fix adapter](../evidence/m2/publisher-connect-failure-red-source.txt)
+left the session `Connecting`; the [red result](../evidence/m2/publisher-connect-failure-red.xml)
+records that mismatch. The minimum change requests a stop and rethrows the
+original exception; a synchronous cleanup exception is attached as suppressed.
+The [green publisher suite](../evidence/m2/publisher-connect-failure-green.xml)
+passes six cases. A forced full offline JVM run passed 76 tests with zero
+failures/errors/skips. Report hostnames were redacted.
+
+This slice does not verify the simultaneous connect-and-stop failure path,
+asynchronous callback behavior, error sanitization or operator notices. A
+synchronous publisher callback can itself throw through `connect`; the fixture
+does not distinguish that from a connect-request failure. No real stop or provider
+termination is established. Session concurrency, durable ordinary-stop recovery,
+Android integration and the publisher trial remain open; do not use this probe to
+publish.
