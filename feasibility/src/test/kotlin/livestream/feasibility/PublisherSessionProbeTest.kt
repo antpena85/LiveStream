@@ -10,6 +10,25 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun connectAndCleanupFailurePreserveOriginalFailureAndBlockNewStart() {
+        val database = temporaryFolder.root.toPath().resolve("connect-and-stop-failed.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher(failConnect = true, failStop = true)
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            val assessed = store.snapshot()
+
+            val failure = assertThrows(IllegalStateException::class.java) { session.start("session-a", assessed) }
+
+            assertThat(failure).hasMessageThat().isEqualTo("simulated connect failure")
+            assertThat(failure.suppressed.map { it.message }).containsExactly("simulated stop failure")
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a")
+            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(publisher.connectRequests).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun connectionRequestFailureRequiresStopAndBlocksNewStart() {
         val database = temporaryFolder.root.toPath().resolve("connect-failed.sqlite")
         DurableCommandProbe(database).use { store ->

@@ -185,3 +185,19 @@ does not distinguish that from a connect-request failure. No real stop or provid
 termination is established. Session concurrency, durable ordinary-stop recovery,
 Android integration and the publisher trial remain open; do not use this probe to
 publish.
+
+## Connect and cleanup failure — first-run verification
+
+The fake throws after recording the connect request and also throws after
+recording the cleanup stop request. The caller observes the original simulated
+connect exception with the simulated stop exception suppressed; the session stays
+`Stopping`, and a new start is rejected without a second connect request. The
+[targeted result](../evidence/m2/publisher-connect-cleanup-failure-first-run.xml)
+passed on its first run with unchanged implementation: it is verification, not
+an observed red/green cycle. A forced full offline JVM run passed 77 tests with
+zero failures, errors or skips. The retained exception messages are fictional.
+
+This does not sanitize real errors, confirm a stop, exercise asynchronous or
+concurrent callbacks, or establish Android/provider behavior. Propagating raw
+real-provider exceptions is not approved for a production interface. Durable
+recovery and safe operator-visible diagnostics remain open.
