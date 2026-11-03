@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-03T02:42:36.394Z" hostname="redacted" time="0.195">
+  <properties/>
+  <testcase name="connectionAfterConfirmedStopRequestsAnotherStopForSameSession" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.193"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

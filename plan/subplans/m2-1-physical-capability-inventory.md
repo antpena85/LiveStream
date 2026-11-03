@@ -32,6 +32,12 @@ For repeatable application behavior, follow the [TDD agreement](../MASTER_PLAN.m
 
 ## Evidence to retain
 
+The [2026-11-02 case-by-case audit](../evidence/m2/m2-1-capability-audit-2026-11-02.md)
+reconciles subsequent local media and watch evidence with C01–C06 and records a
+current read-only ADB check. It identifies two Pixel 8 Pro entries with different
+builds and a model-based collector filename collision; live-session evidence
+remains pending and this task is still In progress.
+
 The later [connected-phone record](../evidence/m2/phone-capabilities-2026-10-24.md)
 supersedes the earlier unavailable/unconnected session state. Both phones report
 Android 17/API 37 and have opened the API 37 diagnostic APK. This supplies the

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-03T02:48:11.418Z" hostname="redacted" time="0.291">
+  <properties/>
+  <testcase name="confirmedRetryAfterStopRequestFailureTargetsSameSessionAndRemainsStopping" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.217"/>
+  <testcase name="confirmedStopWhileConnectingRequestsStopWithoutClaimingStopped" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.017"/>
+  <testcase name="lateConnectionAfterFitFailureRequestsStopForAffectedSession" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.026"/>
+  <testcase name="failedStopRequestRemainsStoppingAndBlocksNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.015"/>
+  <testcase name="connectionAfterConfirmedStopRequestsAnotherStopForSameSession" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.013"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

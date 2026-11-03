@@ -1,0 +1,23 @@
+package livestream.feasibility
+
+/** Host-only external boundary; not an Android or network publisher. */
+interface ProbePublisher {
+    fun connect(sessionId: String, onConnected: () -> Unit)
+    fun stop(sessionId: String)
+}
+
+/** Experimental T02 adapter; does not provide production concurrency guarantees. */
+class PublisherSessionProbe(
+    private val session: StreamSession,
+    private val publisher: ProbePublisher,
+) {
+    fun status(): StreamStatus = session.status()
+
+    fun start(sessionId: String, assessedSnapshot: ProbeSnapshot): StartResult {
+        val result = session.requestStart(true, true, true, true, assessedSnapshot)
+        if (result == StartResult.Accepted) {
+            publisher.connect(sessionId) { session.connectionSucceeded() }
+        }
+        return result
+    }
+}

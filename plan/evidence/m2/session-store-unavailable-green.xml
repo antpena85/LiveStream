@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-11-03T01:56:36.574Z" hostname="redacted" time="0.434">
+  <properties/>
+  <testcase name="confirmedStartWithoutMicrophonePermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.013"/>
+  <testcase name="lateConnectionAfterStopKeepsSessionStopping" classname="livestream.feasibility.StreamSessionTest" time="0.173"/>
+  <testcase name="connectionAfterFitFailureIsNotReportedLive" classname="livestream.feasibility.StreamSessionTest" time="0.027"/>
+  <testcase name="unconfirmedStartDoesNotBeginConnectingEvenWithCameraPermission" classname="livestream.feasibility.StreamSessionTest" time="0.001"/>
+  <testcase name="canceledStopLeavesConnectingSessionUnchanged" classname="livestream.feasibility.StreamSessionTest" time="0.011"/>
+  <testcase name="confirmedStartWithoutCameraPermissionIsDeniedAndRemainsStopped" classname="livestream.feasibility.StreamSessionTest" time="0.001"/>
+  <testcase name="confirmedStartWithDurablePendingStopAfterReopenIsDenied" classname="livestream.feasibility.StreamSessionTest" time="0.017"/>
+  <testcase name="changedMatchDuringConnectionRequiresStoppingInsteadOfLive" classname="livestream.feasibility.StreamSessionTest" time="0.015"/>
+  <testcase name="priorEpochFitAssessmentCannotAuthorizeStartWhenValuesAndRevisionCoincide" classname="livestream.feasibility.StreamSessionTest" time="0.018"/>
+  <testcase name="anotherStartWhileLiveIsRejectedWithoutChangingStatus" classname="livestream.feasibility.StreamSessionTest" time="0.012"/>
+  <testcase name="connectionWithUnavailableSafetyStoreRequiresStoppingInsteadOfLive" classname="livestream.feasibility.StreamSessionTest" time="0.012"/>
+  <testcase name="staleFitAssessmentCannotAuthorizeStartAfterMatchRevisionChanges" classname="livestream.feasibility.StreamSessionTest" time="0.023"/>
+  <testcase name="confirmedStopWhileConnectingDoesNotClaimStoppedBeforePublisherConfirmation" classname="livestream.feasibility.StreamSessionTest" time="0.012"/>
+  <testcase name="confirmedStopOfLiveSessionRemainsStoppingUntilConfirmed" classname="livestream.feasibility.StreamSessionTest" time="0.011"/>
+  <testcase name="confirmedStartWithMatchingFitAssessmentAfterReopenBeginsConnecting" classname="livestream.feasibility.StreamSessionTest" time="0.019"/>
+  <testcase name="repeatedStartWhileConnectingIsNotAccepted" classname="livestream.feasibility.StreamSessionTest" time="0.013"/>
+  <testcase name="startWhileStopIsUnconfirmedCannotBeginConnecting" classname="livestream.feasibility.StreamSessionTest" time="0.013"/>
+  <testcase name="missingFitAssessmentAfterStopConfirmationCannotStart" classname="livestream.feasibility.StreamSessionTest" time="0.018"/>
+  <testcase name="stopConfirmationDoesNotClearUnresolvedNumericFitForStart" classname="livestream.feasibility.StreamSessionTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

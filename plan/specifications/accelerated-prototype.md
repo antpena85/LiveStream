@@ -58,3 +58,21 @@ score buttons worked and audio/video were good. [Sanitized evidence](../evidence
 distinguishes this observation from metadata. This completes neither publishing
 nor the prototype gate: the local diagnostic does not implement numeric-fit
 safety, real match scoring, or an Android publisher.
+
+## Host safety checkpoint — 2026-11-02
+
+The [T02 store-unavailable review](../evidence/m2/session-store-unavailable-review-2026-11-02.md)
+records an observed red/green host slice: if safety state cannot be read after a
+connection callback, the session enters `Stopping`. This does not dispatch a
+publisher stop or make the JVM store Android-compatible. The Android-compatible
+boundary, durable state, fit enforcement and publisher integration remain open.
+
+## Reset during connection — host verification
+
+At the confirmed T02 boundary, a real temporary store is reset to a new epoch
+after Start is accepted but before the connection callback. The existing session
+returns `Stopping` on that callback, not `Live`. The [first-run result](../evidence/m2/session-reset-during-connect-first-run.xml)
+passed without an implementation change; this is verification, not a red/green
+cycle. The full forced offline JVM suite subsequently passed 70 tests with no
+failures, errors or skips. This sequential check does not establish concurrency
+atomicity, Android integration, real stop dispatch, or provider termination.

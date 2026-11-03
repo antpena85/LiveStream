@@ -1,6 +1,6 @@
 package livestream.feasibility
 
-enum class StartResult { Accepted, CameraPermissionRequired, MicrophonePermissionRequired, Cancelled, PendingStop, NumericFitUnresolved, AlreadyConnecting, AlreadyLive }
+enum class StartResult { Accepted, CameraPermissionRequired, MicrophonePermissionRequired, Cancelled, PendingStop, NumericFitUnresolved, SafetyStateUnavailable, AlreadyConnecting, AlreadyLive }
 enum class StreamStatus { Stopped, Connecting, Live, Stopping }
 
 /** Isolated M2 T02 probe; this does not control Android capture or publishing. */
@@ -12,9 +12,13 @@ class StreamSession(private val store: DurableCommandProbe? = null) {
 
     fun connectionSucceeded() {
         if (currentStatus == StreamStatus.Connecting) {
-            currentStatus = if (store == null || store.pendingStopSessions().isNotEmpty() || store.snapshot() != connectingAssessment) {
+            currentStatus = try {
+                if (store == null || store.pendingStopSessions().isNotEmpty() || store.snapshot() != connectingAssessment) {
+                    StreamStatus.Stopping
+                } else StreamStatus.Live
+            } catch (_: Exception) {
                 StreamStatus.Stopping
-            } else StreamStatus.Live
+            }
         }
     }
 
@@ -31,9 +35,13 @@ class StreamSession(private val store: DurableCommandProbe? = null) {
         if (currentStatus == StreamStatus.Stopping) return StartResult.PendingStop
         if (!cameraPermission) return StartResult.CameraPermissionRequired
         if (!microphonePermission) return StartResult.MicrophonePermissionRequired
-        if (store != null && store.pendingStopSessions().isNotEmpty()) return StartResult.PendingStop
-        if (!numericFitReady || store == null || assessedSnapshot == null || assessedSnapshot != store.snapshot()) {
-            return StartResult.NumericFitUnresolved
+        try {
+            if (store != null && store.pendingStopSessions().isNotEmpty()) return StartResult.PendingStop
+            if (!numericFitReady || store == null || assessedSnapshot == null || assessedSnapshot != store.snapshot()) {
+                return StartResult.NumericFitUnresolved
+            }
+        } catch (_: Exception) {
+            return StartResult.SafetyStateUnavailable
         }
         connectingAssessment = assessedSnapshot
         currentStatus = StreamStatus.Connecting

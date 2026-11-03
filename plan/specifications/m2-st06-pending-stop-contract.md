@@ -275,7 +275,8 @@ host experiment; no hardware or provider result is implied.
 
 ## Proposed check-to-connect race experiment — 2026-10-30
 
-Status: design only; no race test or fix has run. Existing T01 match commands
+Original status: design only. A later limited host interleaving is recorded in
+the linked simulated-publisher contract below. Existing T01 match commands
 and T02 session control remain the owner-confirmed public boundaries. Model an
 external publisher as a controllable boundary, not a mock match/store. The
 current T02 probe only changes an in-memory status and has no publisher adapter,
@@ -319,3 +320,7 @@ independent writers and changes after the eventual connection; neither is covere
 by the first interleaving. The host probe must not claim that production can
 guarantee no unreadable frame or that a provider has stopped. Actual publisher,
 Android lifecycle, received-video and operator-notice evidence remain required.
+
+The [simulated-publisher contract](m2-simulated-publisher-race-contract.md)
+specifies the participant effects and records a limited callback/stop-request
+red/green host result. It does not establish full publisher-race safety.

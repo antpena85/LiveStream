@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-03T02:47:32.435Z" hostname="redacted" time="0.261">
+  <properties/>
+  <testcase name="confirmedRetryAfterStopRequestFailureTargetsSameSessionAndRemainsStopping" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.259">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: missing (1): session-a&#10;---&#10;expected   : [session-a, session-a]&#10;but was    : [session-a]" type="com.google.common.truth.AssertionErrorWithFacts">missing (1): session-a
+---
+expected   : [session-a, session-a]
+but was    : [session-a]
+	at livestream.feasibility.PublisherSessionProbeTest.confirmedRetryAfterStopRequestFailureTargetsSameSessionAndRemainsStopping(PublisherSessionProbeTest.kt:25)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

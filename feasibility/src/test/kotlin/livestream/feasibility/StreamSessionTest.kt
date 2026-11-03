@@ -12,6 +12,50 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun resetDuringConnectionPreventsOldMatchAssessmentFromBecomingLive() {
+        val database = temporaryFolder.root.toPath().resolve("reset-during-connect.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val session = StreamSession(store)
+            val assessed = store.snapshot()
+            assertThat(session.requestStart(true, true, true, true, assessed)).isEqualTo(StartResult.Accepted)
+
+            assertThat(store.reset(confirmed = true, expectedEpoch = assessed.epoch))
+                .isEqualTo(ProbeSnapshot(0, 0, 1))
+            session.connectionSucceeded()
+
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
+    fun confirmedStartWithUnavailableSafetyStoreIsDeniedAndRemainsStopped() {
+        val database = temporaryFolder.root.toPath().resolve("unavailable-at-start.sqlite")
+        val store = DurableCommandProbe(database)
+        val assessed = store.snapshot()
+        val session = StreamSession(store)
+        store.close()
+
+        val result = session.requestStart(true, true, true, true, assessed)
+
+        assertThat(result).isEqualTo(StartResult.SafetyStateUnavailable)
+        assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+    }
+
+    @Test
+    fun connectionWithUnavailableSafetyStoreRequiresStoppingInsteadOfLive() {
+        val database = temporaryFolder.root.toPath().resolve("unavailable-during-connect.sqlite")
+        val store = DurableCommandProbe(database)
+        val session = StreamSession(store)
+        val assessed = store.snapshot()
+        assertThat(session.requestStart(true, true, true, true, assessed)).isEqualTo(StartResult.Accepted)
+        store.close()
+
+        session.connectionSucceeded()
+
+        assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+    }
+
+    @Test
     fun changedMatchDuringConnectionRequiresStoppingInsteadOfLive() {
         val database = temporaryFolder.root.toPath().resolve("changed-during-connect.sqlite")
         DurableCommandProbe(database).use { store ->

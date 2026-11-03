@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-03T02:33:57.850Z" hostname="redacted" time="0.256">
+  <properties/>
+  <testcase name="lateConnectionAfterFitFailureRequestsStopForAffectedSession" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.254">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: missing (1): session-a&#10;---&#10;expected   : [session-a]&#10;but was    : []" type="com.google.common.truth.AssertionErrorWithFacts">missing (1): session-a
+---
+expected   : [session-a]
+but was    : []
+	at livestream.feasibility.PublisherSessionProbeTest.lateConnectionAfterFitFailureRequestsStopForAffectedSession(PublisherSessionProbeTest.kt:30)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
