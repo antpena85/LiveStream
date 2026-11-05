@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-11-05T23:44:42.509Z" hostname="redacted" time="0.386">
+  <properties/>
+  <testcase name="connectionRequestFailureRequiresStopAndBlocksNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.205"/>
+  <testcase name="unavailableSafetyStoreAtConnectionRequestsStopAndBlocksNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.018"/>
+  <testcase name="confirmedRetryAfterStopRequestFailureTargetsSameSessionAndRemainsStopping" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.016"/>
+  <testcase name="connectAndCleanupFailurePreserveOriginalFailureAndBlockNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.016"/>
+  <testcase name="canceledStartDoesNotRequestConnection" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.012"/>
+  <testcase name="confirmedStopWhileConnectingRequestsStopWithoutClaimingStopped" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.012"/>
+  <testcase name="lateConnectionAfterFitFailureRequestsStopForAffectedSession" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.024"/>
+  <testcase name="canceledStopWhileConnectingDoesNotStopThePublisher" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.012"/>
+  <testcase name="failedStopRequestRemainsStoppingAndBlocksNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.013"/>
+  <testcase name="confirmedStopOfLiveSessionRequestsStopAndBlocksNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.011"/>
+  <testcase name="startWithoutExplicitConfirmationDoesNotConnect" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.012"/>
+  <testcase name="ordinaryRevisionChangeWhileConnectingStopsTheStaleAttempt" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.018"/>
+  <testcase name="connectionAfterConfirmedStopRequestsAnotherStopForSameSession" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.012"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

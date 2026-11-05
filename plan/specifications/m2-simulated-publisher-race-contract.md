@@ -227,3 +227,60 @@ a new start without another connect request. Acceptance of the stop request is
 not evidence of termination. This tests a sequential simulated callback, not a
 real publisher, concurrent events, or durable recovery. A first-run pass is
 verification, not a red/green cycle.
+
+## Safety store unavailable at connection — first-run verification
+
+At the confirmed T02 boundary, a real temporary store supplies the assessed
+snapshot for a simulated connection. The store is closed before the callback;
+the adapter remains `Stopping`, requests a stop for that same session, and
+blocks another start. The [targeted first run](../evidence/m2/publisher-safety-store-unavailable-first-run.xml)
+passed without an implementation change. This is verification, not a red/green
+cycle. A subsequent forced offline JVM suite and the separate local-only
+Android media build also passed.
+
+The stop request is not confirmation of termination. This sequential simulated
+callback does not establish Android persistence, atomic safety reads, concurrent
+callback handling, real network publishing, or an operator-facing recovery path.
+No physical device or provider was used; the adapter must not be used to publish.
+
+## Cancelled publisher start — host red/green slice
+
+At T02, a cancelled start with a real temporary store must return `Cancelled`,
+remain `Stopped`, and produce neither a simulated connect nor stop request.
+The [pre-fix adapter](../evidence/m2/publisher-canceled-start-red-source.txt)
+accepted the confirmation argument but ignored it; the [red result](../evidence/m2/publisher-canceled-start-red.xml)
+records `Accepted` instead of `Cancelled`. Passing the argument to the existing
+session gate made the [publisher suite](../evidence/m2/publisher-canceled-start-green.xml)
+green. At that checkpoint, the adapter's default confirmation remained true;
+the later fail-closed slice below changes that default. It is not an
+operator-confirmation interface or a production API.
+
+The full host suite also passed, and the separate local-only Android media build
+remained green. The Android project does not use this publisher adapter. This
+sequential host behavior does not demonstrate a real confirmation UI, protect
+against races or establish that real media was never transmitted. Android
+durability, fit rendering, safe publisher integration and G2 remain open.
+
+## Cancelled stop while connecting — first-run verification
+
+At T02, a cancelled stop during a held simulated connection leaves the session
+`Connecting`, makes no stop request, and allows a later connection callback to
+reach `Live` when the assessed state is unchanged. The [targeted first run](../evidence/m2/publisher-canceled-stop-first-run.xml)
+passed without changing the implementation. This is a first-run verification,
+not a red/green cycle. The forced offline host suite and local-only Android
+media build also passed. The callback and publisher are simulated and sequential;
+this does not verify a real confirmation UI, concurrent events or actual media.
+
+## Omitted start confirmation — host red/green slice
+
+At T02, a start without an explicit confirmation must return `Cancelled`, stay
+`Stopped`, and issue no simulated connect request. The [pre-fix adapter](../evidence/m2/publisher-unconfirmed-start-red-source.txt)
+defaulted the argument to true; the [red report](../evidence/m2/publisher-unconfirmed-start-red.xml)
+shows `Accepted` instead of `Cancelled`. The probe now defaults to false, and
+existing cases explicitly supply true when modeling confirmed actions. The
+[green publisher suite](../evidence/m2/publisher-unconfirmed-start-green.xml)
+passes all 13 cases; the forced host suite and local-only media build also pass.
+
+This is a host fixture default, not proof of an operator confirmation flow,
+actual publisher safety, durable Android storage, or concurrent correctness.
+The media activity does not use this adapter; no device or network was used.

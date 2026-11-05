@@ -22,8 +22,8 @@ class PublisherSessionProbe(
         }
     }
 
-    fun start(sessionId: String, assessedSnapshot: ProbeSnapshot): StartResult {
-        val result = session.requestStart(true, true, true, true, assessedSnapshot)
+    fun start(sessionId: String, assessedSnapshot: ProbeSnapshot, confirmed: Boolean = false): StartResult {
+        val result = session.requestStart(confirmed, true, true, true, assessedSnapshot)
         if (result == StartResult.Accepted) {
             activeSessionId = sessionId
             try {

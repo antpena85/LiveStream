@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-05T23:26:30.824Z" hostname="redacted" time="0.281">
+  <properties/>
+  <testcase name="canceledStartDoesNotRequestConnection" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.279">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: Cancelled&#10;but was : Accepted" type="com.google.common.truth.ComparisonFailureWithFacts">expected: Cancelled
+but was : Accepted
+	at livestream.feasibility.PublisherSessionProbeTest.canceledStartDoesNotRequestConnection(PublisherSessionProbeTest.kt:21)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

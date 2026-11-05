@@ -10,13 +10,81 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun startWithoutExplicitConfirmationDoesNotConnect() {
+        val database = temporaryFolder.root.toPath().resolve("publisher-unconfirmed-start.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+
+            val result = session.start("session-a", store.snapshot())
+
+            assertThat(result).isEqualTo(StartResult.Cancelled)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+            assertThat(publisher.connectRequests).isEmpty()
+        }
+    }
+
+    @Test
+    fun canceledStopWhileConnectingDoesNotStopThePublisher() {
+        val database = temporaryFolder.root.toPath().resolve("publisher-canceled-stop.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
+
+            session.stop(confirmed = false)
+
+            assertThat(session.status()).isEqualTo(StreamStatus.Connecting)
+            assertThat(publisher.connectRequests).containsExactly("session-a")
+            assertThat(publisher.stopRequests).isEmpty()
+            publisher.releaseConnection()
+            assertThat(session.status()).isEqualTo(StreamStatus.Live)
+            assertThat(publisher.stopRequests).isEmpty()
+        }
+    }
+
+    @Test
+    fun canceledStartDoesNotRequestConnection() {
+        val database = temporaryFolder.root.toPath().resolve("publisher-canceled-start.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+
+            val result = session.start("session-a", store.snapshot(), confirmed = false)
+
+            assertThat(result).isEqualTo(StartResult.Cancelled)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+            assertThat(publisher.connectRequests).isEmpty()
+            assertThat(publisher.stopRequests).isEmpty()
+        }
+    }
+
+    @Test
+    fun unavailableSafetyStoreAtConnectionRequestsStopAndBlocksNewStart() {
+        val database = temporaryFolder.root.toPath().resolve("publisher-safety-store-unavailable.sqlite")
+        val store = DurableCommandProbe(database)
+        val publisher = HeldPublisher()
+        val session = PublisherSessionProbe(StreamSession(store), publisher)
+        val assessed = store.snapshot()
+        assertThat(session.start("session-a", assessed, confirmed = true)).isEqualTo(StartResult.Accepted)
+        store.close()
+
+        publisher.releaseConnection()
+
+        assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        assertThat(publisher.stopRequests).containsExactly("session-a")
+        assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
+        assertThat(publisher.connectRequests).containsExactly("session-a")
+    }
+
+    @Test
     fun confirmedStopOfLiveSessionRequestsStopAndBlocksNewStart() {
         val database = temporaryFolder.root.toPath().resolve("stop-live.sqlite")
         DurableCommandProbe(database).use { store ->
             val publisher = HeldPublisher()
             val session = PublisherSessionProbe(StreamSession(store), publisher)
             val assessed = store.snapshot()
-            assertThat(session.start("session-a", assessed)).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", assessed, confirmed = true)).isEqualTo(StartResult.Accepted)
             publisher.releaseConnection()
             assertThat(session.status()).isEqualTo(StreamStatus.Live)
 
@@ -24,7 +92,7 @@ class PublisherSessionProbeTest {
 
             assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
             assertThat(publisher.stopRequests).containsExactly("session-a")
-            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
             assertThat(publisher.connectRequests).containsExactly("session-a")
         }
     }
@@ -35,7 +103,7 @@ class PublisherSessionProbeTest {
         DurableCommandProbe(database).use { store ->
             val publisher = HeldPublisher()
             val session = PublisherSessionProbe(StreamSession(store), publisher)
-            assertThat(session.start("session-a", store.snapshot())).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
 
             val changed = store.recordPoint("point", expectedEpoch = 0)
             publisher.releaseConnection()
@@ -56,13 +124,13 @@ class PublisherSessionProbeTest {
             val session = PublisherSessionProbe(StreamSession(store), publisher)
             val assessed = store.snapshot()
 
-            val failure = assertThrows(IllegalStateException::class.java) { session.start("session-a", assessed) }
+            val failure = assertThrows(IllegalStateException::class.java) { session.start("session-a", assessed, confirmed = true) }
 
             assertThat(failure).hasMessageThat().isEqualTo("simulated connect failure")
             assertThat(failure.suppressed.map { it.message }).containsExactly("simulated stop failure")
             assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
             assertThat(publisher.stopRequests).containsExactly("session-a")
-            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
             assertThat(publisher.connectRequests).containsExactly("session-a")
         }
     }
@@ -75,11 +143,11 @@ class PublisherSessionProbeTest {
             val session = PublisherSessionProbe(StreamSession(store), publisher)
             val assessed = store.snapshot()
 
-            assertThrows(IllegalStateException::class.java) { session.start("session-a", assessed) }
+            assertThrows(IllegalStateException::class.java) { session.start("session-a", assessed, confirmed = true) }
 
             assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
             assertThat(publisher.stopRequests).containsExactly("session-a")
-            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
             assertThat(publisher.connectRequests).containsExactly("session-a")
         }
     }
@@ -91,7 +159,7 @@ class PublisherSessionProbeTest {
             val publisher = HeldPublisher(failStop = true)
             val session = PublisherSessionProbe(StreamSession(store), publisher)
             val assessed = store.snapshot()
-            assertThat(session.start("session-a", assessed)).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", assessed, confirmed = true)).isEqualTo(StartResult.Accepted)
             assertThrows(IllegalStateException::class.java) { session.stop(confirmed = true) }
             publisher.failStop = false
 
@@ -99,7 +167,7 @@ class PublisherSessionProbeTest {
 
             assertThat(publisher.stopRequests).containsExactly("session-a", "session-a").inOrder()
             assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
-            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
             assertThat(publisher.connectRequests).containsExactly("session-a")
         }
     }
@@ -111,13 +179,13 @@ class PublisherSessionProbeTest {
             val publisher = HeldPublisher(failStop = true)
             val session = PublisherSessionProbe(StreamSession(store), publisher)
             val assessed = store.snapshot()
-            assertThat(session.start("session-a", assessed)).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", assessed, confirmed = true)).isEqualTo(StartResult.Accepted)
 
             assertThrows(IllegalStateException::class.java) { session.stop(confirmed = true) }
 
             assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
             assertThat(publisher.stopRequests).containsExactly("session-a")
-            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
             assertThat(publisher.connectRequests).containsExactly("session-a")
         }
     }
@@ -128,7 +196,7 @@ class PublisherSessionProbeTest {
         DurableCommandProbe(database).use { store ->
             val publisher = HeldPublisher()
             val session = PublisherSessionProbe(StreamSession(store), publisher)
-            assertThat(session.start("session-a", store.snapshot())).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
             session.stop(confirmed = true)
             assertThat(publisher.stopRequests).containsExactly("session-a")
 
@@ -145,7 +213,7 @@ class PublisherSessionProbeTest {
         DurableCommandProbe(database).use { store ->
             val publisher = HeldPublisher()
             val session = PublisherSessionProbe(StreamSession(store), publisher)
-            assertThat(session.start("session-a", store.snapshot())).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
 
             session.stop(confirmed = true)
 
@@ -162,7 +230,7 @@ class PublisherSessionProbeTest {
             val session = PublisherSessionProbe(StreamSession(store), publisher)
             val assessed = store.recordPoint("first", expectedEpoch = 0)
             assertThat(assessed).isEqualTo(ProbeSnapshot(8, 1, 0))
-            assertThat(session.start("session-a", assessed)).isEqualTo(StartResult.Accepted)
+            assertThat(session.start("session-a", assessed, confirmed = true)).isEqualTo(StartResult.Accepted)
             assertThat(publisher.connectRequests).containsExactly("session-a")
 
             val changed = store.recordPoint("second", expectedEpoch = 0, fitFailureSession = "session-a")

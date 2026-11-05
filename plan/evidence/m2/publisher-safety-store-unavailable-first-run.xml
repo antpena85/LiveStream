@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-05T23:21:30.091Z" hostname="redacted" time="0.205">
+  <properties/>
+  <testcase name="unavailableSafetyStoreAtConnectionRequestsStopAndBlocksNewStart" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.203"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
