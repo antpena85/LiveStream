@@ -10,6 +10,45 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun confirmedStopOfLiveSessionRequestsStopAndBlocksNewStart() {
+        val database = temporaryFolder.root.toPath().resolve("stop-live.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            val assessed = store.snapshot()
+            assertThat(session.start("session-a", assessed)).isEqualTo(StartResult.Accepted)
+            publisher.releaseConnection()
+            assertThat(session.status()).isEqualTo(StreamStatus.Live)
+
+            session.stop(confirmed = true)
+
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a")
+            assertThat(session.start("session-b", assessed)).isEqualTo(StartResult.PendingStop)
+            assertThat(publisher.connectRequests).containsExactly("session-a")
+        }
+    }
+
+    @Test
+    fun ordinaryRevisionChangeWhileConnectingStopsTheStaleAttempt() {
+        val database = temporaryFolder.root.toPath().resolve("stale-assessment.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            assertThat(session.start("session-a", store.snapshot())).isEqualTo(StartResult.Accepted)
+
+            val changed = store.recordPoint("point", expectedEpoch = 0)
+            publisher.releaseConnection()
+
+            assertThat(changed).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(store.snapshot()).isEqualTo(changed)
+            assertThat(store.pendingStopSessions()).isEmpty()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun connectAndCleanupFailurePreserveOriginalFailureAndBlockNewStart() {
         val database = temporaryFolder.root.toPath().resolve("connect-and-stop-failed.sqlite")
         DurableCommandProbe(database).use { store ->

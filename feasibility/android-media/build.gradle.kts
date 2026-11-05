@@ -12,6 +12,8 @@ abstract class CopySessionProbe : DefaultTask() {
     @get:InputFile abstract val sessionSource: RegularFileProperty
     @get:InputFile abstract val scoreboardSource: RegularFileProperty
     @get:InputFile abstract val destinationSource: RegularFileProperty
+    @get:InputFile abstract val streamSessionSource: RegularFileProperty
+    @get:InputFile abstract val safetyStateSource: RegularFileProperty
     @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
 
     @TaskAction fun copySource() {
@@ -21,6 +23,8 @@ abstract class CopySessionProbe : DefaultTask() {
         sessionSource.get().asFile.copyTo(target, overwrite = true)
         scoreboardSource.get().asFile.copyTo(target.parentFile.resolve("DiagnosticScoreboard.kt"), overwrite = true)
         destinationSource.get().asFile.copyTo(target.parentFile.resolve("ManualDestination.kt"), overwrite = true)
+        streamSessionSource.get().asFile.copyTo(target.parentFile.resolve("StreamSession.kt"), overwrite = true)
+        safetyStateSource.get().asFile.copyTo(target.parentFile.resolve("SessionSafetyState.kt"), overwrite = true)
     }
 }
 
@@ -28,6 +32,8 @@ val copySessionProbe = tasks.register<CopySessionProbe>("copySessionProbe") {
     sessionSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/LocalCaptureReadiness.kt"))
     scoreboardSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/DiagnosticScoreboard.kt"))
     destinationSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/ManualDestination.kt"))
+    streamSessionSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/StreamSession.kt"))
+    safetyStateSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/SessionSafetyState.kt"))
     outputDirectory.set(layout.buildDirectory.dir("generated/session-probe"))
 }
 

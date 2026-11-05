@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.PublisherSessionProbeTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-03T15:00:31.771Z" hostname="redacted" time="0.254">
+  <properties/>
+  <testcase name="ordinaryRevisionChangeWhileConnectingStopsTheStaleAttempt" classname="livestream.feasibility.PublisherSessionProbeTest" time="0.252"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

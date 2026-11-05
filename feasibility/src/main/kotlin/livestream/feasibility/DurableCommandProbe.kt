@@ -3,15 +3,13 @@ package livestream.feasibility
 import java.nio.file.Path
 import java.sql.DriverManager
 
-data class ProbeSnapshot(val points: Int, val revision: Long, val epoch: Long = 0)
-
 class StaleProbeMatch(val current: ProbeSnapshot) : IllegalStateException("Command targets an old match epoch")
 
 /** Isolated SQLite feasibility fixture, not the application's match schema. */
 class DurableCommandProbe(
     database: Path,
     private val beforeCommit: () -> Unit = {},
-) : AutoCloseable {
+) : AutoCloseable, SessionSafetyState {
     private val connection = DriverManager.getConnection("jdbc:sqlite:${database.toAbsolutePath()}")
 
     init {
@@ -24,7 +22,7 @@ class DurableCommandProbe(
         }
     }
 
-    fun snapshot(): ProbeSnapshot = connection.createStatement().use { statement ->
+    override fun snapshot(): ProbeSnapshot = connection.createStatement().use { statement ->
         statement.executeQuery("SELECT points, revision, epoch FROM state WHERE id=1").use { rows ->
             check(rows.next())
             ProbeSnapshot(rows.getInt(1), rows.getLong(2), rows.getLong(3))
@@ -62,7 +60,7 @@ class DurableCommandProbe(
     }
 
     @Synchronized
-    fun pendingStopSessions(): Set<String> = connection.createStatement().use { statement ->
+    override fun pendingStopSessions(): Set<String> = connection.createStatement().use { statement ->
         statement.executeQuery("SELECT session FROM pending_stops").use { rows ->
             buildSet { while (rows.next()) add(rows.getString(1)) }
         }

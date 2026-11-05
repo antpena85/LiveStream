@@ -4,7 +4,7 @@ enum class StartResult { Accepted, CameraPermissionRequired, MicrophonePermissio
 enum class StreamStatus { Stopped, Connecting, Live, Stopping }
 
 /** Isolated M2 T02 probe; this does not control Android capture or publishing. */
-class StreamSession(private val store: DurableCommandProbe? = null) {
+class StreamSession(private val store: SessionSafetyState? = null) {
     private var currentStatus = StreamStatus.Stopped
     private var connectingAssessment: ProbeSnapshot? = null
 

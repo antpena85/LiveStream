@@ -201,3 +201,29 @@ This does not sanitize real errors, confirm a stop, exercise asynchronous or
 concurrent callbacks, or establish Android/provider behavior. Propagating raw
 real-provider exceptions is not approved for a production interface. Durable
 recovery and safe operator-visible diagnostics remain open.
+
+## Ordinary revision change while connecting — host case
+
+At the confirmed T01/T02 boundaries, start with a fit assessment for the
+current snapshot and hold the simulated connection. Commit an ordinary point
+without a fit-failure marker, then deliver the connection callback. For this
+conservative probe, the old assessment is stale: expect `Stopping`, a stop
+request for the affected session, the committed point retained, and no pending
+fit-stop marker. A stop request is not a stop confirmation. This fixture does
+not decide the production reassessment policy or guarantee that no frame was
+published. The result must be classified as a first-run verification if the
+existing implementation already passes.
+
+The [targeted first run](../evidence/m2/publisher-stale-assessment-first-run.xml)
+passed without an implementation change. A forced full offline JVM suite then
+passed 78 tests with no failures, errors or skips. This is verification, not a
+red/green cycle; the simulated stop remains unconfirmed.
+
+## Confirmed stop after simulated connection — host case
+
+At T01/T02, allow the held connection to reach `Live`, then confirm stop.
+The probe should request stop for the same session, stay `Stopping`, and reject
+a new start without another connect request. Acceptance of the stop request is
+not evidence of termination. This tests a sequential simulated callback, not a
+real publisher, concurrent events, or durable recovery. A first-run pass is
+verification, not a red/green cycle.
