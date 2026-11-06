@@ -13,6 +13,41 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun startDoesNotAcceptSnapshotAndMarkersFromDifferentCommittedStates() {
+        val database = temporaryFolder.root.toPath().resolve("mixed-safety-view.sqlite")
+        DurableCommandProbe(database).use { store ->
+            var checkpointReached = false
+            fun commitFitFailure() {
+                checkpointReached = true
+                assertThat(store.recordPoint("fit-point", 0, "session-a"))
+                    .isEqualTo(ProbeSnapshot(8, 1, 0))
+            }
+            val checkpoint = object : SessionSafetyState by store {
+                override fun pendingStopSessions(): Set<String> {
+                    val before = store.pendingStopSessions()
+                    commitFitFailure()
+                    return before
+                }
+                override fun safetyView(): ProbeSafetyView {
+                    commitFitFailure()
+                    return store.safetyView()
+                }
+            }
+            val session = StreamSession(checkpoint)
+            val result = session.requestStart(true, true, true, true, ProbeSnapshot(8, 1, 0))
+            assertThat(checkpointReached).isTrue()
+            assertThat(result).isNotEqualTo(StartResult.Accepted)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+            assertThat(store.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.recordPoint("fit-point", 0)).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(reopened.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun callbackDuringAbortedFitWriteUsesPreviouslyCommittedState() {
         val database = temporaryFolder.root.toPath().resolve("callback-during-rollback.sqlite")
         lateinit var session: StreamSession

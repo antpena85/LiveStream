@@ -47,8 +47,9 @@ class StreamSession(private val store: SessionSafetyState? = null) {
         if (!cameraPermission) return StartResult.CameraPermissionRequired
         if (!microphonePermission) return StartResult.MicrophonePermissionRequired
         try {
-            if (store != null && store.pendingStopSessions().isNotEmpty()) return StartResult.PendingStop
-            if (!numericFitReady || store == null || assessedSnapshot == null || assessedSnapshot != store.snapshot()) {
+            val view = store?.safetyView()
+            if (view != null && view.pendingStops.isNotEmpty()) return StartResult.PendingStop
+            if (!numericFitReady || view == null || assessedSnapshot == null || assessedSnapshot != view.snapshot) {
                 return StartResult.NumericFitUnresolved
             }
         } catch (_: Exception) {

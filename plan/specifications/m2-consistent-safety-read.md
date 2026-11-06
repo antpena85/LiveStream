@@ -1,7 +1,7 @@
 # M2 consistent safety read: proposed host experiment
 
-Recorded: 2026-11-05. Status: two narrow host T01 red/green slices completed;
-combined T02 safety read remains proposed. This refines the owner-confirmed T01 match-command and T02 session
+Recorded: 2026-11-05. Status: host T01 slices and a combined-read T02 Start
+slice completed; callback and independent-writer consistency remain open. This refines the owner-confirmed T01 match-command and T02 session
 control boundaries, not the release application's storage API. See the
 [ST06 contract](m2-st06-pending-stop-contract.md) and
 [current safety seam](../evidence/m2/session-safety-seam-2026-11-05.md).
@@ -236,3 +236,36 @@ cycle. The forced offline JVM suite passed 91 tests with no failures, errors or
 skips. The local-only Android media build succeeded with all 35 tasks up to date;
 it does not use the host store or publisher adapter. No Android device or external
 publisher was exercised.
+
+## Proposed mixed-view Start experiment
+
+At T01/T02, arrange a deterministic checkpoint after the old implementation has
+read an empty pending-stop set but before it reads the snapshot. At the checkpoint,
+commit a point and simulated fit-failure stop marker through the real store. Supply
+the independently specified post-commit `8/1/0` assessment to Start. The old
+separate reads can combine the pre-commit empty marker set with the post-commit
+snapshot and incorrectly accept Start. A single committed-view read must instead
+either see the old view and reject the assessment or see the new view and reject
+the pending stop; it must never accept that mixed view. The test checkpoint must
+not replace the actual SQLite store. A single SQL query is one candidate for a
+host-only combined read, not a choice of Android storage or an external-publisher
+atomicity guarantee. Test marker/point durability and receipt after reopening.
+
+The [red report](../evidence/m2/mixed-safety-start-red.xml) shows Start accepted
+the mixed view; the [pre-fix session](../evidence/m2/mixed-safety-start-red-source.txt)
+is retained. The session now uses a mandatory combined safety view at Start;
+the SQLite fixture supplies it through one SELECT. The [green report](../evidence/m2/mixed-safety-start-green.xml)
+passes with the checkpoint asserted as reached and the real store checked after
+reopen. The checkpoint was adapted for the new combined interface: the red run
+commits between the old reads; the green run commits immediately before the new
+combined read. Consequently this establishes rejection of that new committed view,
+not an adversarial commit during the SQL statement. The forced offline JVM suite
+passed 92 tests without failures, errors or skips. The local-only media APK
+compiled the changed shared interface and session; it has no Android implementation
+of the safety view and did not exercise the host SQLite store.
+
+Connection callbacks still use the separate reads; this slice changes Start only.
+Independent writers during a combined query, concurrent access to the shared
+reader, error handling under contention, Android persistence, automatic safety
+notifications and external publisher race/termination remain unverified. A
+consistent view is not a guarantee that the view stays current after the read.

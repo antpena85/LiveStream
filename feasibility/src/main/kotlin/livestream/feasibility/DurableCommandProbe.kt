@@ -27,6 +27,19 @@ class DurableCommandProbe(
 
     override fun snapshot(): ProbeSnapshot = readSnapshot(committedReader)
 
+    @Synchronized
+    override fun safetyView(): ProbeSafetyView = committedReader.createStatement().use { statement ->
+        statement.executeQuery("SELECT state.points, state.revision, state.epoch, pending_stops.session FROM state LEFT JOIN pending_stops ON 1=1 WHERE state.id=1").use { rows ->
+            check(rows.next())
+            val snapshot = ProbeSnapshot(rows.getInt(1), rows.getLong(2), rows.getLong(3))
+            val stops = mutableSetOf<String>()
+            do {
+                rows.getString(4)?.let(stops::add)
+            } while (rows.next())
+            ProbeSafetyView(snapshot, stops)
+        }
+    }
+
     private fun readSnapshot(source: Connection): ProbeSnapshot = source.createStatement().use { statement ->
         statement.executeQuery("SELECT points, revision, epoch FROM state WHERE id=1").use { rows ->
             check(rows.next())

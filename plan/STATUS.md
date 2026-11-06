@@ -87,9 +87,11 @@ Recommended next work:
    host red/green result; simulated stop-dispatch failure/retry passed on its first
    run. Explicit notification during connection has a host red/green result;
    an unavailable store on that explicit signal also fails closed in a first-run
-   host verification. Automatic delivery and recovery remain open. Next design the combined
-   committed snapshot/marker view and T02 interleaving without treating scheduling
-   timeouts as behavioral failures. Do not substitute a permissive fit or
+   host verification. Automatic delivery and recovery remain open. A mixed-view
+   Start has a narrow host red/green result using a combined SQLite query; the
+   connection callback still uses separate reads. Next test callback consistency
+   and independent-writer interleavings without treating scheduling timeouts as
+   behavioral failures. Do not substitute a permissive fit or
    pending-stop stub. A consistent read alone cannot make publisher start atomic
    with later state changes.
 2. Follow the [accelerated prototype gate](specifications/accelerated-prototype.md):

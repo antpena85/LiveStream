@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-06T02:05:28.794Z" hostname="PENA-DESK" time="0.251">
+  <properties/>
+  <testcase name="startDoesNotAcceptSnapshotAndMarkersFromDifferentCommittedStates" classname="livestream.feasibility.StreamSessionTest" time="0.249">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: expected not to be: Accepted" type="com.google.common.truth.AssertionErrorWithFacts">expected not to be: Accepted
+	at livestream.feasibility.StreamSessionTest.startDoesNotAcceptSnapshotAndMarkersFromDifferentCommittedStates(StreamSessionTest.kt:29)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
