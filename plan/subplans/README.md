@@ -86,6 +86,12 @@ preparations. M3–M8 delivery remains Not started. Overall counts: 7 Complete,
 
 ## Working agreement
 
+The owner directed a broadcast-first, code-first/document-on-green M2 focus on
+2026-11-06. Follow the [prototype sequence](../specifications/accelerated-prototype.md#immediate-sequence):
+TDD remains required at confirmed seams, but do not make speculative probe-only
+variants or per-test documentation a prerequisite to integrated progress.
+The trial safety gate and all release requirements remain in force.
+
 1. Use the PRD as product authority. Keep D01–D13 unresolved until actual
    evidence and required owner answers are recorded. T01–T06 are confirmed by
    the owner's 2026-10-23 answer under Q47; changes need renewed confirmation.

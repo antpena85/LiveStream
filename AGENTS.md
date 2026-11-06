@@ -49,6 +49,12 @@ recommendations and decisions awaiting the user's answer.
 
 ## Current Phase
 
+- Owner direction on 2026-11-06: prioritize the authorized broadcast-first M2
+  vertical slice and work code-first, document-on-green as described in the
+  [prototype plan](plan/specifications/accelerated-prototype.md). TDD remains
+  required at confirmed boundaries; code-first does not mean tests afterward.
+  Pause speculative probe-only permutations unless they unblock integration or
+  address a concrete safety defect. Group evidence and commits by useful slice.
 - M2 feasibility research and isolated probe/harness execution, authorized by
   the owner on 2026-10-23. On 2026-10-24 ADB authorized a Pixel 8 Pro and Pixel
   10 Pro XL; actual OS/build facts were retained. A diagnostic capability APK

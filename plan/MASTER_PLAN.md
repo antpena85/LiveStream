@@ -61,6 +61,17 @@ release. Partial milestones are development checkpoints, not a reduced MVP.
 
 ## 3. Delivery sequence and gates
 
+**Owner direction, 2026-11-06:** Prioritize the authorized
+[broadcast-first M2 prototype](specifications/accelerated-prototype.md) over
+further speculative host-only probe permutations. Work code-first,
+document-on-green: select an observable vertical slice, use TDD at the confirmed
+boundary, implement and run it, then record concise results and limitations.
+Group evidence by coherent slice rather than documenting each passing case.
+Preserve security and the prototype's required fit/stop safeguards; do not stream
+until its trial gate is satisfied. This reorders M2 work, not release requirements
+or authorization: G2 remains open and M3–M8 delivery still requires G2 and a
+further owner request.
+
 The order is proposed for one owner working incrementally. Provider and device
 feasibility come early because they can change the implementation approach.
 There is no committed calendar estimate before those checks.
@@ -163,6 +174,15 @@ For each behavior, use one small vertical slice:
 5. **Record:** Retain the test/behavior reference, observed red failure, green
    result, and any outstanding device or real-broadcast evidence. Update the
    requirement mapping as slices become demonstrable.
+
+Apply this agreement proportionately: implement an integrated prototype behavior
+before investigating speculative adjacent cases. After green, group evidence,
+decisions and known limitations in a concise checkpoint; a separate document or
+commit per test is not required. Preserve actual red/green results where needed;
+never manufacture a failing result for a first-run verification. Existing
+T01–T06 confirmations remain valid. Research and advance specification are
+appropriate when a safety, security or unresolved design question actually
+blocks the next slice, not as an automatic prerequisite.
 
 Do not build a whole component and add tests afterward, or write a large batch
 of tests before implementing any of their behaviors. Bug fixes start with one
@@ -631,18 +651,32 @@ answer. This plan and architecture do not silently reopen Q1–Q36.
 
 ## 9. Next authorized work
 
+**Current priority, 2026-11-06:** Build the authorized manual-destination
+[broadcast-first prototype](specifications/accelerated-prototype.md#immediate-sequence)
+in tested Android vertical slices. Reuse the existing local media experiment;
+implement publisher connection/status, confirmed stop and cleanup, credential-safe
+handling, and real Android-compatible fit/pending-stop safeguards before an
+operator-controlled trial. Connect the scoreboard to the encoded output, then
+verify received video, updated score and built-in audio on a selected authorized
+phone. Recheck ADB before device-dependent work. Pause standalone probe-only race
+permutations unless a concrete integration defect or safety blocker warrants one.
+Document after green and retain material evidence together. Provider sign-in,
+remote/watch, adaptation and full-matrix validation remain release obligations,
+but are not prerequisites for this bounded prototype. The trial gate, G2 and
+release acceptance remain open.
+
 Current focus is completing M2 under Q46. The
 [execution/readiness record](reviews/m2-readiness-and-execution.md) links the
 work for all eight tasks, actual JVM red/green evidence and the remaining
 physical/account handoff. The owner confirmed T01–T06 under Q47. G1 is open
 for M2; G2 has not passed.
 
-The latest local continuation verifies [ST03 lost acknowledgment](evidence/m2/st03-lost-acknowledgment.md)
+Historical checkpoint: the continuation verified [ST03 lost acknowledgment](evidence/m2/st03-lost-acknowledgment.md)
 after the earlier ST02/ST04/ST05 checks. A child JVM halts after commit before
 returning its receipt; retries recover the original result without applying
 another point or replacing newer state. Twelve local tests are green, with
 eight observed red/green cycles and four first-run verifications. Recommended
-next independent host work is to specify ST06's durable pending-stop contract
+next independent host work at that time was to specify ST06's durable pending-stop contract
 and interruption checkpoints at T01/T02 before an isolated TDD experiment.
 Q45's policy is confirmed; final stop/recovery mechanisms remain D10 proposals.
 These host probes do not waive remaining physical/account or application-storage evidence.

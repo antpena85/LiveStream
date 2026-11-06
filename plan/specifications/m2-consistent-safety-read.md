@@ -450,3 +450,18 @@ red/green cycle. The forced offline JVM suite also passed.
 This synchronous host-only ordering does not establish automatic notification,
 unnotified changes, cross-thread safety, Android integration, or actual network
 publisher behavior. No device or external publisher was exercised.
+
+## Cross-thread notification while Start is paused — 2026-11-06
+
+At T01/T02, a worker pauses Start after reading the real store's safety view.
+Another thread commits a fit-failure point and marker through an independent
+store instance, explicitly notifies the session, then releases Start. Start is
+not accepted, the session remains Stopped, and reopening confirms the point and
+marker. The latches provide the test ordering and visibility; their timeouts
+represent incomplete test execution, not a behavioral safety failure.
+
+The [first-run report](../evidence/m2/cross-thread-start-notification-first-run.xml)
+passed with unchanged implementation, and the forced offline JVM suite passed.
+This is verification rather than a red/green fix. It does not establish automatic
+notifications, other interleavings, general thread safety, Android integration,
+or actual publisher behavior. No device or external publisher was exercised.

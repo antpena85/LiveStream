@@ -38,15 +38,36 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
-1. Keep the local capture experiment functional; select a provisional Android
-   publishing approach without assuming the diagnostic code is production-ready.
-2. At the confirmed session/media boundary, test start/stop and failure behavior
-   in small red/green slices. Integrate an Android-compatible implementation of
-   pending-stop and numeric-fit safeguards rather than stubbing the JVM store.
-3. Connect a minimal local scoreboard to the encoded output and publishing path;
-   test its observable behavior at the confirmed boundaries.
-4. Build, run the relevant automated tests, then perform the operator-controlled
-   physical and received-stream checks. Record failures as well as successes.
+Owner-confirmed priority on 2026-11-06: **broadcast-first, code-first and
+document-on-green**. Keep TDD: write a focused behavioral test at an already
+confirmed boundary, observe red, implement the minimum and run green. Record
+concise evidence and remaining risks after each coherent green slice; group
+related cases and commits rather than creating a document for each test.
+Pause speculative host-only race permutations unless they unblock integration
+or address a concrete safety defect. First-run passes are verification, not
+red/green cycles. Keep existing probe tests and evidence.
+
+1. Reuse the isolated Android media experiment and its provisional candidate.
+   Build a manual-destination publisher path with explicit confirmation,
+   observable connection/failure state, safe credential handling and cleanup.
+   Implement in small tested vertical slices; do not expose a real trial path
+   before the safety requirements below are in place.
+2. Integrate a real Android-compatible safety state and fit/stop safeguards:
+   preserve values, fail closed on unresolved fit or pending stop, and do not
+   claim stopped without appropriate confirmation. Do not substitute permissive
+   stubs or infer Android guarantees from the host SQLite fixture.
+3. Connect the local scoreboard to the publishing/encoded path. Build, run the
+   relevant automated tests and document results after green. Continue host and
+   build work while a physical device is unavailable.
+4. Once the prototype gate is met, recheck ADB for the chosen streaming phone.
+   The owner chooses destination and duration and initiates the bounded trial;
+   separately inspect received video, changed score and built-in audio. Record
+   sanitized observations and failures without retaining keys or personal media.
+
+Provider sign-in, phone/watch controls, adaptation tuning, recovery stress and
+the full device/provider matrix can proceed after this first demonstration or
+in parallel when useful. They are deferred from this prototype, not removed
+from release. M2 completion, G2 and M3–M8 authorization are unchanged.
 
 No fixed time-box duration or test provider has been selected. Choose these with
 the owner when needed rather than treating a proposed value as confirmed.

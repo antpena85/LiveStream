@@ -78,35 +78,14 @@ dependencies. Research or runner preparation does not waive M2.7/M2.8 dependenci
 Checked M2 acceptance boxes do not supply the physical/tooling evidence
 explicitly missing in those same records; their In progress status remains controlling.
 
-Recommended next work:
+Recommended next work (owner direction, 2026-11-06):
 
-1. At confirmed T01/T02, continue the [consistent safety-read experiment](specifications/m2-consistent-safety-read.md).
-   Two narrow T01 rollback-read slices are red/green; a synchronous in-flight
-   Start/callback and rollback-callback verifications passed on their first runs.
-   An explicitly delivered post-Live fit-failure notification has a narrow
-   host red/green result; simulated stop-dispatch failure/retry passed on its first
-   run. Explicit notification during connection has a host red/green result;
-   an unavailable store on that explicit signal also fails closed in a first-run
-   host verification. Automatic delivery and recovery remain open. A mixed-view
-   Start has a narrow host red/green result using a combined SQLite query; the
-   connection callback still uses separate reads. A sequential independent-store
-   visibility and aborted-write checks passed on their first runs; a point/reset between callback reads
-   also stayed Stopping on its first run. Next test callback consistency and
-   independent-writer interleavings without treating scheduling timeouts as
-   behavioral failures. Do not substitute a permissive fit or
-   pending-stop stub. A consistent read alone cannot make publisher start atomic
-   with later state changes.
-2. Follow the [accelerated prototype gate](specifications/accelerated-prototype.md):
-   implement and validate actual Android publisher control, fit safety, cleanup,
-   and credential handling before attempting a received-stream trial.
-3. For device-dependent work, recheck ADB authorization; identify the intended
-   devices privately. Before a trial the operator must choose a destination and
-   duration and initiate it; separately inspect received video, score and audio.
-4. Continue [provider](subplans/m2-3-provider-setup-feasibility.md),
-   [topology](subplans/m2-4-remote-topology-feasibility.md), and
-   [quality](subplans/m2-6-adaptive-quality-policy.md) evidence, then review the
-   [decision ledger](specifications/m2-7-stack-and-decision-dispositions.md).
-   Q7 direct watch pairing and built-in-only v1 audio remain confirmed.
+1. Build the authorized [broadcast-first prototype](specifications/accelerated-prototype.md#immediate-sequence) as integrated Android vertical slices, using TDD at confirmed boundaries and documenting coherent results after green.
+2. Implement manual publisher control, connection/failure state, credential-safe cleanup, and real Android-compatible fit/pending-stop safeguards before a trial; connect the scoreboard to the encoded output. Pause speculative host-only permutations unless they unblock integration or address a concrete safety defect.
+3. Check ADB for the chosen streaming phone before device-dependent work. The owner selects the destination and duration and initiates a bounded trial; independently inspect received video, changed score and audio.
+4. Continue provider, remote/watch, adaptation and full-matrix evidence as needed for G2 and release; these are deferred from the first prototype demonstration, not waived. G2 remains open and M3–M8 require further authorization.
+
+The counts and milestone evidence above remain the 2026-11-05 snapshot; this priority update does not refresh task statuses or imply new completion.
 
 All [D01–D13 aggregate records](MASTER_PLAN.md#7-open-decision-register) remain open:
 

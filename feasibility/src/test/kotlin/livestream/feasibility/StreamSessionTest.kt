@@ -16,6 +16,47 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun notifiedFitFailureFromAnotherThreadRejectsPausedStart() {
+        val database = temporaryFolder.root.toPath().resolve("cross-thread-notification-start.sqlite")
+        DurableCommandProbe(database).use { reader ->
+            DurableCommandProbe(database).use { writer ->
+                val entered = CountDownLatch(1)
+                val proceed = CountDownLatch(1)
+                val checkpoint = object : SessionSafetyState by reader {
+                    override fun safetyView(): ProbeSafetyView {
+                        val before = reader.safetyView()
+                        entered.countDown()
+                        check(proceed.await(10, TimeUnit.SECONDS)) { "start checkpoint timed out" }
+                        return before
+                    }
+                }
+                val session = StreamSession(checkpoint)
+                val executor = Executors.newSingleThreadExecutor()
+                try {
+                    val start = executor.submit<StartResult> {
+                        session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0))
+                    }
+                    check(entered.await(10, TimeUnit.SECONDS)) { "start did not reach checkpoint" }
+                    assertThat(writer.recordPoint("fit-point", 0, "session-a"))
+                        .isEqualTo(ProbeSnapshot(8, 1, 0))
+                    session.safetyChanged()
+                    proceed.countDown()
+                    assertThat(start.get(10, TimeUnit.SECONDS)).isNotEqualTo(StartResult.Accepted)
+                    assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+                } finally {
+                    proceed.countDown()
+                    executor.shutdownNow()
+                    check(executor.awaitTermination(10, TimeUnit.SECONDS)) { "start executor did not terminate" }
+                }
+            }
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.safetyView())
+                .isEqualTo(ProbeSafetyView(ProbeSnapshot(8, 1, 0), setOf("session-a")))
+        }
+    }
+
+    @Test
     fun safetyNotificationDuringStartPreventsAdmissionFromStaleView() {
         val database = temporaryFolder.root.toPath().resolve("notification-during-start.sqlite")
         DurableCommandProbe(database).use { store ->
