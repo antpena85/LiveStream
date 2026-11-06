@@ -15,6 +15,12 @@ class PublisherSessionProbe(
 
     fun status(): StreamStatus = session.status()
 
+    /** Explicit host-fixture notification; not automatic store observation. */
+    fun safetyChanged() {
+        session.safetyChanged()
+        if (session.status() == StreamStatus.Stopping) activeSessionId?.let { publisher.stop(it) }
+    }
+
     fun stop(confirmed: Boolean) {
         session.requestStop(confirmed)
         if (confirmed && session.status() == StreamStatus.Stopping) {

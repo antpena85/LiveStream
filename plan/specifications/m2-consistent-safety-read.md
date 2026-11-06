@@ -150,3 +150,33 @@ failures, errors or skips; the local-only Android media build succeeded with all
 commits after this callback, the session may already be Live and the current
 probe has no notification path to request a stop: that important scenario remains
 unverified and requires a separate safety contract and test before publishing.
+
+## Proposed post-Live safety recheck slice
+
+At confirmed T01/T02 boundaries use a real temporary store and controllable
+publisher. Start session A and deliver its connection callback, then commit a
+point with simulated fit failure and durable pending stop for A. Deliver an
+explicit safety-change notification to T02 after the commit. T02 must read the
+actual store, enter Stopping, and request stop for A while preserving the point,
+receipt and pending marker. A stop request is not confirmation of termination.
+The fixture callback is explicitly delivered by the test; no automatic event
+delivery or recovery from lost notifications is implied. Rollback, unrelated
+markers, read failure, duplicate delivery, concurrency and publisher-stop failure
+are separate cases. This single slice does not settle the notification mechanism,
+prove timely delivery, or authorize Android or real publishing.
+
+The [behavioral red](../evidence/m2/live-fit-notification-red.xml) observed
+`Live` instead of `Stopping` with an explicitly delivered notification; the
+[pre-fix adapter](../evidence/m2/live-fit-notification-red-source.txt) and
+[session](../evidence/m2/live-fit-notification-red-session-source.txt) are retained.
+The [green test](../evidence/m2/live-fit-notification-green.xml) observes the
+requested stop and durable marker. The forced offline JVM suite passed 88 tests
+without failures, errors or skips; the local-only Android media APK rebuilt with
+five tasks executed. The Android activity does not call this safety notification
+and the host publisher adapter is not included there. No device run occurred.
+
+The adapter does not automatically observe commits; callers must explicitly
+deliver notifications. Lost or late notifications, missed pending stops during
+connection, unrelated markers, repeated notifications, stop failures, real
+termination and synchronized callbacks remain unverified. A safety recheck may
+request a stop but must not clear the durable marker or assert that output stopped.

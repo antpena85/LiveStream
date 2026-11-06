@@ -10,6 +10,30 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun committedFitFailureWhileLiveRequestsStopForAffectedSession() {
+        val database = temporaryFolder.root.toPath().resolve("live-fit-failure.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
+            publisher.releaseConnection()
+            assertThat(session.status()).isEqualTo(StreamStatus.Live)
+
+            assertThat(store.recordPoint("fit-point", 0, "session-a")).isEqualTo(ProbeSnapshot(8, 1, 0))
+            session.safetyChanged()
+
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a")
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+            assertThat(store.recordPoint("fit-point", 0)).isEqualTo(ProbeSnapshot(8, 1, 0))
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(reopened.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun startWithoutExplicitConfirmationDoesNotConnect() {
         val database = temporaryFolder.root.toPath().resolve("publisher-unconfirmed-start.sqlite")
         DurableCommandProbe(database).use { store ->
