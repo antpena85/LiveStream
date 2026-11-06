@@ -435,3 +435,18 @@ This synchronous experiment does not establish automatic delivery, safety for
 unnotified commits or notifications arriving after admission, session-wide
 thread safety, consistent callback reads, publisher termination, or received
 output. No device or external publisher was exercised.
+
+## Publisher adapter: notification during Start — 2026-11-06
+
+At T01/T02, a real-store fit-failure point and pending marker commit after the
+Start safety view is captured. An explicit notification is delivered through
+the host publisher adapter before that view returns. Start is not accepted,
+the session stays Stopped, and the simulated publisher receives neither a
+connect nor a stop request. Reopening the store confirms the point and marker.
+The [first-run report](../evidence/m2/publisher-start-notification-first-run.xml)
+passed with the existing implementation; this is verification rather than a
+red/green cycle. The forced offline JVM suite also passed.
+
+This synchronous host-only ordering does not establish automatic notification,
+unnotified changes, cross-thread safety, Android integration, or actual network
+publisher behavior. No device or external publisher was exercised.
