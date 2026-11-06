@@ -10,6 +10,31 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun fitFailureNotificationWhileConnectingRequestsStopBeforeAndAfterLateCallback() {
+        val database = temporaryFolder.root.toPath().resolve("connecting-fit-notification.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
+            assertThat(store.recordPoint("fit-point", 0, "session-a")).isEqualTo(ProbeSnapshot(8, 1, 0))
+
+            session.safetyChanged()
+
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a")
+            publisher.releaseConnection()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a", "session-a").inOrder()
+            assertThat(store.recordPoint("fit-point", 0)).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(reopened.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun failedSafetyStopCanBeRetriedWithoutClearingDurableMarker() {
         val database = temporaryFolder.root.toPath().resolve("live-fit-stop-failure.sqlite")
         DurableCommandProbe(database).use { store ->

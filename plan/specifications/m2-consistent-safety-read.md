@@ -198,3 +198,24 @@ cycle. The forced offline JVM suite passed 89 tests with no failures, errors or
 skips; the local-only media build succeeded with all 35 tasks up to date and does
 not exercise the host publisher adapter or store. A stop request remains distinct
 from a verified stop, and the test does not prove safe delivery of notifications.
+
+## Safety notification while connecting
+
+At confirmed T01/T02, begin a confirmed simulated publisher connection and hold
+its callback. Commit a real-store point with simulated fit failure and a durable
+stop marker for the active session. On explicit safety-change notification, T02
+must enter Stopping and request stop immediately, without waiting for a connection
+callback that might never arrive. If the callback arrives late, remain Stopping
+and request stop again for that same session. Reopening must retain the accepted
+point and marker; neither request confirms termination. This sequential controlled
+host case does not establish automatic notification delivery, atomic combined
+reads, concurrency or real publisher behavior.
+
+The [red result](../evidence/m2/connecting-fit-notification-red.xml) observed
+`Connecting` rather than `Stopping`; the [pre-fix session](../evidence/m2/connecting-fit-notification-red-source.txt)
+is retained. The [green result](../evidence/m2/connecting-fit-notification-green.xml)
+passes after applying the same pending-stop recheck to Connecting. The forced
+offline JVM suite passed 90 tests, zero failures, errors or skips. The local-only
+Android media build succeeded with five tasks executed; its activity does not
+use this notification and the host publisher is not included. This does not
+prove notification delivery, stop success, or safe real broadcasting.

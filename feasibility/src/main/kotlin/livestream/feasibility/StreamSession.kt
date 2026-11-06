@@ -11,7 +11,7 @@ class StreamSession(private val store: SessionSafetyState? = null) {
     fun status(): StreamStatus = currentStatus
 
     fun safetyChanged() {
-        if (currentStatus == StreamStatus.Live) {
+        if (currentStatus == StreamStatus.Live || currentStatus == StreamStatus.Connecting) {
             val requiresStop = try {
                 store == null || store.pendingStopSessions().isNotEmpty()
             } catch (_: Exception) {
