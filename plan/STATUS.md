@@ -82,7 +82,8 @@ Recommended next work:
 
 1. At confirmed T01/T02, continue the [consistent safety-read experiment](specifications/m2-consistent-safety-read.md).
    Two narrow T01 rollback-read slices are red/green; a synchronous in-flight
-   Start/callback verification passed on its first run. Next design and test the combined
+   Start/callback and rollback-callback verifications passed on their first runs.
+   Next design and test the post-Live fit-failure notification and the combined
    committed snapshot/marker view and T02 interleaving without treating scheduling
    timeouts as behavioral failures. Do not substitute a permissive fit or
    pending-stop stub. A consistent read alone cannot make publisher start atomic

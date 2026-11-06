@@ -130,3 +130,23 @@ suite passed 86 tests with no failures, errors or skips. The local-only media AP
 build succeeded with all 35 tasks up to date; it does not use the host store.
 This is synchronous reentrant observation, not thread-safety, an atomic pair, a
 publisher effect, or Android execution. The combined-read problem remains open.
+
+## Callback during a write that subsequently rolls back
+
+At confirmed T01/T02, start with a valid assessment of the real store's committed
+`7/0/0` state. During a point transaction that has inserted a simulated pending
+stop, invoke the connection callback at the existing pre-commit fault checkpoint,
+then throw to roll back the transaction. The callback should observe the prior
+committed state, not a marker or score that never committed; it may report Live
+in this host model. Verify the rollback after reopening. This synchronous
+interleaving does not show what happens when the write commits afterward and
+does not establish a combined read or safe real publication.
+
+The [targeted first run](../evidence/m2/safety-callback-rollback-first-run.xml)
+passed with unchanged session and store logic, so it is verification rather
+than a red/green cycle. The forced offline JVM suite passed 87 tests without
+failures, errors or skips; the local-only Android media build succeeded with all
+35 tasks up to date and does not use the host SQLite fixture. If the same write
+commits after this callback, the session may already be Live and the current
+probe has no notification path to request a stop: that important scenario remains
+unverified and requires a separate safety contract and test before publishing.

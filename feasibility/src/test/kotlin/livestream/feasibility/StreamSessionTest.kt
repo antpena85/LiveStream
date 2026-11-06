@@ -3,6 +3,7 @@ package livestream.feasibility
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.Rule
+import org.junit.Assert.assertThrows
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -10,6 +11,30 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
+
+    @Test
+    fun callbackDuringAbortedFitWriteUsesPreviouslyCommittedState() {
+        val database = temporaryFolder.root.toPath().resolve("callback-during-rollback.sqlite")
+        lateinit var session: StreamSession
+        var observed: StreamStatus? = null
+        DurableCommandProbe(database, beforeCommit = {
+            session.connectionSucceeded()
+            observed = session.status()
+            throw IllegalStateException("simulated interruption before commit")
+        }).use { store ->
+            session = StreamSession(store)
+            assertThat(session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0)))
+                .isEqualTo(StartResult.Accepted)
+            assertThrows(IllegalStateException::class.java) {
+                store.recordPoint("aborted", 0, "session-a")
+            }
+            assertThat(observed).isEqualTo(StreamStatus.Live)
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(7, 0, 0))
+            assertThat(reopened.pendingStopSessions()).isEmpty()
+        }
+    }
 
     @Test
     fun startDuringUncommittedFitFailureCannotBecomeLiveAfterCommit() {
