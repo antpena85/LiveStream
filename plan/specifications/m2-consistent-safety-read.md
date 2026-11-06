@@ -219,3 +219,20 @@ offline JVM suite passed 90 tests, zero failures, errors or skips. The local-onl
 Android media build succeeded with five tasks executed; its activity does not
 use this notification and the host publisher is not included. This does not
 prove notification delivery, stop success, or safe real broadcasting.
+
+## Safety notification with unavailable store while connecting
+
+At T02, begin a confirmed connection using a real temporary store, then close
+the store and explicitly deliver a safety-change notification before the held
+connection callback. The session must enter Stopping and request stop for its
+active session; a late callback must not report Live, and another Start must not
+be accepted. This verifies fail-closed handling of this explicit signal only;
+it does not detect store failure without a signal, establish automatic delivery,
+or prove the external publisher stopped.
+
+The [first-run result](../evidence/m2/connecting-notification-store-unavailable-first-run.xml)
+passed with unchanged implementation; it is verification rather than a red/green
+cycle. The forced offline JVM suite passed 91 tests with no failures, errors or
+skips. The local-only Android media build succeeded with all 35 tasks up to date;
+it does not use the host store or publisher adapter. No Android device or external
+publisher was exercised.

@@ -10,6 +10,27 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun unavailableStoreAtSafetyNotificationWhileConnectingRequestsStop() {
+        val database = temporaryFolder.root.toPath().resolve("connecting-notification-store-closed.sqlite")
+        val store = DurableCommandProbe(database)
+        val publisher = HeldPublisher()
+        val session = PublisherSessionProbe(StreamSession(store), publisher)
+        val assessed = store.snapshot()
+        assertThat(session.start("session-a", assessed, confirmed = true)).isEqualTo(StartResult.Accepted)
+        store.close()
+
+        session.safetyChanged()
+
+        assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        assertThat(publisher.stopRequests).containsExactly("session-a")
+        publisher.releaseConnection()
+        assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        assertThat(publisher.stopRequests).containsExactly("session-a", "session-a").inOrder()
+        assertThat(session.start("session-b", assessed, confirmed = true)).isEqualTo(StartResult.PendingStop)
+        assertThat(publisher.connectRequests).containsExactly("session-a")
+    }
+
+    @Test
     fun fitFailureNotificationWhileConnectingRequestsStopBeforeAndAfterLateCallback() {
         val database = temporaryFolder.root.toPath().resolve("connecting-fit-notification.sqlite")
         DurableCommandProbe(database).use { store ->
