@@ -254,6 +254,11 @@ request and preserve unrelated user work.
 
 ## Additional Notes
 
+- On completing a task, request an audible completion notification on the local
+  machine before the final response. On Windows, use
+  `powershell -NoProfile -Command '[System.Media.SystemSounds]::Exclamation.Play(); Start-Sleep -Milliseconds 800'`.
+  If playback is unavailable or fails, report that limitation; do not claim
+  the sound was audible merely because the playback request succeeded.
 - Device capabilities must be detected; do not assume every lens or accessory
   is available to third-party applications.
 - Stream keys, access tokens, pairing secrets, and personal credentials must
