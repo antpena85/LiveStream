@@ -399,3 +399,18 @@ do not consistently share that lock; the callback check-and-assignment race,
 visibility across all operations, fit changes after the read, the publisher
 adapter, Android integration, and external stream termination remain open.
 No device or external publisher was exercised.
+
+## Publisher adapter: reentrant Stop during callback — 2026-11-06
+
+At T02, an explicitly confirmed Stop is delivered through the host publisher
+adapter during the callback's real-store safety read. The session remains
+Stopping and the simulated publisher receives two stop requests for the active
+session: one from Stop and one after callback processing. The
+[first-run report](../evidence/m2/publisher-reentrant-stop-callback-first-run.xml)
+passed without an implementation change; the forced offline JVM suite passed.
+This is verification, not a red/green fix.
+
+This synchronous, reentrant experiment does not validate cross-thread ordering,
+publisher idempotence, automatic notification, Android integration, or actual
+publisher termination. Repeated simulated requests do not prove that a real
+publisher has stopped. No device or external publisher was exercised.

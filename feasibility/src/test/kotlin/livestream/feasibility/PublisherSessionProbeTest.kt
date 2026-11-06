@@ -10,6 +10,34 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun confirmedStopDuringConnectionCallbackKeepsStoppingAndRequestsPublisherStop() {
+        val database = temporaryFolder.root.toPath().resolve("publisher-stop-during-callback.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher()
+            lateinit var session: PublisherSessionProbe
+            var checkpointReached = false
+            val checkpoint = object : SessionSafetyState by store {
+                override fun pendingStopSessions(): Set<String> {
+                    val pending = store.pendingStopSessions()
+                    checkpointReached = true
+                    session.stop(confirmed = true)
+                    return pending
+                }
+            }
+            session = PublisherSessionProbe(StreamSession(checkpoint), publisher)
+            assertThat(session.start("session-a", ProbeSnapshot(7, 0, 0), confirmed = true))
+                .isEqualTo(StartResult.Accepted)
+
+            publisher.releaseConnection()
+
+            assertThat(checkpointReached).isTrue()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(publisher.stopRequests).containsExactly("session-a", "session-a").inOrder()
+            assertThat(publisher.connectRequests).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun unavailableStoreAtSafetyNotificationWhileConnectingRequestsStop() {
         val database = temporaryFolder.root.toPath().resolve("connecting-notification-store-closed.sqlite")
         val store = DurableCommandProbe(database)
