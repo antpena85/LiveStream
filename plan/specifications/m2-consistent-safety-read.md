@@ -382,3 +382,20 @@ This controlled ordering does not test Stop between the callback's final status
 check and assignment. Those operations remain unsynchronized, so this result
 does not establish general thread safety, consistent callback reads, Android
 integration, or actual publisher termination. No device was exercised.
+
+## Simultaneous confirmed starts — 2026-11-06
+
+At T02, two worker threads both obtain a real-store safety view before either
+is released to finish Start. Exactly one must be accepted, with the other
+reporting AlreadyConnecting. The [red report](../evidence/m2/simultaneous-start-red.xml)
+shows both were accepted; the [pre-fix source](../evidence/m2/simultaneous-start-red-source.txt)
+is retained. The [green report](../evidence/m2/simultaneous-start-green.xml)
+passes after guarding the final Start admission and rechecking session state.
+The forced offline JVM suite also passed. Latch timeouts indicate incomplete
+test execution, not evidence that the behavioral assertion failed.
+
+This synchronizes competing final Start admissions only. Other state operations
+do not consistently share that lock; the callback check-and-assignment race,
+visibility across all operations, fit changes after the read, the publisher
+adapter, Android integration, and external stream termination remain open.
+No device or external publisher was exercised.

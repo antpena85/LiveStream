@@ -16,6 +16,41 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun simultaneousConfirmedStartsAcceptOnlyOneConnection() {
+        val database = temporaryFolder.root.toPath().resolve("simultaneous-starts.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val bothReading = CountDownLatch(2)
+            val proceed = CountDownLatch(1)
+            val checkpoint = object : SessionSafetyState by store {
+                override fun safetyView(): ProbeSafetyView {
+                    val view = store.safetyView()
+                    bothReading.countDown()
+                    check(proceed.await(10, TimeUnit.SECONDS)) { "start checkpoint timed out" }
+                    return view
+                }
+            }
+            val session = StreamSession(checkpoint)
+            val executor = Executors.newFixedThreadPool(2)
+            try {
+                val calls = (1..2).map {
+                    executor.submit<StartResult> {
+                        session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0))
+                    }
+                }
+                check(bothReading.await(10, TimeUnit.SECONDS)) { "starts did not reach checkpoint" }
+                proceed.countDown()
+                val results = calls.map { it.get(10, TimeUnit.SECONDS) }
+                assertThat(results).containsExactly(StartResult.Accepted, StartResult.AlreadyConnecting)
+                assertThat(session.status()).isEqualTo(StreamStatus.Connecting)
+            } finally {
+                proceed.countDown()
+                executor.shutdownNow()
+                check(executor.awaitTermination(10, TimeUnit.SECONDS)) { "start executor did not terminate" }
+            }
+        }
+    }
+
+    @Test
     fun confirmedStopWhileCallbackIsPausedOnAnotherThreadRemainsStopping() {
         val database = temporaryFolder.root.toPath().resolve("stop-during-paused-callback.sqlite")
         DurableCommandProbe(database).use { store ->

@@ -56,8 +56,17 @@ class StreamSession(private val store: SessionSafetyState? = null) {
         } catch (_: Exception) {
             return StartResult.SafetyStateUnavailable
         }
-        connectingAssessment = assessedSnapshot
-        currentStatus = StreamStatus.Connecting
-        return StartResult.Accepted
+        return synchronized(this) {
+            when (currentStatus) {
+                StreamStatus.Connecting -> StartResult.AlreadyConnecting
+                StreamStatus.Live -> StartResult.AlreadyLive
+                StreamStatus.Stopping -> StartResult.PendingStop
+                StreamStatus.Stopped -> {
+                    connectingAssessment = assessedSnapshot
+                    currentStatus = StreamStatus.Connecting
+                    StartResult.Accepted
+                }
+            }
+        }
     }
 }

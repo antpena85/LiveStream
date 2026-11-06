@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-06T17:54:46.275Z" hostname="PENA-DESK" time="0.264">
+  <properties/>
+  <testcase name="simultaneousConfirmedStartsAcceptOnlyOneConnection" classname="livestream.feasibility.StreamSessionTest" time="0.262">
+    <failure message="com.google.common.truth.AssertionErrorWithFacts: missing (1)   : AlreadyConnecting&#10;unexpected (1): Accepted&#10;---&#10;expected      : [Accepted, AlreadyConnecting]&#10;but was       : [Accepted, Accepted]" type="com.google.common.truth.AssertionErrorWithFacts">missing (1)   : AlreadyConnecting
+unexpected (1): Accepted
+---
+expected      : [Accepted, AlreadyConnecting]
+but was       : [Accepted, Accepted]
+	at livestream.feasibility.StreamSessionTest.simultaneousConfirmedStartsAcceptOnlyOneConnection(StreamSessionTest.kt:43)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
