@@ -51,6 +51,19 @@ adoption and complete the release dependency/license review before release.
 No fixed time-box duration or test provider has been selected. Choose these with
 the owner when needed rather than treating a proposed value as confirmed.
 
+## Host build and device availability — 2026-11-06
+
+The offline `media assembleDebug` runner built the isolated diagnostic APK with
+the current shared session source (35 tasks: five executed, 30 up to date).
+The Kotlin compiler reported an existing listener-parameter-name warning. This
+is a source/build compatibility check only: the activity does not use the shared
+session as an Android publisher and has no Android durable safety-state adapter.
+
+The ADB inventory runner returned an empty device list. Before any physical
+deployment or validation, connect and authorize the intended streaming phone and
+repeat the visibility check. No device, capture, network publisher, or received
+broadcast was exercised in this checkpoint; the prototype gate remains open.
+
 ## Local scoreboard checkpoint — 2026-11-01
 
 The owner reviewed a local Pixel 10 Pro XL recording and reported that both
