@@ -13,6 +13,35 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun callbackRejectsOldEpochAfterFitFailureAndResetBetweenReads() {
+        val database = temporaryFolder.root.toPath().resolve("callback-reset-between-reads.sqlite")
+        DurableCommandProbe(database).use { store ->
+            assertThat(store.reset(true, 0)).isEqualTo(ProbeSnapshot(0, 0, 1))
+            var checkpointReached = false
+            val checkpoint = object : SessionSafetyState by store {
+                override fun pendingStopSessions(): Set<String> {
+                    val before = store.pendingStopSessions()
+                    checkpointReached = true
+                    assertThat(store.recordPoint("fit-point", 1, "session-a"))
+                        .isEqualTo(ProbeSnapshot(1, 1, 1))
+                    assertThat(store.reset(true, 1)).isEqualTo(ProbeSnapshot(0, 0, 2))
+                    return before
+                }
+            }
+            val session = StreamSession(checkpoint)
+            assertThat(session.requestStart(true, true, true, true, ProbeSnapshot(0, 0, 1)))
+                .isEqualTo(StartResult.Accepted)
+            session.connectionSucceeded()
+            assertThat(checkpointReached).isTrue()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(0, 0, 2))
+            assertThat(reopened.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun startDoesNotAcceptSnapshotAndMarkersFromDifferentCommittedStates() {
         val database = temporaryFolder.root.toPath().resolve("mixed-safety-view.sqlite")
         DurableCommandProbe(database).use { store ->

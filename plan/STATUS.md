@@ -90,7 +90,8 @@ Recommended next work:
    host verification. Automatic delivery and recovery remain open. A mixed-view
    Start has a narrow host red/green result using a combined SQLite query; the
    connection callback still uses separate reads. A sequential independent-store
-   visibility check passed on its first run; next test callback consistency and
+   visibility check passed on its first run; a point/reset between callback reads
+   also stayed Stopping on its first run. Next test callback consistency and
    independent-writer interleavings without treating scheduling timeouts as
    behavioral failures. Do not substitute a permissive fit or
    pending-stop stub. A consistent read alone cannot make publisher start atomic

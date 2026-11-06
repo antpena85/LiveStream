@@ -286,3 +286,22 @@ passed with unchanged store logic. A forced offline JVM run passed 93 tests with
 no failures, errors or skips. The local-only media build succeeded with 35 tasks
 up to date; it does not exercise the host store. No concurrent interleaving,
 Android persistence, or callback behavior is established by this test.
+
+## Callback after a point and reset between separate reads
+
+For a deterministic T01/T02 check, initialize the real store with a confirmed
+reset to `0/0/1` and start with that exact assessment. At the callback's marker
+read, capture the empty committed set, then commit a fit-failure point and a
+confirmed reset to `0/0/2` before returning the captured set. The callback's
+subsequent snapshot has the same points and revision but a different epoch. It
+must remain Stopping, not Live; verify the pending marker and epoch after reopen.
+The test fixture coordinates the real store rather than replacing its results.
+This interleaving does not establish atomic reads, all races, actual stop
+dispatch, or a policy for using reset to resolve a pending stop. The reset does
+not clear the pending marker.
+
+The [first-run result](../evidence/m2/callback-reset-between-reads-first-run.xml)
+passed with unchanged session and store logic. The forced offline JVM suite passed
+94 tests without failures, errors or skips. The local-only media build succeeded
+with all 35 tasks up to date and does not exercise this host test or SQLite store.
+The callback still performs separate reads; this example does not close that gap.
