@@ -321,3 +321,18 @@ passed with unchanged store logic. The forced offline JVM suite passed 95 tests,
 zero failures, errors or skips. The local-only Android media build succeeded with
 all 35 tasks up to date and does not exercise the host store. No Android device
 or publisher was used.
+
+## Independent-store fit failure before callback — 2026-11-06
+
+At the confirmed T01/T02 boundaries, a second real SQLite probe instance commits
+a point and pending-stop marker after Start is accepted and before the connection
+callback. The session remains Stopping, and reopening the store confirms the
+committed snapshot and marker. The [first-run report](../evidence/m2/callback-independent-fit-first-run.xml)
+passed with the existing implementation; this is verification, not a red/green
+fix. The full offline JVM suite was rerun successfully.
+
+This is a sequential cross-instance check, not a commit between the callback's
+separate reads or during a SELECT. It does not establish automatic notification,
+thread safety, Android persistence, real publisher stop dispatch, or received
+stream behavior. Callback consistency and independent-writer interleavings remain
+open.
