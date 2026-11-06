@@ -18,6 +18,22 @@ class DurableCommandProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun safetyViewSeesPointAndMarkerCommittedByAnotherStore() {
+        val database = temporaryFolder.root.toPath().resolve("independent-safety-view.sqlite")
+        DurableCommandProbe(database).use { reader ->
+            DurableCommandProbe(database).use { writer ->
+                assertThat(reader.safetyView()).isEqualTo(ProbeSafetyView(ProbeSnapshot(7, 0, 0), emptySet()))
+                assertThat(writer.recordPoint("fit-point", 0, "session-a")).isEqualTo(ProbeSnapshot(8, 1, 0))
+                assertThat(reader.safetyView()).isEqualTo(ProbeSafetyView(ProbeSnapshot(8, 1, 0), setOf("session-a")))
+                assertThat(writer.recordPoint("fit-point", 0)).isEqualTo(ProbeSnapshot(8, 1, 0))
+            }
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.safetyView()).isEqualTo(ProbeSafetyView(ProbeSnapshot(8, 1, 0), setOf("session-a")))
+        }
+    }
+
+    @Test
     fun pendingStopsDuringAbortedPointShowLastCommittedMarkers() {
         val database = temporaryFolder.root.toPath().resolve("stops-before-rollback.sqlite")
         lateinit var store: DurableCommandProbe

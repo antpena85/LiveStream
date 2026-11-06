@@ -269,3 +269,20 @@ Independent writers during a combined query, concurrent access to the shared
 reader, error handling under contention, Android persistence, automatic safety
 notifications and external publisher race/termination remain unverified. A
 consistent view is not a guarantee that the view stays current after the read.
+
+## Combined view across separate store instances
+
+Use two real probe instances on the same fresh SQLite file. Through the reader's
+public safety view, observe the original `7/0/0` and no stops. Commit a point
+with a simulated fit failure through the other instance. A subsequent reader
+view must contain `8/1/0` and the marker together; retry the point and verify
+the same view after reopening. This is a sequential cross-connection check, not a
+controlled commit during a SELECT or proof of concurrent reader thread safety.
+It uses the existing T01 public state/result boundary and the proposed shared
+safety-view seam. A first-run pass is verification, not a behavioral red/green.
+
+The [first-run result](../evidence/m2/safety-view-independent-store-first-run.xml)
+passed with unchanged store logic. A forced offline JVM run passed 93 tests with
+no failures, errors or skips. The local-only media build succeeded with 35 tasks
+up to date; it does not exercise the host store. No concurrent interleaving,
+Android persistence, or callback behavior is established by this test.
