@@ -336,3 +336,17 @@ separate reads or during a SELECT. It does not establish automatic notification,
 thread safety, Android persistence, real publisher stop dispatch, or received
 stream behavior. Callback consistency and independent-writer interleavings remain
 open.
+
+## Independent fit failure between callback reads — 2026-11-06
+
+At T01/T02, a deterministic checkpoint returns the old empty marker set after
+another real SQLite store instance commits a fit-failure point and marker. The
+callback then reads the newer snapshot and enters Stopping; reopening confirms
+the point and marker. The [first-run report](../evidence/m2/callback-independent-between-reads-first-run.xml)
+passed without a production change, and the forced offline JVM suite passed.
+This is verification, not a red/green fix.
+
+The result covers this particular sequentially coordinated interleaving only.
+The callback still uses separate reads; this does not establish a consistent
+view, concurrent SELECT behavior, automatic notifications, Android persistence,
+or actual publisher termination.

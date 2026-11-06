@@ -13,6 +13,35 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun callbackStopsWhenIndependentFitFailureCommitsBetweenItsReads() {
+        val database = temporaryFolder.root.toPath().resolve("callback-independent-between-reads.sqlite")
+        DurableCommandProbe(database).use { reader ->
+            DurableCommandProbe(database).use { writer ->
+                var checkpointReached = false
+                val checkpoint = object : SessionSafetyState by reader {
+                    override fun pendingStopSessions(): Set<String> {
+                        val previous = reader.pendingStopSessions()
+                        checkpointReached = true
+                        assertThat(writer.recordPoint("fit-point", 0, "session-a"))
+                            .isEqualTo(ProbeSnapshot(8, 1, 0))
+                        return previous
+                    }
+                }
+                val session = StreamSession(checkpoint)
+                assertThat(session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0)))
+                    .isEqualTo(StartResult.Accepted)
+                session.connectionSucceeded()
+                assertThat(checkpointReached).isTrue()
+                assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            }
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.safetyView())
+                .isEqualTo(ProbeSafetyView(ProbeSnapshot(8, 1, 0), setOf("session-a")))
+        }
+    }
+
+    @Test
     fun callbackStopsWhenIndependentStoreCommitsFitFailureDuringConnection() {
         val database = temporaryFolder.root.toPath().resolve("callback-independent-fit-failure.sqlite")
         DurableCommandProbe(database).use { reader ->
