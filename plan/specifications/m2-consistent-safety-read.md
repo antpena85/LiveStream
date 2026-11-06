@@ -180,3 +180,21 @@ deliver notifications. Lost or late notifications, missed pending stops during
 connection, unrelated markers, repeated notifications, stop failures, real
 termination and synchronized callbacks remain unverified. A safety recheck may
 request a stop but must not clear the durable marker or assert that output stopped.
+
+## Post-Live notification: stop-dispatch failure and retry
+
+At confirmed T01/T02, start a simulated publisher and commit a point with a
+pending-stop marker for that session in the real temporary store. When explicit
+safety notification dispatches a stop that throws, T02 must stay Stopping and
+retain the accepted point and marker. After the simulated stop boundary recovers,
+a deliberate second notification must request stop for the same session; neither
+attempt proves termination or clears the marker. Verify state again after reopen.
+This covers a sequential failure/retry only, not automatic notification delivery,
+concurrent notifications, process death or provider termination.
+
+The [targeted first-run report](../evidence/m2/live-fit-stop-failure-first-run.xml)
+passed with unchanged implementation, so this is verification, not a red/green
+cycle. The forced offline JVM suite passed 89 tests with no failures, errors or
+skips; the local-only media build succeeded with all 35 tasks up to date and does
+not exercise the host publisher adapter or store. A stop request remains distinct
+from a verified stop, and the test does not prove safe delivery of notifications.

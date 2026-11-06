@@ -84,8 +84,9 @@ Recommended next work:
    Two narrow T01 rollback-read slices are red/green; a synchronous in-flight
    Start/callback and rollback-callback verifications passed on their first runs.
    An explicitly delivered post-Live fit-failure notification has a narrow
-   host red/green result; automatic delivery and recovery remain open. Next test
-   notification failures and design the combined
+   host red/green result; simulated stop-dispatch failure/retry passed on its first
+   run. Automatic delivery and recovery remain open. Next investigate notification
+   during connection and design the combined
    committed snapshot/marker view and T02 interleaving without treating scheduling
    timeouts as behavioral failures. Do not substitute a permissive fit or
    pending-stop stub. A consistent read alone cannot make publisher start atomic

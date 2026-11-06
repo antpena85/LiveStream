@@ -10,6 +10,34 @@ class PublisherSessionProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun failedSafetyStopCanBeRetriedWithoutClearingDurableMarker() {
+        val database = temporaryFolder.root.toPath().resolve("live-fit-stop-failure.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val publisher = HeldPublisher(failStop = true)
+            val session = PublisherSessionProbe(StreamSession(store), publisher)
+            assertThat(session.start("session-a", store.snapshot(), confirmed = true)).isEqualTo(StartResult.Accepted)
+            publisher.releaseConnection()
+            assertThat(session.status()).isEqualTo(StreamStatus.Live)
+            assertThat(store.recordPoint("fit-point", 0, "session-a")).isEqualTo(ProbeSnapshot(8, 1, 0))
+
+            assertThrows(IllegalStateException::class.java) { session.safetyChanged() }
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+            publisher.failStop = false
+            session.safetyChanged()
+
+            assertThat(publisher.stopRequests).containsExactly("session-a", "session-a").inOrder()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            assertThat(store.recordPoint("fit-point", 0)).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(reopened.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun committedFitFailureWhileLiveRequestsStopForAffectedSession() {
         val database = temporaryFolder.root.toPath().resolve("live-fit-failure.sqlite")
         DurableCommandProbe(database).use { store ->
