@@ -111,3 +111,22 @@ the shared read connection during concurrent callers is not established as safe.
 The next experiment must address those conditions without mocking the real store
 or counting an infrastructure timeout as a behavioral failure. No device,
 destination, real publisher or G2 evidence was added.
+
+## In-flight write and later callback: next T01/T02 verification
+
+Use the real store's existing pre-commit fault checkpoint synchronously: begin a
+point with simulated fit failure, request a confirmed session Start using the
+previously committed fit assessment from within the checkpoint, then commit and
+deliver a simulated connection callback. Start may use the old committed view;
+after the commit, the callback must not report Live and the accepted point and
+pending marker must remain durable after reopen. This deliberately does not
+claim the two reads are atomic or that a real publisher cannot transmit before
+the callback. A first-run pass is verification, not a new red/green cycle.
+
+The [first-run report](../evidence/m2/safety-start-inflight-first-run.xml) passed
+with unchanged session and store code. The point and marker survived reopening,
+and a repeated command returned its original receipt. The forced offline full JVM
+suite passed 86 tests with no failures, errors or skips. The local-only media APK
+build succeeded with all 35 tasks up to date; it does not use the host store.
+This is synchronous reentrant observation, not thread-safety, an atomic pair, a
+publisher effect, or Android execution. The combined-read problem remains open.

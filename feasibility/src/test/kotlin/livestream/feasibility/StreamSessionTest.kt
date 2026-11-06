@@ -12,6 +12,27 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun startDuringUncommittedFitFailureCannotBecomeLiveAfterCommit() {
+        val database = temporaryFolder.root.toPath().resolve("start-during-fit-write.sqlite")
+        lateinit var session: StreamSession
+        var startResult: StartResult? = null
+        DurableCommandProbe(database, beforeCommit = {
+            startResult = session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0))
+        }).use { store ->
+            session = StreamSession(store)
+            assertThat(store.recordPoint("fit-point", 0, "session-a")).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(startResult).isEqualTo(StartResult.Accepted)
+            session.connectionSucceeded()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(8, 1, 0))
+            assertThat(reopened.pendingStopSessions()).containsExactly("session-a")
+            assertThat(reopened.recordPoint("fit-point", 0)).isEqualTo(ProbeSnapshot(8, 1, 0))
+        }
+    }
+
+    @Test
     fun resetDuringConnectionPreventsOldMatchAssessmentFromBecomingLive() {
         val database = temporaryFolder.root.toPath().resolve("reset-during-connect.sqlite")
         DurableCommandProbe(database).use { store ->

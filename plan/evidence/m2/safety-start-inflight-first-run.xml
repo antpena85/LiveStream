@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-06T00:29:06.911Z" hostname="PENA-DESK" time="0.229">
+  <properties/>
+  <testcase name="startDuringUncommittedFitFailureCannotBecomeLiveAfterCommit" classname="livestream.feasibility.StreamSessionTest" time="0.227"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
