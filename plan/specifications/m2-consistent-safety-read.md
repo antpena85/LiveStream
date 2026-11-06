@@ -414,3 +414,24 @@ This synchronous, reentrant experiment does not validate cross-thread ordering,
 publisher idempotence, automatic notification, Android integration, or actual
 publisher termination. Repeated simulated requests do not prove that a real
 publisher has stopped. No device or external publisher was exercised.
+
+## Explicit safety notification during Start — 2026-11-06
+
+At T01/T02, the real store supplies a previously committed safety view; before
+that view returns, a fit-failure point and marker commit and an explicit safety
+notification is delivered to the stopped session. The [red report](../evidence/m2/start-safety-notification-red.xml)
+shows that the old session accepted Start using the stale view; the
+[pre-fix source](../evidence/m2/start-safety-notification-red-source.txt) is
+retained. The invocation timed out after producing that behavioral report; the
+report itself contains the failed assertion, not a scheduling-timeout assertion.
+
+The probe now invalidates an in-flight Start when an explicit notification is
+observed during its safety read, conservatively returning SafetyStateUnavailable.
+The [green report](../evidence/m2/start-safety-notification-green.xml) passed,
+as did the forced offline JVM suite and offline local media APK build. The APK
+build checks source compatibility only and still has no Android safety adapter.
+
+This synchronous experiment does not establish automatic delivery, safety for
+unnotified commits or notifications arriving after admission, session-wide
+thread safety, consistent callback reads, publisher termination, or received
+output. No device or external publisher was exercised.

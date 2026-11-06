@@ -16,6 +16,33 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun safetyNotificationDuringStartPreventsAdmissionFromStaleView() {
+        val database = temporaryFolder.root.toPath().resolve("notification-during-start.sqlite")
+        DurableCommandProbe(database).use { store ->
+            lateinit var session: StreamSession
+            var checkpointReached = false
+            val checkpoint = object : SessionSafetyState by store {
+                override fun safetyView(): ProbeSafetyView {
+                    val before = store.safetyView()
+                    assertThat(store.recordPoint("fit-point", 0, "session-a"))
+                        .isEqualTo(ProbeSnapshot(8, 1, 0))
+                    checkpointReached = true
+                    session.safetyChanged()
+                    return before
+                }
+            }
+            session = StreamSession(checkpoint)
+
+            val result = session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0))
+
+            assertThat(checkpointReached).isTrue()
+            assertThat(result).isNotEqualTo(StartResult.Accepted)
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopped)
+            assertThat(store.pendingStopSessions()).containsExactly("session-a")
+        }
+    }
+
+    @Test
     fun simultaneousConfirmedStartsAcceptOnlyOneConnection() {
         val database = temporaryFolder.root.toPath().resolve("simultaneous-starts.sqlite")
         DurableCommandProbe(database).use { store ->

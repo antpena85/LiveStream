@@ -7,10 +7,12 @@ enum class StreamStatus { Stopped, Connecting, Live, Stopping }
 class StreamSession(private val store: SessionSafetyState? = null) {
     private var currentStatus = StreamStatus.Stopped
     private var connectingAssessment: ProbeSnapshot? = null
+    private var safetyGeneration = 0L
 
     fun status(): StreamStatus = currentStatus
 
     fun safetyChanged() {
+        synchronized(this) { safetyGeneration++ }
         if (currentStatus == StreamStatus.Live || currentStatus == StreamStatus.Connecting) {
             val requiresStop = try {
                 store == null || store.pendingStopSessions().isNotEmpty()
@@ -47,6 +49,7 @@ class StreamSession(private val store: SessionSafetyState? = null) {
         if (currentStatus == StreamStatus.Stopping) return StartResult.PendingStop
         if (!cameraPermission) return StartResult.CameraPermissionRequired
         if (!microphonePermission) return StartResult.MicrophonePermissionRequired
+        val startingGeneration = synchronized(this) { safetyGeneration }
         try {
             val view = store?.safetyView()
             if (view != null && view.pendingStops.isNotEmpty()) return StartResult.PendingStop
@@ -62,6 +65,7 @@ class StreamSession(private val store: SessionSafetyState? = null) {
                 StreamStatus.Live -> StartResult.AlreadyLive
                 StreamStatus.Stopping -> StartResult.PendingStop
                 StreamStatus.Stopped -> {
+                    if (safetyGeneration != startingGeneration) return@synchronized StartResult.SafetyStateUnavailable
                     connectingAssessment = assessedSnapshot
                     currentStatus = StreamStatus.Connecting
                     StartResult.Accepted
