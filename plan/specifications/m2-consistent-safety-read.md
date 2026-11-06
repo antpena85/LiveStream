@@ -366,3 +366,19 @@ This covers synchronous reentrancy only. The check and assignment are not an
 atomic cross-thread operation; concurrent callbacks, consistent callback reads,
 automatic safety notification, Android integration, and actual publisher stopping
 remain unverified. No device or external publisher was exercised.
+
+## Confirmed stop while callback is paused on another thread — 2026-11-06
+
+At T02, a callback on a worker thread pauses at a real-store safety read. The
+test thread requests confirmed Stop and observes Stopping before releasing the
+callback; after it finishes the session remains Stopping. The latch provides
+the ordering and happens-before relationship for this experiment. The
+[first-run report](../evidence/m2/callback-paused-cross-thread-stop-first-run.xml)
+passed without implementation changes; the forced offline JVM suite passed.
+This is verification, not a red/green fix. A timeout indicates an incomplete
+or failed test setup, not proof of a behavioral safety violation.
+
+This controlled ordering does not test Stop between the callback's final status
+check and assignment. Those operations remain unsynchronized, so this result
+does not establish general thread safety, consistent callback reads, Android
+integration, or actual publisher termination. No device was exercised.

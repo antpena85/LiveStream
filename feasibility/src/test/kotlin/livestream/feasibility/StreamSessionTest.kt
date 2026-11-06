@@ -7,10 +7,47 @@ import org.junit.Assert.assertThrows
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @RunWith(JUnit4::class)
 class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
+
+    @Test
+    fun confirmedStopWhileCallbackIsPausedOnAnotherThreadRemainsStopping() {
+        val database = temporaryFolder.root.toPath().resolve("stop-during-paused-callback.sqlite")
+        DurableCommandProbe(database).use { store ->
+            val entered = CountDownLatch(1)
+            val proceed = CountDownLatch(1)
+            val checkpoint = object : SessionSafetyState by store {
+                override fun pendingStopSessions(): Set<String> {
+                    val pending = store.pendingStopSessions()
+                    entered.countDown()
+                    check(proceed.await(10, TimeUnit.SECONDS)) { "callback checkpoint timed out" }
+                    return pending
+                }
+            }
+            val session = StreamSession(checkpoint)
+            assertThat(session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0)))
+                .isEqualTo(StartResult.Accepted)
+            val executor = Executors.newSingleThreadExecutor()
+            try {
+                val callback = executor.submit { session.connectionSucceeded() }
+                check(entered.await(10, TimeUnit.SECONDS)) { "callback did not reach checkpoint" }
+                session.requestStop(true)
+                assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+                proceed.countDown()
+                callback.get(10, TimeUnit.SECONDS)
+                assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+            } finally {
+                proceed.countDown()
+                executor.shutdownNow()
+                check(executor.awaitTermination(10, TimeUnit.SECONDS)) { "callback executor did not terminate" }
+            }
+        }
+    }
 
     @Test
     fun confirmedStopDuringConnectionCallbackIsNotOverwrittenByLive() {
