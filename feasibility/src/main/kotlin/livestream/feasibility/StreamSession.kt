@@ -23,13 +23,14 @@ class StreamSession(private val store: SessionSafetyState? = null) {
 
     fun connectionSucceeded() {
         if (currentStatus == StreamStatus.Connecting) {
-            currentStatus = try {
+            val result = try {
                 if (store == null || store.pendingStopSessions().isNotEmpty() || store.snapshot() != connectingAssessment) {
                     StreamStatus.Stopping
                 } else StreamStatus.Live
             } catch (_: Exception) {
                 StreamStatus.Stopping
             }
+            if (currentStatus == StreamStatus.Connecting) currentStatus = result
         }
     }
 

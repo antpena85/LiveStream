@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.StreamSessionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-06T17:40:55.709Z" hostname="PENA-DESK" time="0.205">
+  <properties/>
+  <testcase name="confirmedStopDuringConnectionCallbackIsNotOverwrittenByLive" classname="livestream.feasibility.StreamSessionTest" time="0.203"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

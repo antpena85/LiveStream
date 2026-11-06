@@ -13,6 +13,29 @@ class StreamSessionTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun confirmedStopDuringConnectionCallbackIsNotOverwrittenByLive() {
+        val database = temporaryFolder.root.toPath().resolve("stop-during-callback.sqlite")
+        DurableCommandProbe(database).use { store ->
+            lateinit var session: StreamSession
+            var checkpointReached = false
+            val checkpoint = object : SessionSafetyState by store {
+                override fun pendingStopSessions(): Set<String> {
+                    val pending = store.pendingStopSessions()
+                    checkpointReached = true
+                    session.requestStop(true)
+                    return pending
+                }
+            }
+            session = StreamSession(checkpoint)
+            assertThat(session.requestStart(true, true, true, true, ProbeSnapshot(7, 0, 0)))
+                .isEqualTo(StartResult.Accepted)
+            session.connectionSucceeded()
+            assertThat(checkpointReached).isTrue()
+            assertThat(session.status()).isEqualTo(StreamStatus.Stopping)
+        }
+    }
+
+    @Test
     fun callbackStopsWhenIndependentFitFailureCommitsBetweenItsReads() {
         val database = temporaryFolder.root.toPath().resolve("callback-independent-between-reads.sqlite")
         DurableCommandProbe(database).use { reader ->

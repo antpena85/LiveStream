@@ -350,3 +350,19 @@ The result covers this particular sequentially coordinated interleaving only.
 The callback still uses separate reads; this does not establish a consistent
 view, concurrent SELECT behavior, automatic notifications, Android persistence,
 or actual publisher termination.
+
+## Confirmed stop during callback safety read — 2026-11-06
+
+At T02, a deterministic reentrant checkpoint requests confirmed Stop while the
+connection callback reads the real store. The callback must preserve Stopping
+instead of overwriting it with Live. The [red report](../evidence/m2/callback-confirmed-stop-red.xml)
+shows the old implementation incorrectly returned Live; the
+[pre-fix source](../evidence/m2/callback-confirmed-stop-red-source.txt) is retained.
+The [green report](../evidence/m2/callback-confirmed-stop-green.xml) passes after
+the callback checks that the session is still Connecting before applying its
+result. The full forced offline JVM suite also passed.
+
+This covers synchronous reentrancy only. The check and assignment are not an
+atomic cross-thread operation; concurrent callbacks, consistent callback reads,
+automatic safety notification, Android integration, and actual publisher stopping
+remain unverified. No device or external publisher was exercised.
