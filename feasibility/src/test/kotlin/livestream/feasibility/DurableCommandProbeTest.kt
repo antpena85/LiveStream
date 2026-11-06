@@ -18,6 +18,46 @@ class DurableCommandProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun pendingStopsDuringAbortedPointShowLastCommittedMarkers() {
+        val database = temporaryFolder.root.toPath().resolve("stops-before-rollback.sqlite")
+        lateinit var store: DurableCommandProbe
+        var observed: Set<String>? = null
+        store = DurableCommandProbe(database) {
+            observed = store.pendingStopSessions()
+            throw IllegalStateException("simulated interruption before commit")
+        }
+        store.use {
+            assertThrows(IllegalStateException::class.java) {
+                store.recordPoint("aborted", expectedEpoch = 0, fitFailureSession = "session-a")
+            }
+            assertThat(observed).isEmpty()
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.snapshot()).isEqualTo(ProbeSnapshot(7, 0, 0))
+            assertThat(reopened.pendingStopSessions()).isEmpty()
+        }
+    }
+
+    @Test
+    fun snapshotDuringAbortedPointShowsLastCommittedState() {
+        val database = temporaryFolder.root.toPath().resolve("snapshot-before-rollback.sqlite")
+        lateinit var store: DurableCommandProbe
+        var observed: ProbeSnapshot? = null
+        store = DurableCommandProbe(database) {
+            observed = store.snapshot()
+            throw IllegalStateException("simulated interruption before commit")
+        }
+        store.use {
+            assertThrows(IllegalStateException::class.java) {
+                store.recordPoint("aborted", expectedEpoch = 0, fitFailureSession = "session-a")
+            }
+            assertThat(observed).isEqualTo(ProbeSnapshot(7, 0, 0))
+            assertThat(store.snapshot()).isEqualTo(ProbeSnapshot(7, 0, 0))
+            assertThat(store.pendingStopSessions()).isEmpty()
+        }
+    }
+
+    @Test
     fun distinctUnresolvedStopsSurviveScoringAndReopenUntilIndividuallyConfirmed() {
         val database = temporaryFolder.root.toPath().resolve("multiple-stops.sqlite")
         DurableCommandProbe(database).use { probe ->

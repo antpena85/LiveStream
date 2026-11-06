@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="livestream.feasibility.DurableCommandProbeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2026-11-06T00:18:10.028Z" hostname="PENA-DESK" time="0.255">
+  <properties/>
+  <testcase name="snapshotDuringAbortedPointShowsLastCommittedState" classname="livestream.feasibility.DurableCommandProbeTest" time="0.253">
+    <failure message="com.google.common.truth.ComparisonFailureWithFacts: expected: ProbeSnapshot(points=7, revision=0, epoch=0)&#10;but was : ProbeSnapshot(points=8, revision=1, epoch=0)" type="com.google.common.truth.ComparisonFailureWithFacts">expected: ProbeSnapshot(points=7, revision=0, epoch=0)
+but was : ProbeSnapshot(points=8, revision=1, epoch=0)
+	at livestream.feasibility.DurableCommandProbeTest.snapshotDuringAbortedPointShowsLastCommittedState(DurableCommandProbeTest.kt:33)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

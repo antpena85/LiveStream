@@ -1,6 +1,7 @@
 package livestream.feasibility
 
 import java.nio.file.Path
+import java.sql.Connection
 import java.sql.DriverManager
 
 class StaleProbeMatch(val current: ProbeSnapshot) : IllegalStateException("Command targets an old match epoch")
@@ -22,7 +23,11 @@ class DurableCommandProbe(
         }
     }
 
-    override fun snapshot(): ProbeSnapshot = connection.createStatement().use { statement ->
+    private val committedReader = DriverManager.getConnection("jdbc:sqlite:${database.toAbsolutePath()}")
+
+    override fun snapshot(): ProbeSnapshot = readSnapshot(committedReader)
+
+    private fun readSnapshot(source: Connection): ProbeSnapshot = source.createStatement().use { statement ->
         statement.executeQuery("SELECT points, revision, epoch FROM state WHERE id=1").use { rows ->
             check(rows.next())
             ProbeSnapshot(rows.getInt(1), rows.getLong(2), rows.getLong(3))
@@ -34,13 +39,13 @@ class DurableCommandProbe(
         if (!confirmed) return snapshot()
         connection.autoCommit = false
         try {
-            val current = snapshot()
+            val current = readSnapshot(connection)
             if (current.epoch != expectedEpoch) throw StaleProbeMatch(current)
             connection.prepareStatement("UPDATE state SET points=0, revision=0, epoch=? WHERE id=1").use { statement ->
                 statement.setLong(1, Math.incrementExact(current.epoch))
                 statement.executeUpdate()
             }
-            val reset = snapshot()
+            val reset = readSnapshot(connection)
             beforeCommit()
             connection.commit()
             return reset
@@ -60,7 +65,7 @@ class DurableCommandProbe(
     }
 
     @Synchronized
-    override fun pendingStopSessions(): Set<String> = connection.createStatement().use { statement ->
+    override fun pendingStopSessions(): Set<String> = committedReader.createStatement().use { statement ->
         statement.executeQuery("SELECT session FROM pending_stops").use { rows ->
             buildSet { while (rows.next()) add(rows.getString(1)) }
         }
@@ -78,7 +83,7 @@ class DurableCommandProbe(
     fun recordPoint(commandId: String, expectedEpoch: Long, fitFailureSession: String? = null): ProbeSnapshot {
         connection.autoCommit = false
         try {
-            val current = snapshot()
+            val current = readSnapshot(connection)
             if (current.epoch != expectedEpoch) throw StaleProbeMatch(current)
             val existing = connection.prepareStatement("SELECT points, revision, epoch FROM receipts WHERE command_id=? AND epoch=?").use { statement ->
                 statement.setString(1, commandId)
@@ -94,7 +99,7 @@ class DurableCommandProbe(
             connection.createStatement().use { statement ->
                 statement.executeUpdate("UPDATE state SET points=points+1, revision=revision+1 WHERE id=1")
             }
-            val accepted = snapshot()
+            val accepted = readSnapshot(connection)
             connection.prepareStatement("INSERT INTO receipts VALUES (?, ?, ?, ?)").use { statement ->
                 statement.setString(1, commandId)
                 statement.setInt(2, accepted.points)
@@ -119,5 +124,11 @@ class DurableCommandProbe(
         }
     }
 
-    override fun close() = connection.close()
+    override fun close() {
+        try {
+            committedReader.close()
+        } finally {
+            connection.close()
+        }
+    }
 }
