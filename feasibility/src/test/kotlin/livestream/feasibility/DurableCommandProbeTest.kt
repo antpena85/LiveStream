@@ -18,6 +18,26 @@ class DurableCommandProbeTest {
     @get:Rule val temporaryFolder = TemporaryFolder()
 
     @Test
+    fun independentSafetyViewDuringAbortedWriteShowsCommittedState() {
+        val database = temporaryFolder.root.toPath().resolve("independent-view-aborted-write.sqlite")
+        DurableCommandProbe(database).use { reader ->
+            var observed: ProbeSafetyView? = null
+            DurableCommandProbe(database, beforeCommit = {
+                observed = reader.safetyView()
+                throw IllegalStateException("simulated interruption before commit")
+            }).use { writer ->
+                assertThrows(IllegalStateException::class.java) {
+                    writer.recordPoint("aborted", 0, "session-a")
+                }
+                assertThat(observed).isEqualTo(ProbeSafetyView(ProbeSnapshot(7, 0, 0), emptySet()))
+            }
+        }
+        DurableCommandProbe(database).use { reopened ->
+            assertThat(reopened.safetyView()).isEqualTo(ProbeSafetyView(ProbeSnapshot(7, 0, 0), emptySet()))
+        }
+    }
+
+    @Test
     fun safetyViewSeesPointAndMarkerCommittedByAnotherStore() {
         val database = temporaryFolder.root.toPath().resolve("independent-safety-view.sqlite")
         DurableCommandProbe(database).use { reader ->

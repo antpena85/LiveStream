@@ -305,3 +305,19 @@ passed with unchanged session and store logic. The forced offline JVM suite pass
 94 tests without failures, errors or skips. The local-only media build succeeded
 with all 35 tasks up to date and does not exercise this host test or SQLite store.
 The callback still performs separate reads; this example does not close that gap.
+
+## Combined view during independent aborted write
+
+Use two real store instances on one SQLite file. In the writer's existing
+pre-commit fault checkpoint, read the other instance's combined safety view after
+the writer has inserted a point and stop marker but before the transaction is
+aborted. The reader must return `7/0/0` and no markers, and reopening must return
+the same view. The checkpoint fixes ordering synchronously, not with sleeps; it
+does not test a commit during a SELECT or shared-reader thread safety. A
+first-run pass is verification, not a red/green fix.
+
+The [first-run report](../evidence/m2/safety-view-independent-abort-first-run.xml)
+passed with unchanged store logic. The forced offline JVM suite passed 95 tests,
+zero failures, errors or skips. The local-only Android media build succeeded with
+all 35 tasks up to date and does not exercise the host store. No Android device
+or publisher was used.
