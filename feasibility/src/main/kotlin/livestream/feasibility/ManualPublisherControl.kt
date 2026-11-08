@@ -1,0 +1,20 @@
+package livestream.feasibility
+
+/** Prototype boundary only; no network publisher or Android safety adapter is supplied. */
+class ManualPublisherControl(private val session: StreamSession, private val connect: (String) -> Unit) {
+    fun start(server: String, key: String, confirmed: Boolean, cameraPermission: Boolean,
+              microphonePermission: Boolean, fitReady: Boolean, assessed: ProbeSnapshot?): StartResult {
+        if (!confirmed) return StartResult.Cancelled
+        if (ManualDestination.validate(server, key) != DestinationResult.Ready) return StartResult.InvalidDestination
+        val result = session.requestStart(true, cameraPermission, microphonePermission, fitReady, assessed)
+        if (result == StartResult.Accepted) {
+            try {
+                ManualDestination.withEndpoint(server, key, connect)
+            } catch (failure: Exception) {
+                session.requestStop(true)
+                throw failure
+            }
+        }
+        return result
+    }
+}

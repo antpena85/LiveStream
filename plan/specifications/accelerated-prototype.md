@@ -72,6 +72,17 @@ from release. M2 completion, G2 and M3–M8 authorization are unchanged.
 No fixed time-box duration or test provider has been selected. Choose these with
 the owner when needed rather than treating a proposed value as confirmed.
 
+## Manual publisher control slice — 2026-11-08
+
+An isolated host control now passes a validated manual endpoint to a supplied
+publisher boundary only after the existing session accepts a confirmed start.
+The new T02/T03 behavioral test first failed with `Cancelled` instead of
+`Accepted`, then passed in the full offline JVM suite. This is an initial host
+slice, not Android integration: it has no real publisher, connection callback,
+stop dispatch, durable Android safety adapter, or credential-lifecycle proof.
+The existing session and fit concurrency limitations still apply. No broadcast
+or device validation is claimed; do not use this control for a trial.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with
