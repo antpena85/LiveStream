@@ -265,6 +265,17 @@ cleanup, and stop confirmation and callback provenance remain unverified. This
 experiment is not connected to the activity or the real adapter; full fit,
 safe actual integration, received output, the prototype gate and G2 remain open.
 
+### Partial-connect cleanup follow-up — 2026-11-08
+
+The diagnostic lifecycle now requires a stop operation and invokes it when the
+connect operation throws after a durable claim. At T02, a Pixel 8 Pro test first
+failed because cleanup was not called, then passed while the marker and Stopping
+state remained. Both Android APKs built; the JVM task was up to date. The test
+uses a double and a fictional sensitive exception; it does not verify network
+shutdown. The earlier statement that this path does not dispatch cleanup is
+superseded only for synchronous connect exceptions; async failure handling,
+session-scoped callbacks, real adapter wiring and confirmation remain open.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

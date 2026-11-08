@@ -16,9 +16,19 @@ class SafetyStoreInstrumentation : Instrumentation() {
         val result = Bundle()
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
+                var stopped = false
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                val accepted = lifecycle.claimAndConnect("partial-failure", store.snapshot(), stop = { stopped = true }) {
+                    throw IllegalStateException("fictional sensitive endpoint")
+                }
+                check(!accepted && stopped && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Partial connection was not stopped" }
+                check(store.pendingStopSessions() == setOf("partial-failure")) { "Unconfirmed stop lost its marker" }
+            }
+            AndroidSafetyStore(targetContext, name).use { it.confirmStopped("partial-failure") }
+            AndroidSafetyStore(targetContext, name).use { store ->
                 var connected = false
                 val lifecycle = DiagnosticPublisherLifecycle(store)
-                check(lifecycle.claimAndConnect("session-integrated", store.snapshot()) {
+                check(lifecycle.claimAndConnect("session-integrated", store.snapshot(), stop = {}) {
                     check(store.pendingStopSessions() == setOf("session-integrated")) { "Publisher called before durable claim" }
                     connected = true
                 }) { "Integrated claim was rejected" }

@@ -62,6 +62,8 @@ cannot claim while the previous marker remains. Its controllable diagnostic
 publisher boundary now invokes connect only after a durable claim and dispatches
 a confirmed stop without clearing the marker. It is not wired to the real
 publisher and does not reconcile a real shutdown.
+If the diagnostic connect operation throws, the lifecycle requests cleanup and
+retains the marker in `Stopping`; it does not expose the thrown message.
 
 Build with the media runner using `assembleDebug assembleDebugAndroidTest --offline`.
 After checking ADB authorization, install both debug APKs from

@@ -11,12 +11,13 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
         current = DiagnosticPublisherStatus.Stopping
         try { stop() } catch (_: Exception) { /* Keep the durable claim and stopping state. */ }
     }
-    @Synchronized fun claimAndConnect(sessionId: String, snapshot: ProbeSnapshot, connect: () -> Unit): Boolean {
+    @Synchronized fun claimAndConnect(sessionId: String, snapshot: ProbeSnapshot, stop: () -> Unit, connect: () -> Unit): Boolean {
         if (!claim(sessionId, snapshot)) return false
         try {
             connect()
         } catch (_: Exception) {
             current = DiagnosticPublisherStatus.Stopping
+            try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
             return false
         }
         return true
