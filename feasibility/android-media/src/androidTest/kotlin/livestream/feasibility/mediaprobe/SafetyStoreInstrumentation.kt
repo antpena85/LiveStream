@@ -16,6 +16,25 @@ class SafetyStoreInstrumentation : Instrumentation() {
         val result = Bundle()
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
+                var connected = false
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                check(lifecycle.claimAndConnect("session-integrated", store.snapshot()) {
+                    check(store.pendingStopSessions() == setOf("session-integrated")) { "Publisher called before durable claim" }
+                    connected = true
+                }) { "Integrated claim was rejected" }
+                check(connected) { "Publisher was not called" }
+                lifecycle.connected("session-integrated")
+                check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Matching callback did not transition to live" }
+                var stopped = false
+                lifecycle.requestStop("session-integrated", true) { stopped = true }
+                check(stopped && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Confirmed stop did not dispatch" }
+                check(store.pendingStopSessions() == setOf("session-integrated")) { "Stop request prematurely cleared marker" }
+            }
+            AndroidSafetyStore(targetContext, name).use { reopened ->
+                check(!DiagnosticPublisherLifecycle(reopened).claim("new-session", reopened.snapshot())) { "Prior publisher not reconciled" }
+                reopened.confirmStopped("session-integrated")
+            }
+            AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 check(lifecycle.claim("owned-session", store.snapshot())) { "Could not claim diagnostic session" }
                 lifecycle.connected("old-session")

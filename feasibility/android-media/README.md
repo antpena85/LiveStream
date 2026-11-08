@@ -58,8 +58,10 @@ in one transaction and leaves a durable marker before any publisher call.
 The activity and adapter do not yet use that claim; it does not confirm a stop.
 `DiagnosticPublisherLifecycle` separately demonstrates in-memory ownership of
 that claim: only the matching callback can mark it connected, and a new lifecycle
-cannot claim while the previous marker remains. It does not invoke a publisher,
-dispatch stops or reconcile a real shutdown.
+cannot claim while the previous marker remains. Its controllable diagnostic
+publisher boundary now invokes connect only after a durable claim and dispatches
+a confirmed stop without clearing the marker. It is not wired to the real
+publisher and does not reconcile a real shutdown.
 
 Build with the media runner using `assembleDebug assembleDebugAndroidTest --offline`.
 After checking ADB authorization, install both debug APKs from

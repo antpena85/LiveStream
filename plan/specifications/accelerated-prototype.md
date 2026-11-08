@@ -249,6 +249,22 @@ This is not wired to the activity or publisher adapter and does not dispatch a
 connection or stop, verify a callback's provenance, or confirm termination.
 Broadcast fit and the real trial gate remain unresolved.
 
+## Diagnostic claim and publisher dispatch — 2026-11-08
+
+The Android diagnostic lifecycle now dispatches a supplied connect operation
+only after a successful durable session claim and dispatches a confirmed stop
+without clearing that claim. At T01/T02, two Pixel 8 Pro instrumented cases
+first failed on unimplemented operations and then passed: the marker existed
+before the connection operation, and stop dispatch retained it. A fresh
+lifecycle remained blocked until a simulated independent confirmation. The
+Android APKs built offline; the JVM suite was up to date.
+
+The supplied operations were test doubles, not `GenericStream` or a network
+provider. Connection failure currently retains the marker but does not dispatch
+cleanup, and stop confirmation and callback provenance remain unverified. This
+experiment is not connected to the activity or the real adapter; full fit,
+safe actual integration, received output, the prototype gate and G2 remain open.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with
