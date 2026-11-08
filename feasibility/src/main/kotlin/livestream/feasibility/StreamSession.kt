@@ -1,6 +1,6 @@
 package livestream.feasibility
 
-enum class StartResult { Accepted, CameraPermissionRequired, MicrophonePermissionRequired, Cancelled, InvalidDestination, PendingStop, NumericFitUnresolved, SafetyStateUnavailable, AlreadyConnecting, AlreadyLive }
+enum class StartResult { Accepted, CameraPermissionRequired, MicrophonePermissionRequired, Cancelled, InvalidDestination, PublisherFailed, PendingStop, NumericFitUnresolved, SafetyStateUnavailable, AlreadyConnecting, AlreadyLive }
 enum class StreamStatus { Stopped, Connecting, Live, Stopping }
 
 /** Isolated M2 T02 probe; this does not control Android capture or publishing. */

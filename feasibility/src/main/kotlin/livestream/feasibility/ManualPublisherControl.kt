@@ -10,9 +10,9 @@ class ManualPublisherControl(private val session: StreamSession, private val con
         if (result == StartResult.Accepted) {
             try {
                 ManualDestination.withEndpoint(server, key, connect)
-            } catch (failure: Exception) {
+            } catch (_: Exception) {
                 session.requestStop(true)
-                throw failure
+                return StartResult.PublisherFailed
             }
         }
         return result

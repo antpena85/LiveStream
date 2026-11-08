@@ -14,6 +14,7 @@ abstract class CopySessionProbe : DefaultTask() {
     @get:InputFile abstract val destinationSource: RegularFileProperty
     @get:InputFile abstract val streamSessionSource: RegularFileProperty
     @get:InputFile abstract val safetyStateSource: RegularFileProperty
+    @get:InputFile abstract val manualPublisherSource: RegularFileProperty
     @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
 
     @TaskAction fun copySource() {
@@ -25,6 +26,7 @@ abstract class CopySessionProbe : DefaultTask() {
         destinationSource.get().asFile.copyTo(target.parentFile.resolve("ManualDestination.kt"), overwrite = true)
         streamSessionSource.get().asFile.copyTo(target.parentFile.resolve("StreamSession.kt"), overwrite = true)
         safetyStateSource.get().asFile.copyTo(target.parentFile.resolve("SessionSafetyState.kt"), overwrite = true)
+        manualPublisherSource.get().asFile.copyTo(target.parentFile.resolve("ManualPublisherControl.kt"), overwrite = true)
     }
 }
 
@@ -34,6 +36,7 @@ val copySessionProbe = tasks.register<CopySessionProbe>("copySessionProbe") {
     destinationSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/ManualDestination.kt"))
     streamSessionSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/StreamSession.kt"))
     safetyStateSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/SessionSafetyState.kt"))
+    manualPublisherSource.set(layout.projectDirectory.file("../src/main/kotlin/livestream/feasibility/ManualPublisherControl.kt"))
     outputDirectory.set(layout.buildDirectory.dir("generated/session-probe"))
 }
 
@@ -46,6 +49,7 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "m2-media-1"
+        testInstrumentationRunner = "livestream.feasibility.mediaprobe.SafetyStoreInstrumentation"
     }
     signingConfigs.getByName("debug") {
         storeFile = rootProject.file("../../.tools/m2/inventory-debug.keystore")

@@ -83,6 +83,34 @@ stop dispatch, durable Android safety adapter, or credential-lifecycle proof.
 The existing session and fit concurrency limitations still apply. No broadcast
 or device validation is claimed; do not use this control for a trial.
 
+The subsequent publisher-failure test initially failed because an exception
+escaped; it then passed with a sanitized `PublisherFailed` result and the
+session left `Stopping`, blocking another start. The full offline JVM suite
+passed 106 tests. The media APK compiled the shared control successfully
+(35 tasks: five executed), with the existing listener-parameter warning. This
+only prevents this boundary from propagating the caught exception: it does not
+prove library logging or credential safety, dispatch a stop, or integrate the
+control with the activity. The prototype gate remains open.
+
+## Android safety-store foundation — 2026-11-08
+
+An isolated Android SQLite store now implements the shared probe read interface.
+On an ADB-authorized Pixel 8 Pro (Android 17, API 37), an instrumented test first
+reported `UnsupportedOperationException` for the unimplemented point/stop write;
+after implementation it passed after closing and reopening the store. The point,
+revision and session-specific pending-stop marker were present together. A
+subsequent first-run integration assertion verified that `StreamSession` rejects
+Start while that reopened marker exists. The debug and test APKs built offline;
+the JVM suite was up to date and successful. The initial test-harness compilation
+and wrong APK-path attempts were setup errors, not behavioral red results.
+
+This is an isolated points-only store, not the activity's scoreboard or a live
+publisher. It does not yet provide full match values, fit measurement, command
+receipts, verified stop reconciliation, interruption testing or production
+concurrency guarantees. Neither device storage result proves received output or
+safe broadcasting. The next integration needs to connect real scoreboard state,
+fit decisions and publisher stop behavior without bypassing these gaps.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with
