@@ -142,6 +142,32 @@ or publisher stop dispatch. The test does not simulate process interruption or
 verify a broadcast. Continue the integrated fit and stop path before enabling a
 trial; this checkpoint does not complete M2 or pass G2.
 
+## Diagnostic overlay measurement — 2026-11-08
+
+The local-only Android overlay measures its diagnostic score text and expands
+its bitmap to a provisional maximum rather than silently clipping; an unfittable
+value causes local capture to stop with a notice after the score is saved. At
+the confirmed T05 rendering boundary, instrumented checks on a Pixel 8 Pro
+observed an unimplemented failure first, then passed for ordinary, wider and
+unfittable strings. Both APKs built offline. This checks renderer behavior,
+not actual readable encoded/received output or the activity's stop path.
+
+The score fixture omits required real-match fields. The chosen dimensions are
+experimental, not approved D10 safe bounds or a production fit assessment.
+The combined score/pending-stop operation remains disconnected from the local
+activity, there is no publisher stop dispatch, and publishing stays disabled.
+
+## Manual publisher failure cleanup — 2026-11-08
+
+At confirmed T02, the manual publisher control now requires a cleanup callback
+and invokes it when a connection attempt throws, while keeping the session in
+Stopping and returning a sanitized failure. A focused test first failed because
+cleanup was not requested, then passed; an earlier compilation error while
+updating the test constructor was a harness error, not the behavioral red.
+The complete host suite was run after the behavioral change. The Android project
+compiled the shared control; it is not yet wired to a network publisher.
+Cleanup dispatch alone is not stop confirmation and does not authorize a trial.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

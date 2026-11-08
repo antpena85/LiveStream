@@ -15,6 +15,12 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            val compact = DiagnosticOverlay.render("ABC  1  |  2  XYZ") ?: error("Normal score did not fit")
+            val wider = DiagnosticOverlay.render("ABC  12345678901234567890  |  2  XYZ") ?: error("Wider score did not fit")
+            check(wider.width > compact.width) { "Scoreboard did not widen" }
+            check(DiagnosticOverlay.render("ABC  ${"9".repeat(100)}  |  2  XYZ") == null) { "Unfittable score was accepted" }
+            compact.recycle()
+            wider.recycle()
             AndroidSafetyStore(targetContext, name).use {
                 it.scorePoint(left = true)
                 it.scorePoint(left = false)
@@ -32,7 +38,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 val start = StreamSession(reopened).requestStart(true, true, true, true, view.snapshot)
                 check(start == StartResult.PendingStop) { "Pending stop did not block Start" }
             }
-            result.putString("result", "PASS: updated team score and pending stop survive reopening; pending stop blocks Start")
+            result.putString("result", "PASS: diagnostic overlay fit and durable score/pending stop checks")
             finish(Activity.RESULT_OK, result)
         } catch (failure: Throwable) {
             result.putString("result", "FAIL: ${failure.javaClass.simpleName}: ${failure.message}")

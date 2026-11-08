@@ -214,9 +214,10 @@ class MediaActivity : Activity() {
             val audio = getSystemService(AudioManager::class.java)
             val builtin = audio.getDevices(AudioManager.GET_DEVICES_INPUTS).firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC }
             report.put("builtinPreferenceAccepted", builtin != null && microphone.setPreferredDevice(builtin))
+            val image = if (transitionTest) scoreboard() else dynamicScoreboard()
             val filter = ImageFilterRender().apply {
-                setImage(if (transitionTest) scoreboard() else dynamicScoreboard())
-                setScale(40f, 18f)
+                setImage(image)
+                setScale(image.width / 12f, 18f)
                 setPosition(5f, 5f)
             }
             scoreFilter = filter
@@ -248,7 +249,7 @@ class MediaActivity : Activity() {
             handler.postDelayed({ stopCapture(if (transitionTest) "twenty_second_timer" else "ten_second_timer") }, duration)
         } catch (failure: Exception) {
             report.put("setupError", failure.javaClass.simpleName)
-            if (capture != null) stopCapture("setup_error")
+            if (capture != null) stopCapture(if (failure is DiagnosticOverlayDoesNotFit) "score_does_not_fit" else "setup_error")
             else { runButton.isEnabled = true; transitionButton.isEnabled = true; saveReport(); status.text = "Test setup failed: ${failure.javaClass.simpleName}" }
         }
     }
@@ -289,7 +290,8 @@ class MediaActivity : Activity() {
                 runButton.isEnabled = true
                 transitionButton.isEnabled = true
                 val failed = listOf("setupError", "recordError", "stopError", "releaseError", "inspectionError", "controlError").any { report.has(it) }
-                status.text = if (failed) "Test did not complete successfully ($reason). Diagnostic metadata was saved."
+                status.text = if (reason == "score_does_not_fit") "Local capture stopped: full diagnostic score does not fit. Score was saved."
+                    else if (failed) "Test did not complete successfully ($reason). Diagnostic metadata was saved."
                     else "Test finished ($reason). Review the clip and decoded frame for complete scoreboard values and audible audio."
             }
         }.start()
@@ -346,20 +348,23 @@ class MediaActivity : Activity() {
         try {
             diagnosticScore.scorePoint(left)
             updateScoreFilter()
+        } catch (_: DiagnosticOverlayDoesNotFit) {
+            stopCapture("score_does_not_fit")
+            status.text = "Local capture stopped: full diagnostic score does not fit. Score was saved."
         } catch (_: Exception) {
             stopCapture("score_state_unavailable")
             status.text = "Local capture stopped: diagnostic score state unavailable."
         }
     }
 
-    private fun updateScoreFilter() { scoreFilter?.setImage(dynamicScoreboard()) }
-
-    private fun dynamicScoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
-        val canvas = Canvas(this)
-        canvas.drawColor(Color.argb(235, 0, 0, 0))
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 32f; typeface = Typeface.MONOSPACE }
-        canvas.drawText(diagnosticScore.scoreDisplay(), 16f, 72f, paint)
+    private fun updateScoreFilter() {
+        val image = dynamicScoreboard()
+        scoreFilter?.apply { setImage(image); setScale(image.width / 12f, 18f) }
     }
+
+    private class DiagnosticOverlayDoesNotFit : Exception()
+    private fun dynamicScoreboard(): Bitmap = DiagnosticOverlay.render(diagnosticScore.scoreDisplay())
+        ?: throw DiagnosticOverlayDoesNotFit()
 
     private fun scoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
         val canvas = Canvas(this)
