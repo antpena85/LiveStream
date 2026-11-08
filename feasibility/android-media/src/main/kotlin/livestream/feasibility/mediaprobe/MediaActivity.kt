@@ -49,6 +49,7 @@ class MediaActivity : Activity() {
     private var pendingCapture = false
     private var transitionTest = false
     private var capture: GenericStream? = null
+    private var publisher: AndroidPublisherAdapter? = null
     private var scoreFilter: ImageFilterRender? = null
     private lateinit var diagnosticScore: AndroidSafetyStore
     private var report = JSONObject()
@@ -85,6 +86,17 @@ class MediaActivity : Activity() {
         controls.addView(Button(this).apply {
             text = "Check test destination (no broadcast)"
             setOnClickListener { showDestinationCheck() }
+        })
+        controls.addView(Button(this).apply {
+            text = "Check diagnostic publisher readiness (no broadcast)"
+            setOnClickListener {
+                status.text = try {
+                    val adapter = publisher
+                    if (adapter == null) "Run the local camera/audio test first; publishing remains disabled."
+                    else if (adapter.diagnosticFit()) "Diagnostic text fits its provisional bitmap; broadcast fit and stop confirmation remain unverified. Publishing disabled."
+                    else "Diagnostic text does not fit; publishing disabled."
+                } catch (_: Exception) { "Diagnostic safety state unavailable; publishing disabled." }
+            }
         })
         val scoreControls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scoreControls.addView(Button(this).apply {
@@ -201,13 +213,14 @@ class MediaActivity : Activity() {
             val microphone = MicrophoneSource(MediaRecorder.AudioSource.MIC)
             val stream = GenericStream(this, object : ConnectChecker {
                 override fun onConnectionStarted(url: String) {}
-                override fun onConnectionSuccess() {}
-                override fun onConnectionFailed(reason: String) {}
-                override fun onDisconnect() {}
-                override fun onAuthError() {}
+                override fun onConnectionSuccess() { runOnUiThread { publisher?.connectionSucceeded() } }
+                override fun onConnectionFailed(reason: String) { runOnUiThread { publisher?.requestStop(true) } }
+                override fun onDisconnect() { runOnUiThread { publisher?.requestStop(true) } }
+                override fun onAuthError() { runOnUiThread { publisher?.requestStop(true) } }
                 override fun onAuthSuccess() {}
             }, camera, microphone)
             capture = stream
+            publisher = AndroidPublisherAdapter(diagnosticScore, stream)
             stream.forceCodecType(CodecUtil.CodecType.HARDWARE, CodecUtil.CodecType.SOFTWARE)
             check(stream.prepareVideo(1280, 720, 2_000_000, fps = 30, rotation = 0)) { "Video preparation failed" }
             check(stream.prepareAudio(48000, true, 128000)) { "Audio preparation failed" }
@@ -274,6 +287,7 @@ class MediaActivity : Activity() {
     private fun stopCapture(reason: String) {
         val stream = capture ?: return
         capture = null
+        publisher = null
         scoreFilter = null
         handler.removeCallbacksAndMessages(null)
         report.put("stopReason", reason).put("stoppedElapsedMs", SystemClock.elapsedRealtime())

@@ -23,6 +23,14 @@ are compiled here to check source compatibility, but the activity does not use
 them for publishing. The activity uses an isolated Android SQLite safety-store
 experiment for its local diagnostic scores, not for a publisher. Separate session reads do not
 establish atomicity or safe publishing.
+An `AndroidPublisherAdapter` now binds the shared manual control to the
+candidate `GenericStream` start/stop methods, but deliberately denies all
+starts because an assessed broadcast-fit and durable stop-recovery path are
+not yet integrated. During local capture the activity instantiates the adapter
+and forwards sanitized connection events, and offers a no-network diagnostic
+fit preflight. The activity exposes no publisher Start control. These callbacks
+are not proof of network integration or stop confirmation; it is not a working
+broadcast or a trial-ready build.
 [Built-in Kotlin guidance](https://developer.android.com/build/migrate-to-built-in-kotlin).
 
 ## Android safety-store experiment
@@ -39,6 +47,9 @@ and that the session blocks Start. The activity does not yet invoke this
 combined operation or assess fit. Its points-only
 fixture is not a complete match, and the experiment does not implement fit
 measurement, publisher stop/confirmation, receipt deduplication or recovery.
+The store also supports clearing a specific pending-stop marker after an
+independently confirmed stop. No real publisher callback is wired to that
+operation; a stop request or local streaming flag is not confirmation.
 
 Build with the media runner using `assembleDebug assembleDebugAndroidTest --offline`.
 After checking ADB authorization, install both debug APKs from

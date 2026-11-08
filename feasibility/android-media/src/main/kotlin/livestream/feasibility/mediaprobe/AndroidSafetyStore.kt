@@ -9,6 +9,11 @@ import livestream.feasibility.SessionSafetyState
 
 /** Isolated diagnostic store; not a complete match or publishing authorization. */
 class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 1), SessionSafetyState {
+    /** Caller must independently establish that this exact session has stopped. */
+    fun confirmStopped(sessionId: String) {
+        require(sessionId.isNotBlank())
+        writableDatabase.delete("pending_stops", "session = ?", arrayOf(sessionId))
+    }
     fun scorePointWithPendingStop(left: Boolean, sessionId: String) {
         require(sessionId.isNotBlank())
         recordScore(left, sessionId)

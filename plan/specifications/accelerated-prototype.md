@@ -168,6 +168,53 @@ The complete host suite was run after the behavioral change. The Android project
 compiled the shared control; it is not yet wired to a network publisher.
 Cleanup dispatch alone is not stop confirmation and does not authorize a trial.
 
+On the next T02 cycle, the manual control's connection-success callback now
+requests publisher stop if the session fails closed because its safety store is
+unavailable. The focused test first failed because no stop was requested and
+then passed in the full host suite. A first forced-suite command timed out;
+a subsequent suite run succeeded, and both Android APKs built offline. This
+callback is not yet wired to Android's publisher and does not establish stop
+confirmation, real network behavior, or an integrated broadcast path.
+
+## Android publisher adapter checkpoint — 2026-11-08
+
+The isolated Android project now contains a `GenericStream` adapter for the
+manual control. At T02, a confirmed operator stop first failed to dispatch
+cleanup, then passed after dispatch was added. An Android instrumented gate
+check first failed on an unimplemented adapter, then passed with the incomplete
+fit assessment returning `NumericFitUnresolved`. This deliberately blocks
+network start. The adapter is not connected to the activity, callbacks, encoded
+score updates, durable stop confirmation, or a real network session; it is not
+an integrated publisher and does not pass the prototype gate or G2.
+
+## Android pending-stop reconciliation — 2026-11-08
+
+At T01, a Pixel 8 Pro instrumentation test observed the unimplemented failure,
+then passed with session-scoped marker deletion: confirming session A leaves
+session B's marker and the diagnostic score intact across reopening. The Android
+APKs built; the JVM suite was up to date. The operation requires independent
+confirmation and is not connected to any callback. Inspection of the candidate
+library's `stopStream()` bytecode shows its Boolean is encoder preparation,
+not provider termination; neither that result nor `isStreaming` is sufficient
+to clear a marker. Actual stop confirmation, process recovery, complete fit,
+activity wiring and real publishing remain unresolved. The trial gate is closed.
+
+## Local adapter wiring and diagnostic preflight — 2026-11-08
+
+The local recording activity now constructs the guarded Android adapter, forwards
+connection-success and failure/disconnect/auth-error events without retaining
+raw provider text, and offers a no-network diagnostic fit preflight. T05/T02
+instrumentation on an authorized Pixel 8 Pro first failed for an unimplemented
+diagnostic assessment, then passed against the renderer and the still-denied
+start gate. The Android APKs built after an initial build-command timeout; the
+JVM test task was up to date. No network callback or activity UI was exercised.
+
+The provisional bitmap measurement does not assess the complete scoreboard,
+reviewed output bounds or received readability. The callback does not confirm
+remote stop or clear a durable marker. Real start remains blocked and no
+publisher UI is exposed. Provider-scoped confirmation/reconciliation, complete
+fit enforcement and encoded broadcast validation remain open.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

@@ -15,6 +15,14 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            AndroidSafetyStore(targetContext, name).use { store ->
+                var connected = false
+                val adapter = AndroidPublisherAdapter(store, connect = { connected = true }, stop = {})
+                check(adapter.diagnosticFit() == true) { "Normal diagnostic score should fit its provisional bitmap" }
+                val outcome = adapter.start("rtmps://example.test/live", "fictional-key", true, true, true)
+                check(outcome == StartResult.NumericFitUnresolved) { "Incomplete safety gate must block network start" }
+                check(!connected) { "Incomplete safety gate invoked publisher" }
+            }
             val compact = DiagnosticOverlay.render("ABC  1  |  2  XYZ") ?: error("Normal score did not fit")
             val wider = DiagnosticOverlay.render("ABC  12345678901234567890  |  2  XYZ") ?: error("Wider score did not fit")
             check(wider.width > compact.width) { "Scoreboard did not widen" }
@@ -37,8 +45,14 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 check(view.pendingStops == setOf("session-a")) { "Missing reopened pending stop" }
                 val start = StreamSession(reopened).requestStart(true, true, true, true, view.snapshot)
                 check(start == StartResult.PendingStop) { "Pending stop did not block Start" }
+                reopened.recordPointWithPendingStop("session-b")
+                reopened.confirmStopped("session-a")
             }
-            result.putString("result", "PASS: diagnostic overlay fit and durable score/pending stop checks")
+            AndroidSafetyStore(targetContext, name).use { reopened ->
+                check(reopened.pendingStopSessions() == setOf("session-b")) { "Stop confirmation cleared the wrong session" }
+                check(reopened.scoreDisplay() == "ABC  1  |  3  XYZ") { "Stop confirmation changed score" }
+            }
+            result.putString("result", "PASS: publisher gate, diagnostic overlay and durable safety state")
             finish(Activity.RESULT_OK, result)
         } catch (failure: Throwable) {
             result.putString("result", "FAIL: ${failure.javaClass.simpleName}: ${failure.message}")
