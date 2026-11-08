@@ -240,6 +240,14 @@ TBD when implementation begins.
   behavioral test, implement the minimum to pass, then review/refactor with
   the relevant suite green. Deliver one behavior at a time throughout each
   implementation milestone.
+- Avoid spiraling into edge-case testing. Prioritize the requested behavior,
+  confirmed acceptance criteria, and realistic failures with meaningful safety,
+  security, data-loss, or integration consequences. Add an edge-case test only
+  when it covers one of those needs or a concrete observed defect; do not expand
+  speculative permutations for completeness alone. Once the relevant tests are
+  green and required validation is satisfied, move to the next useful slice;
+  briefly record material deferred risks instead of exploring them indefinitely.
+  This does not waive TDD, required safety checks, or release/device validation.
 - During planning, check requirements for completeness, consistency, clear
   acceptance criteria, and explicit unresolved decisions.
 - Do not add application tests during the documentation phase.
