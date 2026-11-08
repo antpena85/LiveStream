@@ -238,6 +238,17 @@ an active-session marker must be distinguished from a stop requirement by the
 eventual lifecycle integration. No actual shutdown confirmation, process-kill
 test or broadcast was performed, and the trial gate remains closed.
 
+## Diagnostic session ownership — 2026-11-08
+
+At T01/T02, an Android lifecycle experiment now owns a durable claim in memory,
+accepts the matching connection event while ignoring an unrelated session event,
+and treats a surviving marker as unresolved in a new lifecycle. On an authorized
+Pixel 8 Pro, instrumentation observed the unimplemented failure then passed;
+both APKs built after retrying a timed-out command. The JVM suite was up to date.
+This is not wired to the activity or publisher adapter and does not dispatch a
+connection or stop, verify a callback's provenance, or confirm termination.
+Broadcast fit and the real trial gate remain unresolved.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

@@ -16,6 +16,18 @@ class SafetyStoreInstrumentation : Instrumentation() {
         val result = Bundle()
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                check(lifecycle.claim("owned-session", store.snapshot())) { "Could not claim diagnostic session" }
+                lifecycle.connected("old-session")
+                check(lifecycle.status() == DiagnosticPublisherStatus.Connecting) { "Old callback changed the current session" }
+                lifecycle.connected("owned-session")
+                check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Own claim was treated as an old stop" }
+            }
+            AndroidSafetyStore(targetContext, name).use { reopened ->
+                check(!DiagnosticPublisherLifecycle(reopened).claim("next-session", reopened.snapshot())) { "Unresolved prior claim did not block" }
+                reopened.confirmStopped("owned-session")
+            }
+            AndroidSafetyStore(targetContext, name).use { store ->
                 var connected = false
                 val adapter = AndroidPublisherAdapter(store, connect = { connected = true }, stop = {})
                 check(adapter.diagnosticFit() == true) { "Normal diagnostic score should fit its provisional bitmap" }
