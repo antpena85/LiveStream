@@ -128,6 +128,20 @@ diagnostic is not full match state, numeric fit measurement, stop dispatch or
 verified stop reconciliation. Publishing remains disabled; the prototype gate
 and G2 remain open.
 
+## Atomic diagnostic score and pending stop — 2026-11-08
+
+At the confirmed T01 Android real-store boundary, the combined operation now
+commits the changed team score, probe revision and session-specific pending-stop
+marker in one SQLite transaction. An instrumented test on an authorized Pixel
+8 Pro first failed on the unimplemented operation, then passed after reopening:
+the right score changed from 2 to 3, the marker survived, and Start was blocked.
+Both Android APKs built offline; the JVM test task was successful and up to date.
+
+This operation is not yet called by the activity or connected to fit assessment
+or publisher stop dispatch. The test does not simulate process interruption or
+verify a broadcast. Continue the integrated fit and stop path before enabling a
+trial; this checkpoint does not complete M2 or pass G2.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

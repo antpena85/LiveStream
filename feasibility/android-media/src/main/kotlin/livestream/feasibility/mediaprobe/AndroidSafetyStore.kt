@@ -9,12 +9,20 @@ import livestream.feasibility.SessionSafetyState
 
 /** Isolated diagnostic store; not a complete match or publishing authorization. */
 class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 1), SessionSafetyState {
-    fun scorePoint(left: Boolean) {
+    fun scorePointWithPendingStop(left: Boolean, sessionId: String) {
+        require(sessionId.isNotBlank())
+        recordScore(left, sessionId)
+    }
+
+    fun scorePoint(left: Boolean) = recordScore(left, null)
+
+    private fun recordScore(left: Boolean, sessionId: String?) {
         val db = writableDatabase
         db.beginTransaction()
         try {
             db.execSQL(if (left) "UPDATE diagnostic_score SET left_points=left_points+1 WHERE id=1" else "UPDATE diagnostic_score SET right_points=right_points+1 WHERE id=1")
             db.execSQL("UPDATE state SET points=points+1, revision=revision+1 WHERE id=1")
+            if (sessionId != null) db.execSQL("INSERT OR IGNORE INTO pending_stops (session) VALUES (?)", arrayOf(sessionId))
             db.setTransactionSuccessful()
         } finally { db.endTransaction() }
     }

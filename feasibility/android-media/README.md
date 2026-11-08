@@ -33,9 +33,10 @@ durable diagnostic database. Scores persist across local captures and activity
 restarts; this is not a match reset or a broadcast-ready scoreboard. The
 instrumented check verifies both team scores after reopening, not the activity
 UI or the encoded video. Local capture stops if an update or redraw fails.
-The instrumented check writes a diagnostic point and pending stop in one
-transaction, closes and reopens the database, and verifies that the session
-blocks Start. Its points-only
+The instrumented check writes an actual team score and pending stop in one
+transaction, closes and reopens the database, and verifies the updated score
+and that the session blocks Start. The activity does not yet invoke this
+combined operation or assess fit. Its points-only
 fixture is not a complete match, and the experiment does not implement fit
 measurement, publisher stop/confirmation, receipt deduplication or recovery.
 
