@@ -15,15 +15,23 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            AndroidSafetyStore(targetContext, name).use {
+                it.scorePoint(left = true)
+                it.scorePoint(left = false)
+                it.scorePoint(left = false)
+            }
+            AndroidSafetyStore(targetContext, name).use {
+                check(it.scoreDisplay() == "ABC  1  |  2  XYZ") { "Diagnostic scoreboard did not survive reopening" }
+            }
             AndroidSafetyStore(targetContext, name).use { it.recordPointWithPendingStop("session-a") }
             AndroidSafetyStore(targetContext, name).use { reopened ->
                 val view = reopened.safetyView()
-                check(view.snapshot == ProbeSnapshot(1, 1, 0)) { "Incorrect reopened snapshot" }
+                check(view.snapshot == ProbeSnapshot(4, 4, 0)) { "Incorrect reopened snapshot" }
                 check(view.pendingStops == setOf("session-a")) { "Missing reopened pending stop" }
                 val start = StreamSession(reopened).requestStart(true, true, true, true, view.snapshot)
                 check(start == StartResult.PendingStop) { "Pending stop did not block Start" }
             }
-            result.putString("result", "PASS: point and pending stop survive reopening and block Start")
+            result.putString("result", "PASS: diagnostic scores and pending stop survive reopening; pending stop blocks Start")
             finish(Activity.RESULT_OK, result)
         } catch (failure: Throwable) {
             result.putString("result", "FAIL: ${failure.javaClass.simpleName}: ${failure.message}")

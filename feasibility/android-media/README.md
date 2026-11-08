@@ -20,18 +20,23 @@ the generated file. This local-only gate never authorizes publishing; the separa
 `StreamSession` retains its pending-stop and numeric-fit requirements. The
 shared session, manual publisher control, and read-only safety-state interface
 are compiled here to check source compatibility, but the activity does not use
-them. An isolated Android SQLite safety-store experiment is available, but is
-not connected to the activity or a publisher. Separate session reads do not
+them for publishing. The activity uses an isolated Android SQLite safety-store
+experiment for its local diagnostic scores, not for a publisher. Separate session reads do not
 establish atomicity or safe publishing.
 [Built-in Kotlin guidance](https://developer.android.com/build/migrate-to-built-in-kotlin).
 
 ## Android safety-store experiment
 
 `AndroidSafetyStore` implements the probe safety interface using Android SQLite.
+The local-only score buttons and encoded overlay now read and update a separate
+durable diagnostic database. Scores persist across local captures and activity
+restarts; this is not a match reset or a broadcast-ready scoreboard. The
+instrumented check verifies both team scores after reopening, not the activity
+UI or the encoded video. Local capture stops if an update or redraw fails.
 The instrumented check writes a diagnostic point and pending stop in one
 transaction, closes and reopens the database, and verifies that the session
-blocks Start. The diagnostic activity does not use this store. Its points-only
-fixture is not the scoreboard, and the experiment does not implement fit
+blocks Start. Its points-only
+fixture is not a complete match, and the experiment does not implement fit
 measurement, publisher stop/confirmation, receipt deduplication or recovery.
 
 Build with the media runner using `assembleDebug assembleDebugAndroidTest --offline`.

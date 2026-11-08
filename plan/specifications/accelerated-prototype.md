@@ -111,6 +111,23 @@ concurrency guarantees. Neither device storage result proves received output or
 safe broadcasting. The next integration needs to connect real scoreboard state,
 fit decisions and publisher stop behavior without bypassing these gaps.
 
+## Local durable scoreboard integration — 2026-11-08
+
+The local media activity now updates and renders two diagnostic scores through
+an Android SQLite store, rather than resetting an in-memory fixture at each
+capture. At the confirmed T01 boundary, an instrumented reopen test first
+failed with the intentionally unimplemented score operation, then passed on
+an authorized Pixel 8 Pro: left 1 and right 2 survived reopening, and the
+existing pending-stop check also passed. The offline Android APK and test APK
+built; the JVM suite was up to date. An initial installation attempt used an
+incorrect APK filename and was corrected before the behavioral red run.
+
+The activity wiring compiled but was not separately exercised on-device, and
+no fresh encoded recording or broadcast was inspected. This points-only
+diagnostic is not full match state, numeric fit measurement, stop dispatch or
+verified stop reconciliation. Publishing remains disabled; the prototype gate
+and G2 remain open.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

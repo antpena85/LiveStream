@@ -9,9 +9,27 @@ import livestream.feasibility.SessionSafetyState
 
 /** Isolated diagnostic store; not a complete match or publishing authorization. */
 class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 1), SessionSafetyState {
+    fun scorePoint(left: Boolean) {
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            db.execSQL(if (left) "UPDATE diagnostic_score SET left_points=left_points+1 WHERE id=1" else "UPDATE diagnostic_score SET right_points=right_points+1 WHERE id=1")
+            db.execSQL("UPDATE state SET points=points+1, revision=revision+1 WHERE id=1")
+            db.setTransactionSuccessful()
+        } finally { db.endTransaction() }
+    }
+
+    fun scoreDisplay(): String = readableDatabase.rawQuery(
+        "SELECT left_points, right_points FROM diagnostic_score WHERE id=1", null
+    ).use { rows ->
+        check(rows.moveToFirst())
+        "ABC  ${rows.getInt(0)}  |  ${rows.getInt(1)}  XYZ"
+    }
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE state (id INTEGER PRIMARY KEY CHECK(id=1), points INTEGER NOT NULL, revision INTEGER NOT NULL, epoch INTEGER NOT NULL)")
         db.execSQL("INSERT INTO state VALUES (1, 0, 0, 0)")
+        db.execSQL("CREATE TABLE diagnostic_score (id INTEGER PRIMARY KEY CHECK(id=1), left_points INTEGER NOT NULL, right_points INTEGER NOT NULL)")
+        db.execSQL("INSERT INTO diagnostic_score VALUES (1, 0, 0)")
         db.execSQL("CREATE TABLE pending_stops (session TEXT PRIMARY KEY NOT NULL)")
     }
 

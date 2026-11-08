@@ -37,7 +37,6 @@ import com.pedro.library.base.recording.RecordController
 import com.pedro.library.generic.GenericStream
 import livestream.feasibility.LocalCaptureReadiness
 import livestream.feasibility.LocalCaptureResult
-import livestream.feasibility.DiagnosticScoreboard
 import livestream.feasibility.ManualDestination
 import livestream.feasibility.DestinationResult
 import org.json.JSONArray
@@ -51,7 +50,7 @@ class MediaActivity : Activity() {
     private var transitionTest = false
     private var capture: GenericStream? = null
     private var scoreFilter: ImageFilterRender? = null
-    private var diagnosticScore = DiagnosticScoreboard()
+    private lateinit var diagnosticScore: AndroidSafetyStore
     private var report = JSONObject()
     private var decodedFrame: Bitmap? = null
     private lateinit var preview: SurfaceView
@@ -62,6 +61,7 @@ class MediaActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        diagnosticScore = AndroidSafetyStore(this, "local-diagnostic-score.db")
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(32, 48, 32, 24)
@@ -89,11 +89,11 @@ class MediaActivity : Activity() {
         val scoreControls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scoreControls.addView(Button(this).apply {
             text = "+ ABC"
-            setOnClickListener { if (capture != null && !transitionTest) { diagnosticScore.pointLeft(); updateScoreFilter() } }
+            setOnClickListener { scorePoint(left = true) }
         })
         scoreControls.addView(Button(this).apply {
             text = "+ XYZ"
-            setOnClickListener { if (capture != null && !transitionTest) { diagnosticScore.pointRight(); updateScoreFilter() } }
+            setOnClickListener { scorePoint(left = false) }
         })
         controls.addView(scoreControls)
         controls.addView(Button(this).apply {
@@ -187,7 +187,6 @@ class MediaActivity : Activity() {
         transitionButton.isEnabled = false
         decodedFrame?.recycle()
         decodedFrame = null
-        diagnosticScore = DiagnosticScoreboard()
         report = JSONObject().put("probeVersion", "m2-media-1").put("model", Build.MODEL)
             .put("buildId", Build.ID).put("targetWidth", 1280).put("targetHeight", 720)
             .put("targetFps", 30).put("requestedVideoBitrate", 2_000_000)
@@ -342,13 +341,24 @@ class MediaActivity : Activity() {
 
     private fun saveReport() { filesDir.resolve("media-report.json").writeText(report.toString(2)) }
 
+    private fun scorePoint(left: Boolean) {
+        if (capture == null || transitionTest) return
+        try {
+            diagnosticScore.scorePoint(left)
+            updateScoreFilter()
+        } catch (_: Exception) {
+            stopCapture("score_state_unavailable")
+            status.text = "Local capture stopped: diagnostic score state unavailable."
+        }
+    }
+
     private fun updateScoreFilter() { scoreFilter?.setImage(dynamicScoreboard()) }
 
     private fun dynamicScoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
         val canvas = Canvas(this)
         canvas.drawColor(Color.argb(235, 0, 0, 0))
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 32f; typeface = Typeface.MONOSPACE }
-        canvas.drawText(diagnosticScore.display(), 16f, 72f, paint)
+        canvas.drawText(diagnosticScore.scoreDisplay(), 16f, 72f, paint)
     }
 
     private fun scoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
@@ -363,5 +373,10 @@ class MediaActivity : Activity() {
         pendingCapture = false
         stopCapture("activity_stopped")
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        diagnosticScore.close()
+        super.onDestroy()
     }
 }
