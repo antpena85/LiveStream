@@ -215,6 +215,17 @@ remote stop or clear a durable marker. Real start remains blocked and no
 publisher UI is exposed. Provider-scoped confirmation/reconciliation, complete
 fit enforcement and encoded broadcast validation remain open.
 
+## Coherent diagnostic fit input — 2026-11-08
+
+The diagnostic assessment now reads both displayed scores and their probe
+revision in one SQLite query before measuring the resulting fixture. At the
+confirmed T05/T01 boundary, a Pixel 8 Pro instrumented test first observed the
+unimplemented failure and then passed for the 1–2 score and revision 3. Both
+Android APKs built; an earlier build command timed out and was rerun. The JVM
+test task was up to date. This is a diagnostic projection, not a complete match
+or an assessment of pending stops, encoded readability or safe publishing;
+the adapter still denies all starts and stop reconciliation remains unresolved.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

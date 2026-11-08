@@ -9,6 +9,12 @@ import livestream.feasibility.SessionSafetyState
 
 /** Isolated diagnostic store; not a complete match or publishing authorization. */
 class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 1), SessionSafetyState {
+    fun diagnosticProjection(): Pair<String, ProbeSnapshot> = readableDatabase.rawQuery(
+        "SELECT diagnostic_score.left_points, diagnostic_score.right_points, state.points, state.revision, state.epoch FROM diagnostic_score JOIN state ON state.id=diagnostic_score.id WHERE state.id=1", null
+    ).use { rows ->
+        check(rows.moveToFirst())
+        "ABC  ${rows.getInt(0)}  |  ${rows.getInt(1)}  XYZ" to ProbeSnapshot(rows.getInt(2), rows.getLong(3), rows.getLong(4))
+    }
     /** Caller must independently establish that this exact session has stopped. */
     fun confirmStopped(sessionId: String) {
         require(sessionId.isNotBlank())

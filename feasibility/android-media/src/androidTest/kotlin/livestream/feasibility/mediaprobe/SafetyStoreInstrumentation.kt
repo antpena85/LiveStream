@@ -36,6 +36,10 @@ class SafetyStoreInstrumentation : Instrumentation() {
             }
             AndroidSafetyStore(targetContext, name).use {
                 check(it.scoreDisplay() == "ABC  1  |  2  XYZ") { "Diagnostic scoreboard did not survive reopening" }
+                val assessment = AndroidPublisherAdapter(it, connect = {}, stop = {}).diagnosticAssessment()
+                check(assessment.display == "ABC  1  |  2  XYZ" && assessment.snapshot == ProbeSnapshot(3, 3, 0) && assessment.fits) {
+                    "Fit assessment did not identify the score and revision assessed"
+                }
             }
             AndroidSafetyStore(targetContext, name).use { it.scorePointWithPendingStop(left = false, sessionId = "session-a") }
             AndroidSafetyStore(targetContext, name).use { reopened ->
