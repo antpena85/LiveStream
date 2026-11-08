@@ -226,6 +226,18 @@ test task was up to date. This is a diagnostic projection, not a complete match
 or an assessment of pending stops, encoded readability or safe publishing;
 the adapter still denies all starts and stop reconciliation remains unresolved.
 
+## Durable publisher session claim — 2026-11-08
+
+At T01 an Android SQLite transaction now checks the assessed snapshot and all
+pending markers, then persists a session marker before an external connection
+could be initiated. On an authorized Pixel 8 Pro, the instrumented test first
+failed for the unimplemented operation and then passed: the marker survived
+reopening and blocked a second claim. The APKs built offline; the JVM test task
+was up to date. The claim is not wired into the adapter or a real publisher;
+an active-session marker must be distinguished from a stop requirement by the
+eventual lifecycle integration. No actual shutdown confirmation, process-kill
+test or broadcast was performed, and the trial gate remains closed.
+
 ## Host build and device availability — 2026-11-06
 
 The offline `media assembleDebug` runner built the isolated diagnostic APK with

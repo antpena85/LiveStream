@@ -9,6 +9,18 @@ import livestream.feasibility.SessionSafetyState
 
 /** Isolated diagnostic store; not a complete match or publishing authorization. */
 class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 1), SessionSafetyState {
+    fun claimPublisherSession(sessionId: String, assessed: ProbeSnapshot): Boolean {
+        require(sessionId.isNotBlank())
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            val view = safetyView()
+            if (view.snapshot != assessed || view.pendingStops.isNotEmpty()) return false
+            db.execSQL("INSERT INTO pending_stops (session) VALUES (?)", arrayOf(sessionId))
+            db.setTransactionSuccessful()
+            return true
+        } finally { db.endTransaction() }
+    }
     fun diagnosticProjection(): Pair<String, ProbeSnapshot> = readableDatabase.rawQuery(
         "SELECT diagnostic_score.left_points, diagnostic_score.right_points, state.points, state.revision, state.epoch FROM diagnostic_score JOIN state ON state.id=diagnostic_score.id WHERE state.id=1", null
     ).use { rows ->

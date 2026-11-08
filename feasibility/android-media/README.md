@@ -53,6 +53,9 @@ measurement, publisher stop/confirmation, receipt deduplication or recovery.
 The store also supports clearing a specific pending-stop marker after an
 independently confirmed stop. No real publisher callback is wired to that
 operation; a stop request or local streaming flag is not confirmation.
+An experimental session claim checks the assessed revision and existing markers
+in one transaction and leaves a durable marker before any publisher call.
+The activity and adapter do not yet use that claim; it does not confirm a stop.
 
 Build with the media runner using `assembleDebug assembleDebugAndroidTest --offline`.
 After checking ADB authorization, install both debug APKs from

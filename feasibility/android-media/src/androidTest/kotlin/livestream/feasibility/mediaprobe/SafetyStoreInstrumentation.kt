@@ -22,6 +22,12 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 val outcome = adapter.start("rtmps://example.test/live", "fictional-key", true, true, true)
                 check(outcome == StartResult.NumericFitUnresolved) { "Incomplete safety gate must block network start" }
                 check(!connected) { "Incomplete safety gate invoked publisher" }
+                check(store.claimPublisherSession("session-claim", store.snapshot())) { "Safe session claim failed" }
+            }
+            AndroidSafetyStore(targetContext, name).use { reopened ->
+                check(reopened.pendingStopSessions() == setOf("session-claim")) { "Publisher claim did not survive reopen" }
+                check(!reopened.claimPublisherSession("session-new", reopened.snapshot())) { "Unresolved session permitted another claim" }
+                reopened.confirmStopped("session-claim")
             }
             val compact = DiagnosticOverlay.render("ABC  1  |  2  XYZ") ?: error("Normal score did not fit")
             val wider = DiagnosticOverlay.render("ABC  12345678901234567890  |  2  XYZ") ?: error("Wider score did not fit")
