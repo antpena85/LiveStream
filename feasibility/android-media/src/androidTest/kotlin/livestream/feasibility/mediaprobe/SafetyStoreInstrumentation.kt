@@ -15,6 +15,25 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stopped = false
+                check(lifecycle.claim("async-failure", store.snapshot()))
+                lifecycle.failed("async-failure") { stopped = true }
+                check(stopped && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Async failure did not request cleanup" }
+                check(store.pendingStopSessions() == setOf("async-failure")) { "Async failure cleared the claim" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stopped = false
+                check(lifecycle.claim("stale-callback", store.snapshot()))
+                store.scorePoint(left = true)
+                lifecycle.connected("stale-callback") { stopped = true }
+                check(stopped && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Unsafe connection did not request cleanup" }
+                check(store.pendingStopSessions() == setOf("stale-callback")) { "Unsafe callback cleared the claim" }
+            }
+            targetContext.deleteDatabase(name)
             var oldEvents = 0
             var newEvents = 0
             val oldCallbacks = PublisherCallbacks(onSuccess = { oldEvents++ }, onFailure = {})
@@ -41,8 +60,9 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     connected = true
                 }) { "Integrated claim was rejected" }
                 check(connected) { "Publisher was not called" }
-                lifecycle.connected("session-integrated")
-                check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Matching callback did not transition to live" }
+                var unexpectedStop = false
+                lifecycle.connected("session-integrated") { unexpectedStop = true }
+                check(!unexpectedStop && lifecycle.status() == DiagnosticPublisherStatus.Live) { "Matching callback did not transition to live" }
                 var stopped = false
                 lifecycle.requestStop("session-integrated", true) { stopped = true }
                 check(stopped && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Confirmed stop did not dispatch" }
@@ -55,10 +75,11 @@ class SafetyStoreInstrumentation : Instrumentation() {
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 check(lifecycle.claim("owned-session", store.snapshot())) { "Could not claim diagnostic session" }
-                lifecycle.connected("old-session")
-                check(lifecycle.status() == DiagnosticPublisherStatus.Connecting) { "Old callback changed the current session" }
-                lifecycle.connected("owned-session")
-                check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Own claim was treated as an old stop" }
+                var unexpectedStop = false
+                lifecycle.connected("old-session") { unexpectedStop = true }
+                check(!unexpectedStop && lifecycle.status() == DiagnosticPublisherStatus.Connecting) { "Old callback changed the current session" }
+                lifecycle.connected("owned-session") { unexpectedStop = true }
+                check(!unexpectedStop && lifecycle.status() == DiagnosticPublisherStatus.Live) { "Own claim was treated as an old stop" }
             }
             AndroidSafetyStore(targetContext, name).use { reopened ->
                 check(!DiagnosticPublisherLifecycle(reopened).claim("next-session", reopened.snapshot())) { "Unresolved prior claim did not block" }

@@ -6,6 +6,9 @@ enum class DiagnosticPublisherStatus { Stopped, Connecting, Live, Stopping }
 
 /** Testable session ownership experiment; not an authorization to publish. */
 class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
+    @Synchronized fun failed(sessionId: String, stop: () -> Unit) {
+        requestStop(sessionId, true, stop)
+    }
     @Synchronized fun requestStop(sessionId: String, confirmed: Boolean, stop: () -> Unit) {
         if (!confirmed || owner != sessionId || current == DiagnosticPublisherStatus.Stopped || current == DiagnosticPublisherStatus.Stopping) return
         current = DiagnosticPublisherStatus.Stopping
@@ -35,13 +38,16 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
         return true
     }
 
-    @Synchronized fun connected(sessionId: String) {
+    @Synchronized fun connected(sessionId: String, stop: () -> Unit) {
         if (owner != sessionId || current != DiagnosticPublisherStatus.Connecting) return
         current = try {
             val view = store.safetyView()
             if (view.pendingStops == setOf(sessionId) && view.snapshot == assessed) DiagnosticPublisherStatus.Live
             else DiagnosticPublisherStatus.Stopping
         } catch (_: Exception) { DiagnosticPublisherStatus.Stopping }
+        if (current == DiagnosticPublisherStatus.Stopping) {
+            try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
+        }
     }
 
     @Synchronized fun status(): DiagnosticPublisherStatus = current

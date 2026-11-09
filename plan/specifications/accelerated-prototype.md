@@ -227,6 +227,22 @@ network events or provider termination. The adapter still denies publishing;
 its durable diagnostic lifecycle remains separate, so the prototype gate and
 M2 remain open.
 
+## Diagnostic callback cleanup — 2026-11-09
+
+At T02, an Android instrumentation test on a Pixel 8 Pro first failed because
+a stale score revision at connection success entered `Stopping` without
+requesting cleanup. The diagnostic lifecycle now requests its supplied stop
+operation and retains the durable claim. The lifecycle also accepts a
+session-scoped asynchronous failure and requests cleanup without clearing the
+claim; its new test first failed to compile because the entry point did not
+exist, so that case is not an observed behavioral red/green cycle. Both cases
+passed with test doubles on Pixel 8 Pro builds `DP11.261016.003` and
+`CP3A.261005.005`, and Pixel 10 Pro XL build `CP3A.261005.005`. The media,
+inventory and watch APKs built offline; the JVM test task was up to date.
+These are diagnostic lifecycle checks, not real provider callbacks, confirmed
+network shutdown, complete fit, or integration with the activity. The guarded
+adapter still denies publishing; the prototype gate and G2 remain open.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe
