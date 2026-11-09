@@ -217,7 +217,7 @@ class MediaActivity : Activity() {
             )
             val stream = GenericStream(this, callbacks, camera, microphone)
             capture = stream
-            capturePublisher = AndroidPublisherAdapter(diagnosticScore, stream)
+            capturePublisher = AndroidPublisherAdapter(diagnosticScore, stream, DiagnosticPublisherLifecycle(diagnosticScore), java.util.UUID.randomUUID().toString())
             publisher = capturePublisher
             stream.forceCodecType(CodecUtil.CodecType.HARDWARE, CodecUtil.CodecType.SOFTWARE)
             check(stream.prepareVideo(1280, 720, 2_000_000, fps = 30, rotation = 0)) { "Video preparation failed" }

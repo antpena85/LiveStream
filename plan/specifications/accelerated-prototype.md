@@ -336,6 +336,18 @@ task was up to date. Callbacks were invoked directly with a publisher double;
 the bridge is not wired into the activity or `GenericStream`, and real callback
 threading, shutdown confirmation, complete fit and received output remain open.
 
+### Candidate adapter lifecycle wiring — 2026-11-09
+
+An Android instrumentation test first failed when the publisher adapter did
+not forward success to its owned diagnostic lifecycle. The adapter now forwards
+connection and stop events to the capture-scoped lifecycle, and the local
+activity constructs that lifecycle alongside its candidate `GenericStream`.
+The test passed on a Pixel 8 Pro with supplied publisher operations. Both media
+APKs built offline; the JVM task was up to date. The local activity does not
+claim a session or expose a publisher start, and this is not a real network or
+shutdown test. Full fit, lifecycle/start integration, stop confirmation and
+received output remain open; the existing start gate is unchanged.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

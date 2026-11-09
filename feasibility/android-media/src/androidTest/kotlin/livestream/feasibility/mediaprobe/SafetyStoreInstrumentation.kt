@@ -18,6 +18,18 @@ class SafetyStoreInstrumentation : Instrumentation() {
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
+                val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "adapter-session")
+                check(lifecycle.claim("adapter-session", store.snapshot()))
+                adapter.connectionSucceeded()
+                check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Adapter did not forward success to owned session" }
+                adapter.requestStop(true)
+                check(stops == 1 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Adapter did not stop owned session" }
+                check(store.pendingStopSessions() == setOf("adapter-session")) { "Adapter cleared unresolved session" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stops = 0
                 check(lifecycle.claim("callback-session", store.snapshot()))
                 val callbacks = lifecycle.callbacksFor("callback-session") { stops++ }
                 callbacks.onConnectionSuccess()
