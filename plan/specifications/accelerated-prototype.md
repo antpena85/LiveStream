@@ -215,6 +215,18 @@ remote stop or clear a durable marker. Real start remains blocked and no
 publisher UI is exposed. Provider-scoped confirmation/reconciliation, complete
 fit enforcement and encoded broadcast validation remain open.
 
+## Capture-scoped callback routing — 2026-11-08
+
+The local Android activity now binds each candidate stream's callback object to
+that capture's adapter, rather than dereferencing the activity's current adapter
+when a delayed callback arrives. At the confirmed T02 boundary, an instrumented
+Pixel 8 Pro test first failed for the unimplemented callback and then passed
+with separate old/new callback targets. Both APKs built offline; the JVM task was
+up to date. This tests routing with direct callback calls, not actual asynchronous
+network events or provider termination. The adapter still denies publishing;
+its durable diagnostic lifecycle remains separate, so the prototype gate and
+M2 remain open.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

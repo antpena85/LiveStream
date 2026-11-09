@@ -31,6 +31,8 @@ and forwards sanitized connection events, and offers a no-network diagnostic
 fit preflight. The activity exposes no publisher Start control. These callbacks
 are not proof of network integration or stop confirmation; it is not a working
 broadcast or a trial-ready build.
+Each local capture now binds callback delivery to its own adapter instead of
+looking up whichever adapter happens to be current when a delayed event arrives.
 The diagnostic fit preflight reads the displayed two-team fixture and its
 revision together in one SQLite query before measuring the text. That snapshot
 does not include a full scoreboard or authorize the publisher.

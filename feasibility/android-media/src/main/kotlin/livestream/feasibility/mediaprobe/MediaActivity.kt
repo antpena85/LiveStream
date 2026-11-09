@@ -28,7 +28,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.VideoView
-import com.pedro.common.ConnectChecker
 import com.pedro.encoder.input.gl.render.filters.`object`.ImageFilterRender
 import com.pedro.encoder.input.sources.audio.MicrophoneSource
 import com.pedro.encoder.input.sources.video.Camera2Source
@@ -211,16 +210,15 @@ class MediaActivity : Activity() {
             if (clip.exists()) check(clip.delete())
             val camera = Camera2Source(this)
             val microphone = MicrophoneSource(MediaRecorder.AudioSource.MIC)
-            val stream = GenericStream(this, object : ConnectChecker {
-                override fun onConnectionStarted(url: String) {}
-                override fun onConnectionSuccess() { runOnUiThread { publisher?.connectionSucceeded() } }
-                override fun onConnectionFailed(reason: String) { runOnUiThread { publisher?.requestStop(true) } }
-                override fun onDisconnect() { runOnUiThread { publisher?.requestStop(true) } }
-                override fun onAuthError() { runOnUiThread { publisher?.requestStop(true) } }
-                override fun onAuthSuccess() {}
-            }, camera, microphone)
+            var capturePublisher: AndroidPublisherAdapter? = null
+            val callbacks = PublisherCallbacks(
+                onSuccess = { runOnUiThread { capturePublisher?.connectionSucceeded() } },
+                onFailure = { runOnUiThread { capturePublisher?.requestStop(true) } }
+            )
+            val stream = GenericStream(this, callbacks, camera, microphone)
             capture = stream
-            publisher = AndroidPublisherAdapter(diagnosticScore, stream)
+            capturePublisher = AndroidPublisherAdapter(diagnosticScore, stream)
+            publisher = capturePublisher
             stream.forceCodecType(CodecUtil.CodecType.HARDWARE, CodecUtil.CodecType.SOFTWARE)
             check(stream.prepareVideo(1280, 720, 2_000_000, fps = 30, rotation = 0)) { "Video preparation failed" }
             check(stream.prepareAudio(48000, true, 128000)) { "Audio preparation failed" }

@@ -15,6 +15,14 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            var oldEvents = 0
+            var newEvents = 0
+            val oldCallbacks = PublisherCallbacks(onSuccess = { oldEvents++ }, onFailure = {})
+            val newCallbacks = PublisherCallbacks(onSuccess = { newEvents++ }, onFailure = {})
+            oldCallbacks.onConnectionSuccess()
+            check(oldEvents == 1 && newEvents == 0) { "Old callback reached a newer publisher" }
+            newCallbacks.onConnectionSuccess()
+            check(oldEvents == 1 && newEvents == 1) { "New publisher callback not delivered" }
             AndroidSafetyStore(targetContext, name).use { store ->
                 var stopped = false
                 val lifecycle = DiagnosticPublisherLifecycle(store)
