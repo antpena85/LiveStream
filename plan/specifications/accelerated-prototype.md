@@ -272,6 +272,20 @@ without independently established session-scoped termination. Joining these
 paths, complete scoreboard assessment and real stop confirmation remain required
 before a trial. No live destination or owner-selected trial duration was used.
 
+### Diagnostic manual-start integration — 2026-11-09
+
+At confirmed T02, an instrumented Pixel 8 Pro test first failed when manual
+start did not durably claim a session before invoking a supplied publisher. The
+diagnostic lifecycle now validates the manual destination, checks supplied
+readiness and invokes its Android SQLite claim before the supplied connect
+operation. The test passed on both Pixel 8 Pro builds and Pixel 10 Pro XL. A
+separate prior-pending-stop check passed first-run on Pixel 8 Pro; it is not a
+red/green cycle. Android APK builds and a forced 109-test JVM regression passed.
+The publisher was a test double and the endpoint fictional. This diagnostic is
+not connected to the activity or actual provider; the supplied fit Boolean is
+not a complete fit assessment, and no real stream is enabled. Full fit/stop,
+credential-safe activity integration and received output remain open.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

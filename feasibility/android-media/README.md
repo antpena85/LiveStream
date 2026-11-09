@@ -33,6 +33,11 @@ are not proof of network integration or stop confirmation; it is not a working
 broadcast or a trial-ready build.
 Each local capture now binds callback delivery to its own adapter instead of
 looking up whichever adapter happens to be current when a delayed event arrives.
+The separate `DiagnosticPublisherLifecycle.startDiagnostic` experiment combines
+manual destination validation, caller-supplied readiness, the Android SQLite
+session claim and a supplied connect operation. It is not called by the activity;
+its readiness Boolean is not a complete broadcast-fit assessment and must not
+authorize a real stream. The activity's publisher adapter still denies start.
 The diagnostic fit preflight reads the displayed two-team fixture and its
 revision together in one SQLite query before measuring the text. That snapshot
 does not include a full scoreboard or authorize the publisher.

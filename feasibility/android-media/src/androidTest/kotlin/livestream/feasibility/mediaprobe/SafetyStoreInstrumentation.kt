@@ -16,6 +16,27 @@ class SafetyStoreInstrumentation : Instrumentation() {
         val result = Bundle()
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
+                check(store.claimPublisherSession("prior-session", store.snapshot()))
+                var connected = false
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                val accepted = lifecycle.startDiagnostic("next-session", "rtmps://example.test/live", "fictional-key", true, true, true, true, store.snapshot(), stop = {}) { connected = true }
+                check(!accepted && !connected && lifecycle.status() == DiagnosticPublisherStatus.Stopped) { "Unresolved prior session allowed connection" }
+                check(store.pendingStopSessions() == setOf("prior-session")) { "Prior session claim changed" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var endpoint = ""
+                var claimedBeforeConnect = false
+                val accepted = lifecycle.startDiagnostic("manual-session", "rtmps://example.test/live", "fictional-key", true, true, true, true, store.snapshot(), stop = {}) {
+                    endpoint = it
+                    claimedBeforeConnect = store.pendingStopSessions() == setOf("manual-session")
+                }
+                check(accepted && claimedBeforeConnect && endpoint == "rtmps://example.test/live/fictional-key") { "Manual start did not durably claim before connecting" }
+                check(lifecycle.status() == DiagnosticPublisherStatus.Connecting) { "Manual start did not enter Connecting" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
                 check(lifecycle.claim("late-connect", store.snapshot()))

@@ -1,11 +1,19 @@
 package livestream.feasibility.mediaprobe
 
 import livestream.feasibility.ProbeSnapshot
+import livestream.feasibility.DestinationResult
+import livestream.feasibility.ManualDestination
 
 enum class DiagnosticPublisherStatus { Stopped, Connecting, Live, Stopping }
 
 /** Testable session ownership experiment; not an authorization to publish. */
 class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
+    fun startDiagnostic(sessionId: String, server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean, fit: Boolean, snapshot: ProbeSnapshot, stop: () -> Unit, connect: (String) -> Unit): Boolean {
+        if (!confirmed || !camera || !microphone || !fit || ManualDestination.validate(server, key) != DestinationResult.Ready) return false
+        return claimAndConnect(sessionId, snapshot, stop) {
+            ManualDestination.withEndpoint(server, key, connect)
+        }
+    }
     @Synchronized fun failed(sessionId: String, stop: () -> Unit) {
         requestStop(sessionId, true, stop)
     }
