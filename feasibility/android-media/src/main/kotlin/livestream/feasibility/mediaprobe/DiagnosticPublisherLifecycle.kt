@@ -8,6 +8,10 @@ enum class DiagnosticPublisherStatus { Stopped, Connecting, Live, Stopping }
 
 /** Testable session ownership experiment; not an authorization to publish. */
 class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
+    fun callbacksFor(sessionId: String, stop: () -> Unit): PublisherCallbacks = PublisherCallbacks(
+        onSuccess = { connected(sessionId, stop) },
+        onFailure = { failed(sessionId, stop) }
+    )
     fun startDiagnostic(sessionId: String, server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean, fit: Boolean, snapshot: ProbeSnapshot, stop: () -> Unit, connect: (String) -> Unit): Boolean {
         if (!confirmed || !camera || !microphone || !fit || ManualDestination.validate(server, key) != DestinationResult.Ready) return false
         return try {

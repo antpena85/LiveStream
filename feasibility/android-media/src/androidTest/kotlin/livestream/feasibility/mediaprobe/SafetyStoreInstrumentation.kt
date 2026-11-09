@@ -17,6 +17,18 @@ class SafetyStoreInstrumentation : Instrumentation() {
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stops = 0
+                check(lifecycle.claim("callback-session", store.snapshot()))
+                val callbacks = lifecycle.callbacksFor("callback-session") { stops++ }
+                callbacks.onConnectionSuccess()
+                check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Publisher callback did not mark matching session live" }
+                callbacks.onConnectionFailed("fictional error")
+                check(stops == 1 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Publisher failure did not request session cleanup" }
+                check(store.pendingStopSessions() == setOf("callback-session")) { "Publisher failure cleared claim" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 check(lifecycle.claim("retry-stop", store.snapshot()))
                 var attempts = 0
                 lifecycle.requestStop("retry-stop", true) { attempts++; throw IllegalStateException("stop failed") }

@@ -317,6 +317,25 @@ claimed for this revision. Media APKs built offline and the JVM task was up to
 date. These use publisher doubles and do not demonstrate real stop completion,
 provider reconciliation, activity integration or a safe broadcast.
 
+Later the same day, a fresh installation retry on the Pixel 10 Pro XL again
+timed out. The owner reported a Google security review prompt; the cause of the
+timeout is not independently established. Both installed diagnostic APK hashes
+matched the current built APKs, so instrumentation was run without reinstalling
+and returned PASS with instrumentation code -1 on `CP3A.261005.005`. No device
+security setting was changed. This supersedes the missing Pro XL result for the
+diagnostic test only, not any real publisher or received-broadcast evidence.
+
+### Diagnostic session callback bridge — 2026-11-09
+
+At confirmed T02, a Pixel 8 Pro instrumentation test first failed when the
+candidate callback did not transition its claimed diagnostic session on
+connection success. The session-scoped callback bridge now sends success and
+failure events to that lifecycle; the test passed, including cleanup request
+and durable claim retention on failure. Android APKs built offline and the JVM
+task was up to date. Callbacks were invoked directly with a publisher double;
+the bridge is not wired into the activity or `GenericStream`, and real callback
+threading, shutdown confirmation, complete fit and received output remain open.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

@@ -38,6 +38,8 @@ manual destination validation, caller-supplied readiness, the Android SQLite
 session claim and a supplied connect operation. It is not called by the activity;
 its readiness Boolean is not a complete broadcast-fit assessment and must not
 authorize a real stream. The activity's publisher adapter still denies start.
+The lifecycle can now produce callbacks bound to one diagnostic session; this
+bridge is tested with direct calls, not wired into the activity's candidate stream.
 The diagnostic fit preflight reads the displayed two-team fixture and its
 revision together in one SQLite query before measuring the text. That snapshot
 does not include a full scoreboard or authorize the publisher.
