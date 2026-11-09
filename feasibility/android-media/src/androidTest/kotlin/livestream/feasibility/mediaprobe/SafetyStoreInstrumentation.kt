@@ -15,6 +15,16 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                check(lifecycle.claim("retry-stop", store.snapshot()))
+                var attempts = 0
+                lifecycle.requestStop("retry-stop", true) { attempts++; throw IllegalStateException("stop failed") }
+                lifecycle.requestStop("retry-stop", true) { attempts++ }
+                check(attempts == 2 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Failed publisher stop could not be retried" }
+                check(store.pendingStopSessions() == setOf("retry-stop")) { "Retry cleared unresolved stop" }
+            }
+            targetContext.deleteDatabase(name)
             run {
                 val snapshot = AndroidSafetyStore(targetContext, name).use { it.snapshot() }
                 val store = AndroidSafetyStore(targetContext, "/dev/null/unavailable.db")

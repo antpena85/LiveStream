@@ -306,6 +306,17 @@ date. These fields are static fixtures, not match state; no local recording was
 reviewed for the changed fixture and no received output was tested. This is not
 full scoreboard fit, match logic, or authorization to publish.
 
+### Diagnostic stop retry — 2026-11-09
+
+At T02, an instrumented Pixel 8 Pro test failed when a confirmed stop whose
+publisher operation threw could not be retried. A later confirmed request for
+the same owned session now dispatches stop again while retaining `Stopping` and
+the durable claim. The test passed on both Pixel 8 Pro builds. A multi-device
+command and subsequent Pixel 10 Pro XL retry timed out, so no Pro XL result is
+claimed for this revision. Media APKs built offline and the JVM task was up to
+date. These use publisher doubles and do not demonstrate real stop completion,
+provider reconciliation, activity integration or a safe broadcast.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

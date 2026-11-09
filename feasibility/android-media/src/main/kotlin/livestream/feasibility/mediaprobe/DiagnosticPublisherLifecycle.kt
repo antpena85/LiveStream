@@ -22,7 +22,7 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
         requestStop(sessionId, true, stop)
     }
     @Synchronized fun requestStop(sessionId: String, confirmed: Boolean, stop: () -> Unit) {
-        if (!confirmed || owner != sessionId || current == DiagnosticPublisherStatus.Stopped || current == DiagnosticPublisherStatus.Stopping) return
+        if (!confirmed || owner != sessionId || current == DiagnosticPublisherStatus.Stopped) return
         current = DiagnosticPublisherStatus.Stopping
         try { stop() } catch (_: Exception) { /* Keep the durable claim and stopping state. */ }
     }
