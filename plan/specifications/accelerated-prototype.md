@@ -295,6 +295,17 @@ separate retry after the concurrent command timed out. This checks a real
 unopenable Android database and a publisher double; it does not test arbitrary
 storage failures, connect the activity or authorize broadcasting.
 
+### Diagnostic projection fields — 2026-11-09
+
+At T05, the Android instrumentation first failed because the dynamic diagnostic
+projection omitted sets, timeouts and a serving cue. Its local projection and
+fit preflight now use the same fixture text: fixed S0, T/O2 and left-serve values
+alongside the stored point totals. The check passed on both Pixel 8 Pro builds
+and the Pixel 10 Pro XL; the APKs built offline and the JVM test task was up to
+date. These fields are static fixtures, not match state; no local recording was
+reviewed for the changed fixture and no received output was tested. This is not
+full scoreboard fit, match logic, or authorization to publish.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

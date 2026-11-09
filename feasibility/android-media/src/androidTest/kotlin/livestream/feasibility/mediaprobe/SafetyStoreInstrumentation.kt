@@ -151,15 +151,18 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 it.scorePoint(left = false)
             }
             AndroidSafetyStore(targetContext, name).use {
-                check(it.scoreDisplay() == "ABC  1  |  2  XYZ") { "Diagnostic scoreboard did not survive reopening" }
+                check(it.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 2 S0 T/O2") { "Diagnostic scoreboard did not survive reopening" }
                 val assessment = AndroidPublisherAdapter(it, connect = {}, stop = {}).diagnosticAssessment()
-                check(assessment.display == "ABC  1  |  2  XYZ" && assessment.snapshot == ProbeSnapshot(3, 3, 0) && assessment.fits) {
+                check(assessment.display == "> ABC 1 S0 T/O2 | XYZ 2 S0 T/O2" && assessment.snapshot == ProbeSnapshot(3, 3, 0) && assessment.fits) {
                     "Fit assessment did not identify the score and revision assessed"
+                }
+                check(assessment.display.contains("T/O") && assessment.display.contains("S0") && assessment.display.contains(">")) {
+                    "Diagnostic projection omitted timeouts, sets or serving indicator"
                 }
             }
             AndroidSafetyStore(targetContext, name).use { it.scorePointWithPendingStop(left = false, sessionId = "session-a") }
             AndroidSafetyStore(targetContext, name).use { reopened ->
-                check(reopened.scoreDisplay() == "ABC  1  |  3  XYZ") { "Updated score missing after pending stop" }
+                check(reopened.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 3 S0 T/O2") { "Updated score missing after pending stop" }
                 val view = reopened.safetyView()
                 check(view.snapshot == ProbeSnapshot(4, 4, 0)) { "Incorrect reopened snapshot" }
                 check(view.pendingStops == setOf("session-a")) { "Missing reopened pending stop" }
@@ -170,7 +173,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
             }
             AndroidSafetyStore(targetContext, name).use { reopened ->
                 check(reopened.pendingStopSessions() == setOf("session-b")) { "Stop confirmation cleared the wrong session" }
-                check(reopened.scoreDisplay() == "ABC  1  |  3  XYZ") { "Stop confirmation changed score" }
+                check(reopened.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 3 S0 T/O2") { "Stop confirmation changed score" }
             }
             result.putString("result", "PASS: publisher gate, diagnostic overlay and durable safety state")
             finish(Activity.RESULT_OK, result)

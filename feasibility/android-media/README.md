@@ -116,7 +116,9 @@ the encoded video, and check orientation and audible audio. The 20-second
 switch/mute test retains the asymmetric fixture (ABC 99/S2/T/O2/serve and XYZ
 100/S1/T/O1). **Decoded frame** shows a single frame, not the whole sequence.
 The simplified score is not match logic and must not be used for a broadcast
-or real match. Its local renderer measures the diagnostic text and widens its
+or real match. The dynamic fixture displays fixed S0, T/O2 and left-serve
+values; these do not update with scoring and are not actual match state.
+Its local renderer measures the diagnostic text and widens its
 bitmap within a provisional limit; if it still cannot fit, the saved score is
 retained and local capture stops with a notice. This is not the full numeric-fit
 or publishing-stop safety contract: only the diagnostic fixture is measured,

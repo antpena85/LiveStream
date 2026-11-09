@@ -25,7 +25,7 @@ class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(cont
         "SELECT diagnostic_score.left_points, diagnostic_score.right_points, state.points, state.revision, state.epoch FROM diagnostic_score JOIN state ON state.id=diagnostic_score.id WHERE state.id=1", null
     ).use { rows ->
         check(rows.moveToFirst())
-        "ABC  ${rows.getInt(0)}  |  ${rows.getInt(1)}  XYZ" to ProbeSnapshot(rows.getInt(2), rows.getLong(3), rows.getLong(4))
+        fixtureDisplay(rows.getInt(0), rows.getInt(1)) to ProbeSnapshot(rows.getInt(2), rows.getLong(3), rows.getLong(4))
     }
     /** Caller must independently establish that this exact session has stopped. */
     fun confirmStopped(sessionId: String) {
@@ -54,8 +54,9 @@ class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(cont
         "SELECT left_points, right_points FROM diagnostic_score WHERE id=1", null
     ).use { rows ->
         check(rows.moveToFirst())
-        "ABC  ${rows.getInt(0)}  |  ${rows.getInt(1)}  XYZ"
+        fixtureDisplay(rows.getInt(0), rows.getInt(1))
     }
+    private fun fixtureDisplay(left: Int, right: Int) = "> ABC $left S0 T/O2 | XYZ $right S0 T/O2"
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE state (id INTEGER PRIMARY KEY CHECK(id=1), points INTEGER NOT NULL, revision INTEGER NOT NULL, epoch INTEGER NOT NULL)")
         db.execSQL("INSERT INTO state VALUES (1, 0, 0, 0)")

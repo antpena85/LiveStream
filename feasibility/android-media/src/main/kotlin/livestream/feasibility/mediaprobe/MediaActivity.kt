@@ -67,7 +67,7 @@ class MediaActivity : Activity() {
             setPadding(32, 48, 32, 24)
         }
         status = TextView(this).apply {
-            text = "Local M2 test; no broadcast. Transition test: speak/count throughout. Mute at 4s, unmute at 8s, front at 12s, rear at 16s; stop at 20s. Each run replaces the private clip."
+            text = "Local M2 test; no broadcast. Sets, timeouts and serve are fixed fixture values, not match state. Transition test: speak/count throughout. Mute at 4s, unmute at 8s, front at 12s, rear at 16s; stop at 20s. Each run replaces the private clip."
         }
         content.addView(status)
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
