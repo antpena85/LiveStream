@@ -286,6 +286,15 @@ not connected to the activity or actual provider; the supplied fit Boolean is
 not a complete fit assessment, and no real stream is enabled. Full fit/stop,
 credential-safe activity integration and received output remain open.
 
+An unavailable Android SQLite database at diagnostic start initially raised
+`SQLiteCantOpenDatabaseException` on Pixel 8 Pro rather than returning a safe
+denial. The diagnostic entry point now denies the start without invoking the
+publisher; the instrumentation passed on both Pixel 8 Pro builds and Pixel 10
+Pro XL. The media APKs built offline and the forced JVM regression passed on a
+separate retry after the concurrent command timed out. This checks a real
+unopenable Android database and a publisher double; it does not test arbitrary
+storage failures, connect the activity or authorize broadcasting.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

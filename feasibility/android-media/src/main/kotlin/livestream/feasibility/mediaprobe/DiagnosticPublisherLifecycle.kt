@@ -10,8 +10,12 @@ enum class DiagnosticPublisherStatus { Stopped, Connecting, Live, Stopping }
 class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
     fun startDiagnostic(sessionId: String, server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean, fit: Boolean, snapshot: ProbeSnapshot, stop: () -> Unit, connect: (String) -> Unit): Boolean {
         if (!confirmed || !camera || !microphone || !fit || ManualDestination.validate(server, key) != DestinationResult.Ready) return false
-        return claimAndConnect(sessionId, snapshot, stop) {
-            ManualDestination.withEndpoint(server, key, connect)
+        return try {
+            claimAndConnect(sessionId, snapshot, stop) {
+                ManualDestination.withEndpoint(server, key, connect)
+            }
+        } catch (_: Exception) {
+            false
         }
     }
     @Synchronized fun failed(sessionId: String, stop: () -> Unit) {

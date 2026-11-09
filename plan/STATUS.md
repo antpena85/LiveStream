@@ -1,6 +1,6 @@
 # LiveStream plan status dashboard
 
-As of: 2026-11-05 (America/New_York)
+As of: 2026-11-09 (America/New_York)
 Current phase: M2 feasibility, isolated probes, and an authorized accelerated prototype.
 Implementation/release: Local media and watch diagnostics have been exercised; the publisher safety seam compiles for Android but is not integrated. No received broadcast or release application is delivered.
 Sources: [Instructions](../AGENTS.md), [PRD](../PRD.md), [master plan](MASTER_PLAN.md),
@@ -15,7 +15,7 @@ implementation percentage or release readiness. All 53 plans exist.
 | --- | --- | --- | --- |
 | [M0 — Requirements](subplans/README.md#m0-requirements-baseline) | 1 / 1 | Complete | Explicit PRD open details remain separate from approval. |
 | [M1 — Planning package](subplans/README.md#m1-planning-package) | 6 / 6 | Complete for documentation | Remaining D10/D11 technical/visual decisions and physical inputs feed later gates. |
-| [M2 — Feasibility and stack](subplans/README.md#m2-technical-feasibility-and-selection) | 0 / 8 | All eight In progress | Actual devices/media/accounts/uploads, final decisions and Android/watch toolchain handoff. Preparation is not measured feasibility. |
+| [M2 — Feasibility and stack](subplans/README.md#m2-technical-feasibility-and-selection) | 0 / 8 | All eight In progress | Received media, provider/remote/upload evidence, final decisions and Android/watch toolchain handoff. Local measurements do not establish full feasibility. |
 | [M3 — Match and controls](subplans/README.md#m3-match-state-persistence-and-local-controls) | 0 / 9 | Not started | G2, applicable implementation authorization and task dependencies. |
 | [M4 — Capture and publishing](subplans/README.md#m4-capture-overlay-publishing-and-adaptation) | 0 / 7 | Not started | G2, applicable authorization, media evidence and task dependencies. |
 | [M5 — Provider sign-in](subplans/README.md#m5-destination-sign-in-and-automatic-setup) | 0 / 4 | Not started | G2, applicable authorization and both provider paths. |
@@ -85,7 +85,13 @@ Recommended next work (owner direction, 2026-11-06):
 3. Check ADB for the chosen streaming phone before device-dependent work. The owner selects the destination and duration and initiates a bounded trial; independently inspect received video, changed score and audio.
 4. Continue provider, remote/watch, adaptation and full-matrix evidence as needed for G2 and release; these are deferred from the first prototype demonstration, not waived. G2 remains open and M3–M8 require further authorization.
 
-The counts and milestone evidence above remain the 2026-11-05 snapshot; this priority update does not refresh task statuses or imply new completion.
+The [manual-start diagnostic integration](specifications/accelerated-prototype.md#diagnostic-manual-start-integration--2026-11-09)
+validates a fictional destination and durable Android SQLite claim before a test
+double connects. It passed on three phones, as did the subsequent unavailable
+Android-store denial. The complete fit assessment, actual publisher integration
+and stop confirmation remain open. The [current-build
+inventory audit](evidence/m2/m2-1-capability-audit-2026-11-02.md#current-build-report-collection--2026-11-09)
+distinguishes capability advertisements from capture and received output.
 
 All [D01–D13 aggregate records](MASTER_PLAN.md#7-open-decision-register) remain open:
 
@@ -97,10 +103,10 @@ All [D01–D13 aggregate records](MASTER_PLAN.md#7-open-decision-register) remai
 | D10–D11 | Visual/numeric capacity, preference/stop/recovery, and revision/identity/receipt/retention contracts with required evidence. Q44/Q45 stay confirmed. |
 | D12–D13 | Distribution/support coverage and final Android/watch/tooling handoff. Q47 now settles T01–T06 confirmation; TDD remains required. |
 
-Since the 2026-10-25 snapshot, ST06 and publisher simulations, local media,
-watch diagnostics, and Android source/build compatibility have additional retained
-evidence linked above. The former instruction to specify ST06 is superseded; it
-is not the next action. Task counts and the G2 disposition have not changed.
+Since the 2026-11-05 snapshot, diagnostic callback cleanup, durable manual-start
+claim tests and current-build inventory reports have added evidence as linked
+above. Task counts and the G2 disposition have not changed; these experiments
+do not establish a working broadcast.
 
 [Graphical progression](../.archify/workflow-livestream-progression-20261018-164617/livestream-progression.html)
 remains the earlier dated 4/53 snapshot. This Markdown file carries current

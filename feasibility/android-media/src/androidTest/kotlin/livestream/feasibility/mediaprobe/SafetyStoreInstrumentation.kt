@@ -15,6 +15,15 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            run {
+                val snapshot = AndroidSafetyStore(targetContext, name).use { it.snapshot() }
+                val store = AndroidSafetyStore(targetContext, "/dev/null/unavailable.db")
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var connected = false
+                val accepted = lifecycle.startDiagnostic("closed-store", "rtmps://example.test/live", "fictional-key", true, true, true, true, snapshot, stop = {}) { connected = true }
+                check(!accepted && !connected && lifecycle.status() == DiagnosticPublisherStatus.Stopped) { "Unavailable safety store allowed start" }
+            }
+            targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
                 check(store.claimPublisherSession("prior-session", store.snapshot()))
                 var connected = false
