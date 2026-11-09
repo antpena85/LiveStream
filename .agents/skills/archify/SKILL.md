@@ -17,7 +17,8 @@ For a native diagram of a real codebase, read [Repository authoring](references/
 
 ## Choose the artifact
 
-- When the user asks to draw or visualize a system, flow, schema or history, use a native diagram and the Type router.
+- Project routing: honor an explicitly requested format. Use Archify for interactive standalone HTML and Pretty Mermaid for Mermaid source or documentation renders. For an unspecified diagram format, default to Mermaid for repository documentation and Archify for an interactive standalone view; do not create both unless requested.
+- When an Archify visualization is selected for a system, flow, schema or history, use a native diagram and the Type router.
 - Use `explainer` when the user asks for the answer as a page: a page, one page, an explainer, something to share (“做成一页”, “用页面讲”, “answer with a page”). Without such a request, answer in text or draw the requested diagram. A page made on request ends its reply with the one-line mode offer under Output.
 - A rules line in context changes this. `[archify explainer: proactive]`: also make a page, unasked, for an explanation, comparison, trade-off, decision, diagnosis, review or plan that needs a table, steps or several sections. `[archify explainer: always-on]`: every reply that reaches a conclusion also gets a compact page of at most four panels, delivered without opening it, its link closing the reply. `[archify explainer: on-demand]`: only when asked, and never offer a mode.
 - In every mode a page needs a conclusion with some structure behind it: chat, one-line answers, raw command output and text-only requests get none.

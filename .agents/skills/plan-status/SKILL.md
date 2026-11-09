@@ -51,8 +51,9 @@ documented status; research is needed if the user also requests new fact checks.
 - Count unresolved decision records from the current register. Partial evidence
   does not resolve the record. In particular, M1.2 can be complete while D01
   remains open for installed builds, accessories, uploads, and device evidence.
-- Keep confirmed Q7 direct watch pairing and confirmed TDD separate from open
-  framework/tool choices and unconfirmed T01–T06 public boundaries.
+- Keep confirmed Q7 direct watch pairing, TDD, and T01–T06 public boundaries
+  separate from open framework/tool choices and pending harness and physical
+  evidence. Changed boundary scope requires renewed confirmation.
 - Treat owner reports, documentation review, automated results, physical checks,
   and received-broadcast evidence as different evidence. Do not substitute one
   for another when assessing an acceptance criterion.

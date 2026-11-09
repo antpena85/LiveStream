@@ -9,6 +9,8 @@ description: Indoor volleyball match state machine, scoring rules (FIVB 2025-202
 
 This skill provides domain rules, state machine specifications, and broadcast overlay guidelines for indoor volleyball live streaming. Use this skill when designing, implementing, or validating match state transitions, remote scoring controls, and video scoreboard overlays.
 
+The approved [PRD](../../../PRD.md), [match correction specification](../../../plan/specifications/m1-5-match-correction-specification.md), and [overlay specification](../../../plan/specifications/m1-6-overlay-display-specification.md) govern project behavior. The examples below are illustrative, not a complete state model or authority to implement. Confirm current official competition rules when a rules claim matters; do not turn recommendations into product decisions.
+
 ---
 
 ## 1. Indoor Volleyball Scoring Rules (FIVB 2025-2028 Standard)
@@ -28,7 +30,7 @@ This skill provides domain rules, state machine specifications, and broadcast ov
 
 ### Timeouts & Intervals
 
-- **Team Timeouts:** Each team is allowed a maximum of **2 timeouts per set**.
+- **Team Timeouts:** The standard example allows **2 timeouts per team per set**; use the configured allowance for custom presets.
 - **Timeout Reset:** The timeout count resets to the full allowance at the start of each new set.
 - **Unused Timeouts:** Unused timeouts do not carry over to subsequent sets.
 
@@ -49,17 +51,17 @@ MatchState:
     name: String (e.g. "Eagles")
     shortName: String (e.g. "EAG")
     color: Color (optional hex/accent)
-    setsWon: Int (0..3)
+    setsWon: Int (configured range)
     currentPoints: Int (0..N)
-    timeoutsRemaining: Int (0..2)
+    timeoutsRemaining: Int (0..configured allowance)
   teamB:
     name: String (e.g. "Panthers")
     shortName: String (e.g. "PAN")
     color: Color (optional hex/accent)
-    setsWon: Int (0..3)
+    setsWon: Int (configured range)
     currentPoints: Int (0..N)
-    timeoutsRemaining: Int (0..2)
-  currentSetNumber: Int (1..5)
+    timeoutsRemaining: Int (0..configured allowance)
+  currentSetNumber: Int (configured match range)
   servingTeam: Enum (TEAM_A, TEAM_B, NONE)
   displayOrderSwapped: Boolean (false = Team A left, Team B right; true = Team B left, Team A right)
   setHistory: List of SetResult (e.g. [{set: 1, scoreA: 25, scoreB: 22}, ...])
@@ -79,19 +81,17 @@ MatchState:
      - Serve possession automatically toggles to the receiving team.
    - *Manual Override:* Controllers must allow the scorekeeper to manually toggle serving possession if an error occurred or before the first serve of a set.
 2. **Point Subtraction & Undo:**
-   - Scorekeepers can decrement a point or trigger "Undo".
-   - Undo must restore the exact previous state (points, serving possession, and timeout count).
+   - Authorized scorekeepers can decrement a point or use one-step Undo of the latest eligible match edit; decrement and Undo have distinct effects. Apply PRD Q18, Q26, Q27 and the controller matrix, including restart and restricted-edit behavior.
    - Points cannot become negative (< 0).
 3. **Set Completion Transition:**
-   - A set is won when a team reaches the target points (25, or 15 in deciding set) with a lead of >= 2 points.
+   - Evaluate the configured target, winning margin, and optional cap. A cap/margin conflict pauses ordinary scoring until an authorized explicit resolution; apply PRD Q25 and Q29.
    - The UI indicates **Set Point** or **Match Point**.
    - Advancing the set requires **explicit user confirmation** (not automated) to avoid premature advancement during disputed calls.
    - Upon confirmation:
      - Increment `setsWon` for the winning team.
      - Record the completed score in `setHistory`.
-     - Reset `currentPoints` for both teams to 0.
-     - Reset `timeoutsRemaining` for both teams to 2.
-     - Increment `currentSetNumber`.
+     - If the match continues, begin the next set at 0–0 with the full configured timeout allowance and no server until explicitly selected.
+     - If the match is complete, retain the final score and do not create an active next set; apply the PRD and match specification for corrections and reopening.
 4. **Court Side Swap:**
    - Triggering "Swap Sides" toggles `displayOrderSwapped`.
    - Swaps visual positions of Team A and Team B on the broadcast overlay so they match what the camera sees on court.
@@ -105,22 +105,22 @@ MatchState:
 
 - **Target Output Resolution:** 1280x720 (720p, 16:9) baseline; scalable to 1920x1080 (1080p).
 - **Safe Margins:** Keep all graphics within a 5% title safe margin from screen edges (min. 36px at 720p, 54px at 1080p).
-- **Recommended Placement:** Top-left banner or bottom-center bug.
+- **Placement:** Configurable presets cover the four corners and bottom-center.
 
 ### Scoreboard Elements (Compact Layout)
 
 ```
 +-------------------------------------------------------------+
 | [•] TEAM A   25 | (2)   SETS   (1) | 22   TEAM B        | |
-|     T/O: ●●     |      SET 3       |      T/O: ●○       | |
+|     T/O: 2      |      SET 3       |      T/O: 1        | |
 +-------------------------------------------------------------+
 ```
 
-1. **Team Identifier:** Team name or short code (e.g. 3–5 characters), truncated gracefully if too long.
+1. **Team Identifier:** Editable, validated 1–5-character abbreviation. Follow PRD Q41–Q43 for validation, duplicate confirmation, and recovery; never silently truncate invalid saved codes.
 2. **Current Set Points:** Prominent, high-contrast numeric display (largest visual element).
 3. **Serving Indicator (`[•]`):** Distinct visual pip, dot, or icon adjacent to the team currently serving.
 4. **Sets-Won Counter:** Compact digits (e.g., `2 - 1`) or dots representing sets won.
-5. **Timeouts Indicator:** Dots or bars representing timeouts remaining (e.g. `●●` = 2 left, `●○` = 1 left, `○○` = 0 left).
+5. **Timeouts Indicator:** Numeric remaining allowance labeled `T/O` for each team, including custom allowances.
 6. **Set Number Indicator:** Small label indicating current set (e.g., `SET 3`).
 
 ### Legibility & Visual Contrast Standards
@@ -133,9 +133,10 @@ MatchState:
 
 ## 4. Remote Controller Operational Patterns
 
-- **Streaming Phone:** Full control, video preview, audio level meter, direct Wear OS communication.
-- **Second Phone/Tablet:** Full scoring control (points, serve toggle, timeouts, set confirm, side swap, team names). Communicates over local network / Wi-Fi Hotspot.
-- **Wear OS Watch:** Quick-action wrist interface:
+- Consult the PRD controller matrix and match specification for authoritative permissions, including Undo and cap continuation. Transport and implementation details remain open; examples below are not a permission grant.
+- **Streaming Phone:** Local controls and preview; direct pairing with the active streaming phone applies to the watch.
+- **Second Phone/Tablet:** Scoring and permitted match-information controls.
+- **Wear OS Watch:** Simpler quick-action interface, subject to the controller matrix:
   - Big touch targets for: `+ Point Left`, `+ Point Right`, `Undo`.
   - Secondary screen/long-press for: `Timeout`, `Swap Sides`, `Confirm Set`.
   - Display current score, sets, and serve possession at a glance.

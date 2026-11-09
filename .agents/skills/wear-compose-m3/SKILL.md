@@ -26,10 +26,12 @@ metadata:
 
 ## Prerequisites and compatibility
 
+Project scope: use this guidance conditionally for an authorized Wear Compose M3 evaluation or implementation. Its installation does not select the release UI stack or authorize dependency, SDK, AGP, or Kotlin upgrades. Preserve the project's confirmed versions and dependencies unless a change is authorized; when selecting or upgrading an authorized stack, verify compatibility and current official documentation rather than blindly applying version examples below.
+
 1. **Current Wear OS Compose version in-use:** To find the installed library version, read `gradle/libs.versions.toml` or `build.gradle.kts` directly. Don't run `./gradlew dependencies` or other shell commands to resolve versions.
 2. **Wear OS Compose Material3 version:** If an internal tool is available to establish the **latest stable version** `{VERSION}` of `androidx.wear.compose:compose-material3`, use that tool.
    - Otherwise, fetch the [official Maven metadata XML](https://dl.google.com/dl/android/maven2/androidx/wear/compose/compose-material3/maven-metadata.xml) to identify `{VERSION}` (highest number, ignoring `-alpha`, `-beta`, or `-rc`).
-3. **Strict compliance:** If a version is listed as stable, you MUST use it, unless overridden by the user. Do not downgrade based on initial "Unresolved reference" errors in the editor or outdated web search results.
+3. **Version selection:** Prefer a compatible stable version when an upgrade is authorized; do not change an existing version solely because a newer stable version exists. Investigate unresolved references rather than blindly downgrading.
 4. **Kotlin \& Compose compiler:** Use Kotlin **2.0.0+** with the `org.jetbrains.kotlin.plugin.compose` Gradle plugin.
 5. **Min SDK:** Ensure `minSdk` is at least **25**.
 6. **Compile SDK \& AGP:** Ensure `compileSdk` and AGP meet the library's AAR metadata floors (`compileSdk >= 35` and `AGP >= 8.6.0` for `1.6.x`; `compileSdk >= 37` and `AGP >= 9.1.0` for `1.7.x`).
@@ -47,7 +49,7 @@ Use this guidance when migrating from an older version of Wear OS Compose or
 Horologist, updating an existing Wear Compose Material3 project, or adding
 features.
 
-1. Unless otherwise indicated by the developer, use the latest stable version of Wear Compose Material3 from `{VERSION}` (superseding any literal version strings in the migration guide).
+1. When an upgrade is authorized, evaluate the latest compatible stable version of Wear Compose Material3 from `{VERSION}` against project constraints; otherwise retain the existing authorized version.
 2. When migrating from Material 2.5 or Horologist, read the [migration guide](references/android/training/wearables/compose/migrate-to-material3.md) and use its official component mappings.
 3. Before refactoring any component (for example, `Chip` -\> `Button`), check the parameter names, slot types, and "Expressive" design tokens.
 4. Do not use the Horologist Composables, Compose Layout, or Compose Material libraries; replace Horologist components with Wear Compose M3 equivalents (`AppScaffold` -\> M3 `AppScaffold`, `ScreenScaffold` -\> M3 `ScreenScaffold`, `ScalingLazyColumn` -\> `TransformingLazyColumn`, `ResponsiveListHeader` -\> `ListHeader`, `PagerScreen` -\> `HorizontalPagerScaffold`, `Chip` -\> `Button`, `Confirmation` -\> `ConfirmationDialog`).

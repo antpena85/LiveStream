@@ -30,6 +30,8 @@ This skill provides procedural guidance and standard patterns for building
 camera applications on Android, with a focus on CameraX, including its
 `Camera2Interop` utilities, and Media3 integrations.
 
+Project scope: this is conditional guidance for an authorized CameraX evaluation or implementation, not a selection of the release media stack or permission to add dependencies. Respect the current project, confirmed test boundaries and existing libraries; treat the specific abstractions, assertion libraries and runners below as recommendations unless already adopted or explicitly authorized. Verify current platform APIs against official documentation when needed.
+
 ## Core workflows
 
 ### Handling immutable API patterns

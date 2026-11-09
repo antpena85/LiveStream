@@ -26,7 +26,7 @@ Use this skill when:
 
 ### Phase 1: Discovery (The Interview)
 
-Before writing a single line of the PRD, you **MUST** interrogate the user to fill knowledge gaps. Do not assume context.
+First read the existing PRD and relevant project context. Ask concise questions only for unresolved information needed for the requested work; do not re-ask settled decisions or invent constraints. Continue independent work where possible.
 
 **Ask about:**
 
@@ -43,7 +43,7 @@ Synthesize the user's input. Identify dependencies and hidden complexities.
 
 ### Phase 3: Technical Drafting
 
-Generate the document using the **Strict PRD Schema** below.
+For a new PRD, use the schema below as a guide. When revising an existing PRD, preserve its structure and approved decisions unless restructuring is requested.
 
 ---
 
@@ -68,7 +68,7 @@ Use concrete, measurable criteria. Avoid "fast", "easy", or "intuitive".
 
 ## Strict PRD Schema
 
-You **MUST** follow this exact structure for the output:
+Use this structure when appropriate for a new document; adapt to the project and request:
 
 ### 1. Executive Summary
 
@@ -110,7 +110,7 @@ You **MUST** follow this exact structure for the output:
 
 ### DON'T (Avoid)
 
-- **Skip Discovery**: Never write a PRD without asking at least 2 clarifying questions first.
+- **Skip Discovery**: Do not assume unresolved requirements; investigate existing context and ask when a decision is necessary.
 - **Hallucinate Constraints**: If the user didn't specify a tech stack, ask or label it as `TBD`.
 
 ---

@@ -95,3 +95,12 @@ established; both report identities match the current build. Camera capture,
 encoding and publishing remain `not_run`. These advertisements do not verify
 actual capture, selected physical lenses, active routing or received output.
 The task and G2 remain open.
+
+The authorized Pixel 10 Pro XL on `CP3A.261005.005` was also launched into
+the inventory activity, and its separately collected [report](android-inventory-2026-11-09/pixel-10-pro-xl-cp3a.261005.005.json)
+matches the currently reported model/build and has both permissions granted.
+Its camera, encoder and advertised-input arrays match the retained 2026-10-24
+report. As with the other reports, no collection timestamp proves regeneration;
+capture, audio capture, encoding and publishing are explicitly `not_run`.
+The watch diagnostic package was present on the Pro XL and Pixel Watch 4;
+package presence alone does not establish current pairing or a fresh round trip.

@@ -14,6 +14,8 @@ description: |
 
 Create or render Mermaid diagrams with the bundled Node.js CLI. Use SVG for scalable documentation, PNG for sharing or raster-only consumers, and ASCII or Unicode for terminals and plain text.
 
+Project routing: honor an explicitly requested format. Use Pretty Mermaid for Mermaid source or documentation renders and Archify for interactive standalone HTML. For an unspecified diagram format, default to Mermaid for repository documentation and Archify for an interactive standalone view; do not create both unless requested.
+
 ## Working directory
 
 Treat the directory containing this file as `<skill-root>`. Run bundled scripts from that directory, or invoke them with absolute paths. Keep user source and rendered output in the user's requested location; do not copy the renderer into their project.

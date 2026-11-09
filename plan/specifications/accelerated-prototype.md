@@ -254,6 +254,24 @@ the forced offline JVM suite passed 109 tests with zero failures, errors or
 skips. These callbacks use doubles; real callback provenance, actual network
 shutdown, activity integration and the broadcast gate remain unverified.
 
+### Verification and integration gap — 2026-11-09
+
+After the late-success change was committed, the Android safety instrumentation
+passed again on both Pixel 8 Pro builds and the Pixel 10 Pro XL. The media debug
+and test APK builds were up to date; the watch diagnostic APK also built offline.
+The forced JVM suite ran 109 tests with no failures, errors or skips, and the
+diagnostic media runtime dependency configuration resolved offline. These are
+regressions and build checks, not new TDD cycles or completed M2 tasks.
+
+The actual activity adapter uses `ManualPublisherControl`, which still always
+denies start because complete fit is unavailable. The durable diagnostic
+publisher lifecycle is separate; its session claim cannot simply be inserted
+into that control because `StreamSession` treats any pending marker as a blocker.
+The marker also cannot be cleared merely from `stopStream()` or a callback
+without independently established session-scoped termination. Joining these
+paths, complete scoreboard assessment and real stop confirmation remain required
+before a trial. No live destination or owner-selected trial duration was used.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe
