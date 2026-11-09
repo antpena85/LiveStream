@@ -243,6 +243,17 @@ These are diagnostic lifecycle checks, not real provider callbacks, confirmed
 network shutdown, complete fit, or integration with the activity. The guarded
 adapter still denies publishing; the prototype gate and G2 remain open.
 
+### Late success after stop — 2026-11-09
+
+At T02, a physical Pixel 8 Pro test first failed because a connection-success
+event arriving after a confirmed stop did not request cleanup again. The
+diagnostic lifecycle now dispatches another stop for its own session, retaining
+the pending claim. The revised instrumentation passed on both Pixel 8 Pro
+builds and the Pixel 10 Pro XL listed above. Both media APKs built offline and
+the forced offline JVM suite passed 109 tests with zero failures, errors or
+skips. These callbacks use doubles; real callback provenance, actual network
+shutdown, activity integration and the broadcast gate remain unverified.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

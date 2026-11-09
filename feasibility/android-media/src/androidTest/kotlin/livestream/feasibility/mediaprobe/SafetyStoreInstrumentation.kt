@@ -17,6 +17,16 @@ class SafetyStoreInstrumentation : Instrumentation() {
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stops = 0
+                check(lifecycle.claim("late-connect", store.snapshot()))
+                lifecycle.requestStop("late-connect", true) { stops++ }
+                lifecycle.connected("late-connect") { stops++ }
+                check(stops == 2 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Late connection was not stopped again" }
+                check(store.pendingStopSessions() == setOf("late-connect")) { "Late connection cleared the claim" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stopped = false
                 check(lifecycle.claim("async-failure", store.snapshot()))
                 lifecycle.failed("async-failure") { stopped = true }

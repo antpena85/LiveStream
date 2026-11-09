@@ -80,3 +80,18 @@ This updates the C02/C03 advertisement evidence for both current builds without
 assigning either unit to a historical local label. M2.1 remains In progress:
 live lens changes, active-route evidence and C06's simultaneous publisher and
 controller scenario remain open.
+
+## Current-build report collection — 2026-11-09
+
+With both owner-selected Pixel 8 Pro builds authorized, the inventory activity
+was launched and its existing private report collected separately by build:
+[CP3A](android-inventory-2026-11-09/pixel-8-pro-cp3a.261005.005.json) and
+[DP11](android-inventory-2026-11-09/pixel-8-pro-dp11.261016.003.json).
+Both report camera and audio permission granted, two camera entries, six
+encoder entries, five advertised audio inputs and no inventory error fields.
+Their camera, encoder and audio-input arrays compare identical. The report has
+no collection timestamp, so regeneration on this launch cannot be independently
+established; both report identities match the current build. Camera capture,
+encoding and publishing remain `not_run`. These advertisements do not verify
+actual capture, selected physical lenses, active routing or received output.
+The task and G2 remain open.

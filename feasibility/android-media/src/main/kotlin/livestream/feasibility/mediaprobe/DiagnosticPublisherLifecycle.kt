@@ -39,7 +39,12 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
     }
 
     @Synchronized fun connected(sessionId: String, stop: () -> Unit) {
-        if (owner != sessionId || current != DiagnosticPublisherStatus.Connecting) return
+        if (owner != sessionId) return
+        if (current == DiagnosticPublisherStatus.Stopping) {
+            try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
+            return
+        }
+        if (current != DiagnosticPublisherStatus.Connecting) return
         current = try {
             val view = store.safetyView()
             if (view.pendingStops == setOf(sessionId) && view.snapshot == assessed) DiagnosticPublisherStatus.Live
