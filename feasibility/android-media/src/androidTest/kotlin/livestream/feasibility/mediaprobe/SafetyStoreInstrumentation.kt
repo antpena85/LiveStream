@@ -28,6 +28,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                         return null
                     }
                     val root = activity.window.decorView
+                    check(findText(root, "Prepare publisher preview") != null) { "Publisher preview preparation is missing" }
                     val start = findText(root, "Manual publisher start")
                     check(start != null) { "Manual publisher control is missing" }
                     start.performClick()

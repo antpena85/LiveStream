@@ -33,6 +33,10 @@ requires confirmation and reaches the deliberately blocked adapter; it cannot
 start a broadcast while the fit gate is closed. These callbacks
 are not proof of network integration or stop confirmation; it is not a working
 broadcast or a trial-ready build.
+**Prepare publisher preview** prepares the existing camera, audio and overlay
+without the local recording timer or a network connection. Stop or leaving the
+activity releases the preview. Its physical behavior still requires observation;
+the automated UI check only establishes that the control is present.
 Each local capture now binds callback delivery to its own adapter instead of
 looking up whichever adapter happens to be current when a delayed event arrives.
 The separate `DiagnosticPublisherLifecycle.startDiagnostic` experiment combines

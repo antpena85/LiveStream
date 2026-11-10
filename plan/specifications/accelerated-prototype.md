@@ -79,6 +79,18 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Publisher preview preparation — 2026-11-10
+
+The manual-start adapter was previously available only during a timed local
+recording. The activity now has a separate untimed publisher-preview preparation
+path using the existing camera, audio and overlay setup, without recording or
+starting a network stream. Stop and activity exit release the prepared preview.
+At T06, the missing preparation control failed on the Pixel 8 Pro before the
+change and the instrumentation passed afterward; both Android APKs built offline.
+The automated check confirms control presence only, not physical preview,
+resource cleanup, real publishing or received output. The real start gate remains
+closed pending complete fit, stop confirmation and other prototype safeguards.
+
 ### Activity manual-start control — 2026-11-10
 
 The local media activity now exposes a confirmed manual-start dialog and passes

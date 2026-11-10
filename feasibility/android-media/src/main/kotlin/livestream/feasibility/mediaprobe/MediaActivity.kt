@@ -47,6 +47,7 @@ class MediaActivity : Activity() {
     private val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
     private var pendingCapture = false
     private var transitionTest = false
+    private var publisherPreview = false
     private var capture: GenericStream? = null
     private var publisher: AndroidPublisherAdapter? = null
     private var scoreFilter: ImageFilterRender? = null
@@ -72,6 +73,19 @@ class MediaActivity : Activity() {
         content.addView(status)
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         controls.addView(Button(this).apply {
+            text = "Prepare publisher preview"
+            setOnClickListener {
+                if (capture == null) {
+                    publisherPreview = true
+                    transitionTest = false
+                    if (permissions.any { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }) {
+                        pendingCapture = true
+                        requestPermissions(permissions, 1)
+                    } else startCapture()
+                }
+            }
+        })
+        controls.addView(Button(this).apply {
             text = "Manual publisher start"
             setOnClickListener {
                 if (publisher == null) status.text = "Start a local camera/audio test before checking publisher start. No broadcast was started."
@@ -81,6 +95,7 @@ class MediaActivity : Activity() {
         runButton = Button(this).apply {
             text = "Run 10-second camera/audio test"
             setOnClickListener {
+                publisherPreview = false
                 transitionTest = false
                 if (permissions.any { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }) {
                     pendingCapture = true
@@ -146,6 +161,7 @@ class MediaActivity : Activity() {
         transitionButton = Button(this).apply {
             text = "Run 20-second switch/mute test"
             setOnClickListener {
+                publisherPreview = false
                 transitionTest = true
                 if (permissions.any { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }) {
                     pendingCapture = true
@@ -218,7 +234,7 @@ class MediaActivity : Activity() {
             .put("experiment", if (transitionTest) "front_rear_mute_20s" else "baseline_10s")
             .put("controlEvents", JSONArray())
         try {
-            if (clip.exists()) check(clip.delete())
+            if (!publisherPreview && clip.exists()) check(clip.delete())
             val camera = Camera2Source(this)
             val microphone = MicrophoneSource(MediaRecorder.AudioSource.MIC)
             var capturePublisher: AndroidPublisherAdapter? = null
@@ -245,6 +261,10 @@ class MediaActivity : Activity() {
             scoreFilter = filter
             stream.getGlInterface().addFilter(filter)
             stream.startPreview(preview)
+            if (publisherPreview) {
+                status.text = "Publisher preview prepared; no recording or broadcast. Publisher start remains blocked pending safeguards."
+                return
+            }
             report.put("startedElapsedMs", SystemClock.elapsedRealtime())
             stream.startRecord(clip.absolutePath, listener = object : RecordController.Listener {
                 override fun onStatusChange(recordStatus: RecordController.Status) {
@@ -295,6 +315,8 @@ class MediaActivity : Activity() {
 
     private fun stopCapture(reason: String) {
         val stream = capture ?: return
+        val wasPublisherPreview = publisherPreview
+        publisherPreview = false
         capture = null
         publisher = null
         scoreFilter = null
@@ -304,6 +326,12 @@ class MediaActivity : Activity() {
         catch (failure: Exception) { report.put("stopError", failure.javaClass.simpleName) }
         try { stream.release() }
         catch (failure: Exception) { report.put("releaseError", failure.javaClass.simpleName) }
+        if (wasPublisherPreview) {
+            runButton.isEnabled = true
+            transitionButton.isEnabled = true
+            status.text = if (report.has("releaseError")) "Publisher preview cleanup failed." else "Publisher preview stopped; no broadcast was started."
+            return
+        }
         status.text = "Inspecting the encoded clip…"
         Thread {
             try { inspectClip() }
