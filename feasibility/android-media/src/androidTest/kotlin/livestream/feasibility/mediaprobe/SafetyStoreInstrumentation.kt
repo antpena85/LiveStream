@@ -20,8 +20,10 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "adapter-session")
                 check(lifecycle.claim("adapter-session", store.snapshot()))
+                check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Connecting) { "Adapter did not expose connecting status" }
                 adapter.connectionSucceeded()
                 check(lifecycle.status() == DiagnosticPublisherStatus.Live) { "Adapter did not forward success to owned session" }
+                check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.AlreadyLive) { "Live session was not reported by manual start" }
                 adapter.requestStop(true)
                 check(stops == 1 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Adapter did not stop owned session" }
                 check(store.pendingStopSessions() == setOf("adapter-session")) { "Adapter cleared unresolved session" }

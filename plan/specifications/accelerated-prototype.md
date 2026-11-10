@@ -348,6 +348,20 @@ claim a session or expose a publisher start, and this is not a real network or
 shutdown test. Full fit, lifecycle/start integration, stop confirmation and
 received output remain open; the existing start gate is unchanged.
 
+The adapter now exposes the status of its selected diagnostic lifecycle (or the
+existing session control when no lifecycle is supplied). A Pixel 8 Pro test
+first failed when an owned connecting session was reported stopped and then
+passed. The Android APKs built after a concurrent build timeout and the JVM
+suite passed. This is status plumbing only: manual start remains hard-denied,
+and no real publisher or user-facing live status was exercised.
+
+The adapter's confirmed start request now checks the selected diagnostic
+lifecycle before consulting the still-closed fit gate: an existing connecting,
+live or stopping session is reported accordingly. A Pixel 8 Pro test first
+failed for an already-live session and then passed. Android APKs built offline;
+the JVM test task was up to date. This resolves conflicting status reporting,
+but does not connect manual start to the durable claim or authorize publishing.
+
 ## Coherent diagnostic fit input — 2026-11-08
 
 The diagnostic assessment now reads both displayed scores and their probe

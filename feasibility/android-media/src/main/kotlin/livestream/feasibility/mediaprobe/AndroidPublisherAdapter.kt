@@ -8,6 +8,12 @@ import com.pedro.library.generic.GenericStream
 /** Android integration under construction; no real trial is authorized yet. */
 class AndroidPublisherAdapter(private val store: AndroidSafetyStore, connect: (String) -> Unit, private val stop: () -> Unit,
     private val lifecycle: DiagnosticPublisherLifecycle? = null, private val sessionId: String = "") {
+    fun diagnosticStatus(): DiagnosticPublisherStatus = lifecycle?.status() ?: when (control.status()) {
+        livestream.feasibility.StreamStatus.Stopped -> DiagnosticPublisherStatus.Stopped
+        livestream.feasibility.StreamStatus.Connecting -> DiagnosticPublisherStatus.Connecting
+        livestream.feasibility.StreamStatus.Live -> DiagnosticPublisherStatus.Live
+        livestream.feasibility.StreamStatus.Stopping -> DiagnosticPublisherStatus.Stopping
+    }
     fun diagnosticAssessment(): DiagnosticAssessment {
         val (display, snapshot) = store.diagnosticProjection()
         val bitmap = DiagnosticOverlay.render(display)
@@ -21,8 +27,15 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, connect: (S
         store, connect = { stream.startStream(it) }, stop = { stream.stopStream() }, lifecycle = lifecycle, sessionId = sessionId
     )
 
-    fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult =
-        control.start(server, key, confirmed, camera, microphone, fitReady = false, assessed = null)
+    fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult {
+        if (confirmed && lifecycle != null) when (lifecycle.status()) {
+            DiagnosticPublisherStatus.Connecting -> return StartResult.AlreadyConnecting
+            DiagnosticPublisherStatus.Live -> return StartResult.AlreadyLive
+            DiagnosticPublisherStatus.Stopping -> return StartResult.PendingStop
+            DiagnosticPublisherStatus.Stopped -> Unit
+        }
+        return control.start(server, key, confirmed, camera, microphone, fitReady = false, assessed = null)
+    }
 
     fun connectionSucceeded() {
         if (lifecycle != null) lifecycle.connected(sessionId, stop) else control.connectionSucceeded()

@@ -2,6 +2,7 @@ package livestream.feasibility
 
 /** Prototype boundary only; no network publisher or Android safety adapter is supplied. */
 class ManualPublisherControl(private val session: StreamSession, private val stop: () -> Unit, private val connect: (String) -> Unit) {
+    fun status(): StreamStatus = session.status()
     fun requestStop(confirmed: Boolean) {
         val previous = session.status()
         session.requestStop(confirmed)
