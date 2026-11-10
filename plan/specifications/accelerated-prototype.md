@@ -338,6 +338,15 @@ threading, shutdown confirmation, complete fit and received output remain open.
 
 ### Candidate adapter lifecycle wiring — 2026-11-09
 
+Adapter-level verification on a connected Pixel 8 Pro passed for unconfirmed,
+missing-permission and invalid-destination starts, duplicate starts, and a new
+adapter blocked by an unresolved earlier claim. The publisher was a test double;
+this was a first-run verification, not a red/green implementation cycle. An
+exploratory repeated-stop assertion failed and was removed: suppressing retries
+could prevent cleanup after failure, so no stop behavior was changed. The APKs
+built offline and the JVM test task was up to date. Complete fit and independent
+remote-stop confirmation remain unresolved; the real start gate stays closed.
+
 The adapter's diagnostic-only manual-start path now joins the fixture assessment,
 Android SQLite claim, supplied publisher operation and lifecycle callback. At
 T02 an instrumented Pixel 8 Pro test first failed to dispatch, then passed with

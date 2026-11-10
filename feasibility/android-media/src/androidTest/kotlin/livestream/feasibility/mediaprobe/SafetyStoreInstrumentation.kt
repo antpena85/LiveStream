@@ -28,6 +28,24 @@ class SafetyStoreInstrumentation : Instrumentation() {
             targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                var connects = 0
+                val adapter = AndroidPublisherAdapter(store, connect = { connects++ }, stop = {}, lifecycle = lifecycle, sessionId = "guarded-adapter")
+                check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", false, true, true))
+                check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, false, true))
+                check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, false))
+                check(!adapter.startDiagnostic("invalid", "fictional-key", true, true, true))
+                check(connects == 0 && store.pendingStopSessions().isEmpty() && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopped) { "Denied start changed publisher state" }
+                check(adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true))
+                check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true))
+                check(connects == 1 && store.pendingStopSessions() == setOf("guarded-adapter")) { "Duplicate start dispatched or changed claim" }
+                adapter.requestStop(true)
+                val replacement = AndroidPublisherAdapter(store, connect = { connects++ }, stop = {}, lifecycle = DiagnosticPublisherLifecycle(store), sessionId = "replacement")
+                check(!replacement.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true))
+                check(connects == 1 && store.pendingStopSessions() == setOf("guarded-adapter")) { "Unresolved stop allowed another publisher" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "adapter-session")
                 check(lifecycle.claim("adapter-session", store.snapshot()))
