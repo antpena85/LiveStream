@@ -79,6 +79,17 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Activity manual-start control — 2026-11-10
+
+The local media activity now exposes a confirmed manual-start dialog and passes
+the destination and permission state to the existing publisher adapter. Without
+an active local capture it explains that no broadcast was started; the adapter's
+fit gate still denies a real start. At T06 the missing-control test failed before
+implementation and the instrumentation passed on a Pixel 8 Pro (build
+CP3A.261005.005). The debug and test APKs built offline. This connects the UI to
+the existing blocked path, not a network publisher: complete fit, durable stop
+confirmation, real status/cleanup and received output are still required.
+
 ### Diagnostic re-entrant stop guard — 2026-11-10
 
 At the confirmed T02 boundary, the Android instrumentation first failed when a

@@ -71,6 +71,13 @@ class MediaActivity : Activity() {
         }
         content.addView(status)
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        controls.addView(Button(this).apply {
+            text = "Manual publisher start"
+            setOnClickListener {
+                if (publisher == null) status.text = "Start a local camera/audio test before checking publisher start. No broadcast was started."
+                else showDestinationCheck(publisherStart = true)
+            }
+        })
         runButton = Button(this).apply {
             text = "Run 10-second camera/audio test"
             setOnClickListener {
@@ -152,7 +159,7 @@ class MediaActivity : Activity() {
         setContentView(content)
     }
 
-    private fun showDestinationCheck() {
+    private fun showDestinationCheck(publisherStart: Boolean = false) {
         val fields = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val server = EditText(this).apply {
             hint = "RTMP(S) server address"
@@ -168,10 +175,14 @@ class MediaActivity : Activity() {
         }
         fields.addView(server)
         fields.addView(key)
-        val dialog = AlertDialog.Builder(this).setTitle("Local format check only")
-            .setMessage("This does not connect, verify the destination, or start a stream.")
-            .setView(fields).setPositiveButton("Check") { _, _ ->
-                status.text = when (ManualDestination.validate(server.text.toString(), key.text.toString())) {
+        val dialog = AlertDialog.Builder(this).setTitle(if (publisherStart) "Confirm publisher start" else "Local format check only")
+            .setMessage(if (publisherStart) "Publisher start remains blocked until broadcast fit and stop safeguards are integrated." else "This does not connect, verify the destination, or start a stream.")
+            .setView(fields).setPositiveButton(if (publisherStart) "Confirm start" else "Check") { _, _ ->
+                status.text = if (publisherStart) {
+                    val adapter = publisher
+                    if (adapter == null) "Publisher is unavailable. No broadcast was started."
+                    else "Publisher start result: ${adapter.start(server.text.toString(), key.text.toString(), true, checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED, checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)}. Broadcast safeguards remain incomplete."
+                } else when (ManualDestination.validate(server.text.toString(), key.text.toString())) {
                     DestinationResult.Ready -> "Basic format accepted; destination not verified and publishing disabled."
                     DestinationResult.InvalidServer -> "Invalid server address; use an RTMP(S) address with a host."
                     DestinationResult.MissingKey -> "Enter a stream key."

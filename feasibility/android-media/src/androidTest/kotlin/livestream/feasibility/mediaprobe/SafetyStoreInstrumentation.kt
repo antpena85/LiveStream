@@ -15,6 +15,29 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            val activity = startActivitySync(android.content.Intent(targetContext, MediaActivity::class.java).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+            try {
+                var uiFailure: Throwable? = null
+                runOnMainSync {
+                    try {
+                    fun findText(view: android.view.View, text: String): android.widget.TextView? {
+                        if (view is android.widget.TextView && view.text.toString() == text) return view
+                        if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
+                            findText(view.getChildAt(index), text)?.let { return it }
+                        }
+                        return null
+                    }
+                    val root = activity.window.decorView
+                    val start = findText(root, "Manual publisher start")
+                    check(start != null) { "Manual publisher control is missing" }
+                    start.performClick()
+                    check(findText(root, "Start a local camera/audio test before checking publisher start. No broadcast was started.") != null) {
+                        "Publisher control did not explain why start is unavailable"
+                    }
+                    } catch (failure: Throwable) { uiFailure = failure }
+                }
+                uiFailure?.let { throw it }
+            } finally { activity.finish() }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->

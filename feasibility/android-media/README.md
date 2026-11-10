@@ -28,7 +28,9 @@ candidate `GenericStream` start/stop methods, but deliberately denies all
 starts because an assessed broadcast-fit and durable stop-recovery path are
 not yet integrated. During local capture the activity instantiates the adapter
 and forwards sanitized connection events, and offers a no-network diagnostic
-fit preflight. The activity exposes no publisher Start control. These callbacks
+fit preflight. The activity now offers a manual publisher Start control that
+requires confirmation and reaches the deliberately blocked adapter; it cannot
+start a broadcast while the fit gate is closed. These callbacks
 are not proof of network integration or stop confirmation; it is not a working
 broadcast or a trial-ready build.
 Each local capture now binds callback delivery to its own adapter instead of
