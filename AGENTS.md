@@ -233,6 +233,12 @@ TBD when implementation begins.
 
 ## Testing and Validation
 
+- Prioritize integrated implementation and useful end-to-end slices over
+  speculative probe-only scenarios. Document unobserved hypothetical risks
+  and evaluate them when encountered during actual implementation or live
+  testing, rather than creating tests and fixes for every possible permutation.
+  This does not defer confirmed requirements, TDD, concrete safety defects,
+  necessary integration safeguards, or required release and device validation.
 - The owner requires TDD for future application implementation and bug fixes.
   Follow the installed [tdd skill](.agents/skills/tdd/SKILL.md) and the
   [master plan's TDD working agreement](plan/MASTER_PLAN.md#tdd-working-agreement):
