@@ -10,7 +10,8 @@ enum class DiagnosticPublisherStatus { Stopped, Connecting, Live, Stopping }
 class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
     fun callbacksFor(sessionId: String, stop: () -> Unit): PublisherCallbacks = PublisherCallbacks(
         onSuccess = { connected(sessionId, stop) },
-        onFailure = { failed(sessionId, stop) }
+        onFailure = { failed(sessionId, stop) },
+        onDisconnected = { disconnected(sessionId, stop) }
     )
     fun startDiagnostic(sessionId: String, server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean, fit: Boolean, snapshot: ProbeSnapshot, stop: () -> Unit, connect: (String) -> Unit): Boolean {
         if (!confirmed || !camera || !microphone || !fit || ManualDestination.validate(server, key) != DestinationResult.Ready) return false
@@ -23,6 +24,10 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
         }
     }
     @Synchronized fun failed(sessionId: String, stop: () -> Unit) {
+        requestStop(sessionId, true, stop)
+    }
+    @Synchronized fun disconnected(sessionId: String, stop: () -> Unit) {
+        if (owner != sessionId || current == DiagnosticPublisherStatus.Stopped || current == DiagnosticPublisherStatus.Stopping) return
         requestStop(sessionId, true, stop)
     }
     @Synchronized fun requestStop(sessionId: String, confirmed: Boolean, stop: () -> Unit) {

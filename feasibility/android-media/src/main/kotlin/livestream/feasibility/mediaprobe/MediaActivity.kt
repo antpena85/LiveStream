@@ -240,7 +240,8 @@ class MediaActivity : Activity() {
             var capturePublisher: AndroidPublisherAdapter? = null
             val callbacks = PublisherCallbacks(
                 onSuccess = { runOnUiThread { capturePublisher?.connectionSucceeded() } },
-                onFailure = { runOnUiThread { capturePublisher?.requestStop(true) } }
+                onFailure = { runOnUiThread { capturePublisher?.requestStop(true) } },
+                onDisconnected = { runOnUiThread { capturePublisher?.disconnected() } }
             )
             val stream = GenericStream(this, callbacks, camera, microphone)
             capture = stream

@@ -48,6 +48,9 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
     fun connectionSucceeded() {
         if (lifecycle != null) lifecycle.connected(sessionId, stop) else control.connectionSucceeded()
     }
+    fun disconnected() {
+        if (lifecycle != null) lifecycle.disconnected(sessionId, stop) else control.requestStop(true)
+    }
     fun requestStop(confirmed: Boolean) {
         if (lifecycle != null) lifecycle.requestStop(sessionId, confirmed, stop) else control.requestStop(confirmed)
     }

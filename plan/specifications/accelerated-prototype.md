@@ -79,6 +79,31 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Session-scoped disconnect routing — 2026-11-10
+
+The capture-scoped callback now routes disconnect separately from connection
+failure to its owning diagnostic lifecycle. At T02, a stop followed by a
+disconnect previously dispatched stop again; the device test failed before this
+change and passed afterward on the Pixel 8 Pro (build CP3A.261005.005). Both
+Android APKs built offline. The event does not clear the durable claim or prove
+termination; the controlled callback test is not a real RTMP shutdown test.
+Full fit and the real publisher start path remain blocked.
+
+### Candidate stop-state inspection — 2026-11-10
+
+Inspection of the locally resolved RootEncoder 2.8.1 `StreamBase` bytecode shows
+that `stopStream()` sets its `isStreaming` field false before invoking the
+underlying stop operation. Therefore a false `isStreaming` value alone is not
+evidence of completed shutdown and must not clear the durable session claim.
+The resolved RTMP client's public `disconnect()` launches cleanup asynchronously,
+so return from `stopStream()` also cannot establish completion. Its disconnect
+path invokes its callback after a connection-close step, but subsequent retry/job
+cleanup occurs after that callback; this ordering alone does not establish that
+the session cannot resume or that the destination has stopped receiving media.
+This is a source/bytecode observation, not a network shutdown test. Establish
+an appropriate termination signal and its session provenance before enabling
+the real publishing path; preserve unresolved markers in the meantime.
+
 ### Publisher preview preparation — 2026-11-10
 
 The manual-start adapter was previously available only during a timed local

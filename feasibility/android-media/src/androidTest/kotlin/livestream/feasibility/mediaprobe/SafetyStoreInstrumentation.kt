@@ -43,6 +43,17 @@ class SafetyStoreInstrumentation : Instrumentation() {
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                check(lifecycle.claim("disconnect-event", store.snapshot()))
+                var stops = 0
+                val callbacks = lifecycle.callbacksFor("disconnect-event") { stops++ }
+                lifecycle.requestStop("disconnect-event", true) { stops++ }
+                callbacks.onDisconnect()
+                check(stops == 1 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Disconnect incorrectly dispatched another stop" }
+                check(store.pendingStopSessions() == setOf("disconnect-event")) { "Unverified disconnect cleared the durable claim" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 check(lifecycle.claim("reentrant-stop", store.snapshot()))
                 var stops = 0
                 lateinit var callbacks: PublisherCallbacks
