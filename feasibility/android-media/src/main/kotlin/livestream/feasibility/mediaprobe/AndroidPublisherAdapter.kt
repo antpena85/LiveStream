@@ -6,8 +6,16 @@ import livestream.feasibility.StreamSession
 import com.pedro.library.generic.GenericStream
 
 /** Android integration under construction; no real trial is authorized yet. */
-class AndroidPublisherAdapter(private val store: AndroidSafetyStore, connect: (String) -> Unit, private val stop: () -> Unit,
-    private val lifecycle: DiagnosticPublisherLifecycle? = null, private val sessionId: String = "") {
+class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val connect: (String) -> Unit, private val stop: () -> Unit,
+    private val lifecycle: DiagnosticPublisherLifecycle? = null, private val sessionId: String = "", private val diagnosticOnly: Boolean = true) {
+    /** Test-double path only; never use the fixture as real broadcast authorization. */
+    fun startDiagnostic(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): Boolean {
+        if (!diagnosticOnly || lifecycle == null) return false
+        return try {
+            val assessment = diagnosticAssessment()
+            lifecycle.startDiagnostic(sessionId, server, key, confirmed, camera, microphone, assessment.fits, assessment.snapshot, stop, connect)
+        } catch (_: Exception) { false }
+    }
     fun diagnosticStatus(): DiagnosticPublisherStatus = lifecycle?.status() ?: when (control.status()) {
         livestream.feasibility.StreamStatus.Stopped -> DiagnosticPublisherStatus.Stopped
         livestream.feasibility.StreamStatus.Connecting -> DiagnosticPublisherStatus.Connecting
@@ -24,7 +32,7 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, connect: (S
     private val control = ManualPublisherControl(StreamSession(store), stop = stop, connect = connect)
 
     constructor(store: AndroidSafetyStore, stream: GenericStream, lifecycle: DiagnosticPublisherLifecycle, sessionId: String) : this(
-        store, connect = { stream.startStream(it) }, stop = { stream.stopStream() }, lifecycle = lifecycle, sessionId = sessionId
+        store, connect = { stream.startStream(it) }, stop = { stream.stopStream() }, lifecycle = lifecycle, sessionId = sessionId, diagnosticOnly = false
     )
 
     fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult {

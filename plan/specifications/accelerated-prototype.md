@@ -338,6 +338,14 @@ threading, shutdown confirmation, complete fit and received output remain open.
 
 ### Candidate adapter lifecycle wiring — 2026-11-09
 
+The adapter's diagnostic-only manual-start path now joins the fixture assessment,
+Android SQLite claim, supplied publisher operation and lifecycle callback. At
+T02 an instrumented Pixel 8 Pro test first failed to dispatch, then passed with
+a fictional endpoint and test publisher. The actual `GenericStream` constructor
+disables this diagnostic path; ordinary start remains hard-denied. Media APKs
+built after a timed-out first build, and the JVM task was up to date. This does
+not establish full fit, real network start, stop confirmation or received output.
+
 An Android instrumentation test first failed when the publisher adapter did
 not forward success to its owned diagnostic lifecycle. The adapter now forwards
 connection and stop events to the capture-scoped lifecycle, and the local

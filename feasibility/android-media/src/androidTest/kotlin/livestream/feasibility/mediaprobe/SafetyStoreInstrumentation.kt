@@ -17,6 +17,17 @@ class SafetyStoreInstrumentation : Instrumentation() {
         try {
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                var endpoint = ""
+                val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = {}, lifecycle = lifecycle, sessionId = "integrated-start")
+                val started = adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true)
+                check(started && endpoint == "rtmps://example.test/live/fictional-key") { "Diagnostic adapter did not dispatch manual start" }
+                check(store.pendingStopSessions() == setOf("integrated-start")) { "Diagnostic adapter did not claim session" }
+                adapter.connectionSucceeded()
+                check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Live) { "Started session did not become live" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "adapter-session")
                 check(lifecycle.claim("adapter-session", store.snapshot()))
