@@ -38,6 +38,11 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+Owner direction on 2026-11-10: prioritize integrated implementation and defer
+unobserved speculative scenarios for evaluation during actual implementation
+and live testing. Continue required TDD and concrete safety safeguards; do not
+expand probe-only permutations merely to anticipate hypothetical failures.
+
 Owner-confirmed priority on 2026-11-06: **broadcast-first, code-first and
 document-on-green**. Keep TDD: write a focused behavioral test at an already
 confirmed boundary, observe red, implement the minimum and run green. Record
@@ -73,6 +78,27 @@ No fixed time-box duration or test provider has been selected. Choose these with
 the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
+
+### Diagnostic re-entrant stop guard — 2026-11-10
+
+At the confirmed T02 boundary, the Android instrumentation first failed when a
+controlled publisher delivered a disconnect synchronously during stop: a second
+stop was dispatched before the first returned. The diagnostic lifecycle now
+suppresses re-entrant stop dispatch while retaining the durable claim; a later
+explicit retry remains possible. The updated test and existing instrumentation
+passed on a Pixel 8 Pro (Android 17, build CP3A.261005.005), and the debug and
+test APKs built offline. This uses a publisher double, not a network stream;
+asynchronous callbacks, verified shutdown, full fit and trial readiness remain
+open. The real publisher start remains disabled.
+
+### Android network prerequisite — 2026-11-10
+
+The diagnostic APK's merged manifest lacked Internet permission, a concrete
+blocker to a future network publisher. An installed-package check failed before
+the permission was added and passed afterward on the Pixel 8 Pro (build
+CP3A.261005.005). Both diagnostic APKs built offline. This grants network access
+only; it does not connect or establish destination reachability, fit, confirmed
+shutdown, received output or trial readiness. Publisher start remains disabled.
 
 An isolated host control now passes a validated manual endpoint to a supplied
 publisher boundary only after the existing session accepts a confirmed start.

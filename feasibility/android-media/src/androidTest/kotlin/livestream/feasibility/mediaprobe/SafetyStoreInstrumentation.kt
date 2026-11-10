@@ -15,6 +15,23 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase(name)
         val result = Bundle()
         try {
+            val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
+            check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                check(lifecycle.claim("reentrant-stop", store.snapshot()))
+                var stops = 0
+                lateinit var callbacks: PublisherCallbacks
+                val stop = {
+                    stops++
+                    if (stops == 1) callbacks.onDisconnect()
+                }
+                callbacks = lifecycle.callbacksFor("reentrant-stop", stop)
+                lifecycle.requestStop("reentrant-stop", true, stop)
+                check(stops == 1 && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Disconnect during stop dispatched a reentrant stop" }
+                check(store.pendingStopSessions() == setOf("reentrant-stop")) { "Disconnect cleared unresolved stop" }
+            }
+            targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var endpoint = ""

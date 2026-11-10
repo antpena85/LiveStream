@@ -28,7 +28,7 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
     @Synchronized fun requestStop(sessionId: String, confirmed: Boolean, stop: () -> Unit) {
         if (!confirmed || owner != sessionId || current == DiagnosticPublisherStatus.Stopped) return
         current = DiagnosticPublisherStatus.Stopping
-        try { stop() } catch (_: Exception) { /* Keep the durable claim and stopping state. */ }
+        dispatchStop(stop)
     }
     @Synchronized fun claimAndConnect(sessionId: String, snapshot: ProbeSnapshot, stop: () -> Unit, connect: () -> Unit): Boolean {
         if (!claim(sessionId, snapshot)) return false
@@ -36,7 +36,7 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
             connect()
         } catch (_: Exception) {
             current = DiagnosticPublisherStatus.Stopping
-            try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
+            dispatchStop(stop)
             return false
         }
         return true
@@ -44,6 +44,14 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
     private var owner: String? = null
     private var assessed: ProbeSnapshot? = null
     private var current = DiagnosticPublisherStatus.Stopped
+    private var stopInFlight = false
+
+    private fun dispatchStop(stop: () -> Unit) {
+        if (stopInFlight) return
+        stopInFlight = true
+        try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
+        finally { stopInFlight = false }
+    }
 
     @Synchronized fun claim(sessionId: String, snapshot: ProbeSnapshot): Boolean {
         if (current != DiagnosticPublisherStatus.Stopped) return false
@@ -57,7 +65,7 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
     @Synchronized fun connected(sessionId: String, stop: () -> Unit) {
         if (owner != sessionId) return
         if (current == DiagnosticPublisherStatus.Stopping) {
-            try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
+            dispatchStop(stop)
             return
         }
         if (current != DiagnosticPublisherStatus.Connecting) return
@@ -67,7 +75,7 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
             else DiagnosticPublisherStatus.Stopping
         } catch (_: Exception) { DiagnosticPublisherStatus.Stopping }
         if (current == DiagnosticPublisherStatus.Stopping) {
-            try { stop() } catch (_: Exception) { /* Preserve the unresolved claim. */ }
+            dispatchStop(stop)
         }
     }
 
