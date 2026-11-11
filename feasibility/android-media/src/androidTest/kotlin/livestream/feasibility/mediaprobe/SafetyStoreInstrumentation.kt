@@ -40,6 +40,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     check(findText(root, "Previous publisher session is unresolved. Publishing remains blocked; shutdown is not confirmed.") != null) {
                         "Unresolved publisher session was not shown on reopening"
                     }
+                    check(findText(root, "Publisher: stop unconfirmed") != null) { "Publisher state was not visible" }
                     check(findText(root, "Prepare publisher preview") != null) { "Publisher preview preparation is missing" }
                     val start = findText(root, "Manual publisher start")
                     check(start != null) { "Manual publisher control is missing" }

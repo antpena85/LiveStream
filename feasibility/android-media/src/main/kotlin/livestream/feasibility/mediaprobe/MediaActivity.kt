@@ -57,6 +57,7 @@ class MediaActivity : Activity() {
     private var decodedFrame: Bitmap? = null
     private lateinit var preview: SurfaceView
     private lateinit var status: TextView
+    private lateinit var publisherStatus: TextView
     private lateinit var runButton: Button
     private lateinit var transitionButton: Button
     private val clip get() = filesDir.resolve("m2-capture.mp4")
@@ -76,6 +77,9 @@ class MediaActivity : Activity() {
             "Publisher safety state is unavailable. Publishing remains blocked; shutdown is not confirmed."
         }
         if (safetyNotice != null) content.addView(TextView(this).apply { text = safetyNotice })
+        publisherStatus = TextView(this)
+        content.addView(publisherStatus)
+        updatePublisherStatus()
         status = TextView(this).apply {
             text = "Local M2 test; no broadcast. Sets, timeouts and serve are fixed fixture values, not match state. Transition test: speak/count throughout. Mute at 4s, unmute at 8s, front at 12s, rear at 16s; stop at 20s. Each run replaces the private clip."
         }
@@ -217,6 +221,7 @@ class MediaActivity : Activity() {
                     DestinationResult.InvalidServer -> "Invalid server address; use an RTMP(S) address with a host."
                     DestinationResult.MissingKey -> "Enter a stream key."
                 }
+                updatePublisherStatus()
             }.setNegativeButton("Cancel", null).create()
         dialog.window?.setFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE, android.view.WindowManager.LayoutParams.FLAG_SECURE)
         dialog.setOnDismissListener { server.text.clear(); key.text.clear() }
@@ -253,14 +258,15 @@ class MediaActivity : Activity() {
             val microphone = MicrophoneSource(MediaRecorder.AudioSource.MIC)
             var capturePublisher: AndroidPublisherAdapter? = null
             val callbacks = PublisherCallbacks(
-                onSuccess = { runOnUiThread { capturePublisher?.connectionSucceeded() } },
-                onFailure = { runOnUiThread { capturePublisher?.requestStop(true) } },
-                onDisconnected = { runOnUiThread { capturePublisher?.disconnected() } }
+                onSuccess = { runOnUiThread { capturePublisher?.connectionSucceeded(); if (publisher === capturePublisher) updatePublisherStatus() } },
+                onFailure = { runOnUiThread { capturePublisher?.requestStop(true); if (publisher === capturePublisher) updatePublisherStatus() } },
+                onDisconnected = { runOnUiThread { capturePublisher?.disconnected(); if (publisher === capturePublisher) updatePublisherStatus() } }
             )
             val stream = GenericStream(this, callbacks, camera, microphone)
             capture = stream
             capturePublisher = AndroidPublisherAdapter(diagnosticScore, stream, DiagnosticPublisherLifecycle(diagnosticScore), java.util.UUID.randomUUID().toString())
             publisher = capturePublisher
+            updatePublisherStatus()
             stream.forceCodecType(CodecUtil.CodecType.HARDWARE, CodecUtil.CodecType.SOFTWARE)
             check(stream.prepareVideo(1280, 720, 2_000_000, fps = 30, rotation = 0)) { "Video preparation failed" }
             check(stream.prepareAudio(48000, true, 128000)) { "Audio preparation failed" }
@@ -335,6 +341,7 @@ class MediaActivity : Activity() {
         publisherPreview = false
         capture = null
         publisher = null
+        updatePublisherStatus()
         scoreFilter = null
         handler.removeCallbacksAndMessages(null)
         report.put("stopReason", reason).put("stoppedElapsedMs", SystemClock.elapsedRealtime())
@@ -409,6 +416,18 @@ class MediaActivity : Activity() {
     }
 
     private fun saveReport() { filesDir.resolve("media-report.json").writeText(report.toString(2)) }
+
+    private fun updatePublisherStatus() {
+        val state = publisher?.diagnosticStatus() ?: try {
+            if (diagnosticScore.pendingStopSessions().isEmpty()) DiagnosticPublisherStatus.Stopped else DiagnosticPublisherStatus.Stopping
+        } catch (_: Exception) { DiagnosticPublisherStatus.Stopping }
+        publisherStatus.text = when (state) {
+            DiagnosticPublisherStatus.Stopped -> "Publisher: stopped"
+            DiagnosticPublisherStatus.Connecting -> "Publisher: connecting"
+            DiagnosticPublisherStatus.Live -> "Publisher: connected (received output not verified)"
+            DiagnosticPublisherStatus.Stopping -> "Publisher: stop unconfirmed"
+        }
+    }
 
     private fun scorePoint(left: Boolean) {
         if (capture != null && transitionTest) return

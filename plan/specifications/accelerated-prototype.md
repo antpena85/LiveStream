@@ -38,6 +38,25 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Next-session handoff — 2026-11-11
+
+The owner wants integrated broadcast progress, not further speculative
+probe-only permutations or repeated status work. The manual adapter's controlled
+publisher path joins a durable claim and lifecycle, but the `GenericStream`
+constructor still routes Start through a separate path with `fitReady = false`.
+The prepared preview uses a simplified diagnostic scoreboard; its bitmap fit is
+not a reviewed encoded-output fit. A disconnect callback and `isStreaming` flag
+have not established session termination, and a retained claim cannot yet be
+recovered through the UI. No real broadcast has been run.
+
+Continue by integrating the actual publisher, its current scoreboard projection,
+confirmed stop, sanitized status and durable recovery as one useful slice. Keep
+TDD at confirmed boundaries and the prototype gate above; do not flip the fit
+Boolean or clear a pending claim without implementing the corresponding safety
+behavior. Verify ADB authorization before phone-dependent work. The owner will
+enter destination credentials on the phone and initiate a bounded trial after
+the gate is met; do not request or retain credentials or personal media.
+
 Owner direction on 2026-11-10: prioritize integrated implementation and defer
 unobserved speculative scenarios for evaluation during actual implementation
 and live testing. Continue required TDD and concrete safety safeguards; do not
@@ -78,6 +97,16 @@ No fixed time-box duration or test provider has been selected. Choose these with
 the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
+
+### Publisher status display — 2026-11-11
+
+The activity now displays the diagnostic session state separately from other
+messages, refreshes it after start, callbacks and cleanup, and labels a connected
+callback as unverified received output. At T06, the unresolved-session status
+was absent before the change and the instrumentation passed afterward on the
+Pixel 8 Pro (build CP3A.261005.005). Both APKs built offline. The test establishes
+the reopened unresolved status, not live network state or received output. Real
+publisher start remains blocked pending fit and termination safeguards.
 
 ### Manual session path with controlled publisher — 2026-11-11
 
