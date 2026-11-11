@@ -68,6 +68,14 @@ class MediaActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(32, 48, 32, 24)
         }
+        val safetyNotice = try {
+            if (diagnosticScore.pendingStopSessions().isNotEmpty())
+                "Previous publisher session is unresolved. Publishing remains blocked; shutdown is not confirmed."
+            else null
+        } catch (_: Exception) {
+            "Publisher safety state is unavailable. Publishing remains blocked; shutdown is not confirmed."
+        }
+        if (safetyNotice != null) content.addView(TextView(this).apply { text = safetyNotice })
         status = TextView(this).apply {
             text = "Local M2 test; no broadcast. Sets, timeouts and serve are fixed fixture values, not match state. Transition test: speak/count throughout. Mute at 4s, unmute at 8s, front at 12s, rear at 16s; stop at 20s. Each run replaces the private clip."
         }

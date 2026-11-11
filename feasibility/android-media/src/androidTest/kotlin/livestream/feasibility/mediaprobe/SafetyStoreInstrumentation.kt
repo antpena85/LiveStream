@@ -21,6 +21,9 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         val result = Bundle()
         try {
+            AndroidSafetyStore(targetContext, "off-air-ui-instrumentation.db").use { store ->
+                check(store.claimPublisherSession("previous-session", store.snapshot()))
+            }
             val activity = startActivitySync(android.content.Intent(targetContext, MediaActivity::class.java).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
             try {
                 var uiFailure: Throwable? = null
@@ -34,6 +37,9 @@ class SafetyStoreInstrumentation : Instrumentation() {
                         return null
                     }
                     val root = activity.window.decorView
+                    check(findText(root, "Previous publisher session is unresolved. Publishing remains blocked; shutdown is not confirmed.") != null) {
+                        "Unresolved publisher session was not shown on reopening"
+                    }
                     check(findText(root, "Prepare publisher preview") != null) { "Publisher preview preparation is missing" }
                     val start = findText(root, "Manual publisher start")
                     check(start != null) { "Manual publisher control is missing" }

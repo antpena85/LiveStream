@@ -79,6 +79,18 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Unresolved-session operator notice — 2026-11-11
+
+At the confirmed T06 activity boundary, a test reopening the diagnostic UI
+with a durable publisher claim failed because no warning was displayed. After
+the change, the Android instrumentation passed on the Pixel 8 Pro (Android 17,
+build CP3A.261005.005), and both diagnostic APKs built offline. A separate
+notice now reports an unresolved prior claim; a failed safety-store read also
+shows a conservative warning. Ordinary status messages do not replace it.
+The notice is assessed on activity creation and does not provide recovery or
+prove shutdown. This is not a real publisher or received-broadcast test; the
+complete fit and stop-confirmation safeguards and the real start gate remain open.
+
 ### Reopened pending-session status — 2026-11-10
 
 At T02, an Android store reopened with an unresolved publisher claim was
