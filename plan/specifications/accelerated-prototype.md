@@ -79,6 +79,16 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Reopened pending-session status — 2026-11-10
+
+At T02, an Android store reopened with an unresolved publisher claim was
+incorrectly reported Stopped by a fresh adapter. The instrumented test failed
+before the change and passed on a Pixel 8 Pro (build CP3A.261005.005) afterward.
+The diagnostic lifecycle now reports Stopping for a retained claim or an
+unavailable store, without clearing a claim or connecting. Both APKs built
+offline. This is a conservative unresolved state, not proof that shutdown is
+in progress or that a real publisher has terminated; recovery remains open.
+
 ### Activity stop confirmation — 2026-11-10
 
 The diagnostic activity now asks for confirmation before an operator stop and

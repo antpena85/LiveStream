@@ -84,5 +84,10 @@ class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
         }
     }
 
-    @Synchronized fun status(): DiagnosticPublisherStatus = current
+    @Synchronized fun status(): DiagnosticPublisherStatus {
+        if (current != DiagnosticPublisherStatus.Stopped) return current
+        return try {
+            if (store.pendingStopSessions().isEmpty()) DiagnosticPublisherStatus.Stopped else DiagnosticPublisherStatus.Stopping
+        } catch (_: Exception) { DiagnosticPublisherStatus.Stopping }
+    }
 }

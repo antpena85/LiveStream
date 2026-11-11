@@ -1,8 +1,8 @@
 # LiveStream plan status dashboard
 
-As of: 2026-11-09 (America/New_York)
+As of: 2026-11-10 (America/New_York)
 Current phase: M2 feasibility, isolated probes, and an authorized accelerated prototype.
-Implementation/release: Local media and watch diagnostics have been exercised; the publisher safety seam compiles for Android but is not integrated. No received broadcast or release application is delivered.
+Implementation/release: Local media and watch diagnostics have been exercised. The Android prototype has partial manual controls and durable safety-state integration, but real publisher start remains disabled. No received broadcast or release application is delivered.
 Sources: [Instructions](../AGENTS.md), [PRD](../PRD.md), [master plan](MASTER_PLAN.md),
 [53-task index](subplans/README.md), all task status/entry/acceptance/evidence
 records, and retained evidence below. [Architecture](../ARCHITECTURE.md) remains proposed.
@@ -103,10 +103,12 @@ All [D01–D13 aggregate records](MASTER_PLAN.md#7-open-decision-register) remai
 | D10–D11 | Visual/numeric capacity, preference/stop/recovery, and revision/identity/receipt/retention contracts with required evidence. Q44/Q45 stay confirmed. |
 | D12–D13 | Distribution/support coverage and final Android/watch/tooling handoff. Q47 now settles T01–T06 confirmation; TDD remains required. |
 
-Since the 2026-11-05 snapshot, diagnostic callback cleanup, durable manual-start
-claim tests and current-build inventory reports have added evidence as linked
-above. Task counts and the G2 disposition have not changed; these experiments
-do not establish a working broadcast.
+Since the 2026-11-09 snapshot, the [prototype checkpoints](specifications/accelerated-prototype.md#manual-publisher-control-slice--2026-11-08)
+add a guarded manual-start control, untimed preview preparation, off-air
+diagnostic scoring, session-scoped disconnect routing, a stop-confirmation dialog,
+and conservative reopened pending-session status. Device instrumentation covers
+the stated diagnostic behaviors, not an actual broadcast or verified network
+shutdown. Task counts and G2 disposition have not changed.
 
 [Graphical progression](../.archify/workflow-livestream-progression-20261018-164617/livestream-progression.html)
 remains the earlier dated 4/53 snapshot. This Markdown file carries current

@@ -87,6 +87,14 @@ class SafetyStoreInstrumentation : Instrumentation() {
             }
             targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
+                check(store.claimPublisherSession("prior-session", store.snapshot()))
+            }
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val adapter = AndroidPublisherAdapter(store, connect = {}, stop = {}, lifecycle = DiagnosticPublisherLifecycle(store), sessionId = "new-session")
+                check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping) { "Unresolved prior session was reported stopped" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var endpoint = ""
                 val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = {}, lifecycle = lifecycle, sessionId = "integrated-start")
@@ -157,7 +165,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var connected = false
                 val accepted = lifecycle.startDiagnostic("closed-store", "rtmps://example.test/live", "fictional-key", true, true, true, true, snapshot, stop = {}) { connected = true }
-                check(!accepted && !connected && lifecycle.status() == DiagnosticPublisherStatus.Stopped) { "Unavailable safety store allowed start" }
+                check(!accepted && !connected && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Unavailable safety store did not block start or reported a verified stop" }
             }
             targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
@@ -165,7 +173,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 var connected = false
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 val accepted = lifecycle.startDiagnostic("next-session", "rtmps://example.test/live", "fictional-key", true, true, true, true, store.snapshot(), stop = {}) { connected = true }
-                check(!accepted && !connected && lifecycle.status() == DiagnosticPublisherStatus.Stopped) { "Unresolved prior session allowed connection" }
+                check(!accepted && !connected && lifecycle.status() == DiagnosticPublisherStatus.Stopping) { "Unresolved prior session allowed connection or reported stopped" }
                 check(store.pendingStopSessions() == setOf("prior-session")) { "Prior session claim changed" }
             }
             targetContext.deleteDatabase(name)
