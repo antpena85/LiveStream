@@ -132,7 +132,12 @@ class MediaActivity : Activity() {
         controls.addView(scoreControls)
         controls.addView(Button(this).apply {
             text = "Stop"
-            setOnClickListener { stopCapture("operator_stopped") }
+            setOnClickListener {
+                AlertDialog.Builder(this@MediaActivity).setTitle("Confirm stop")
+                    .setMessage("Stop the current preview or capture?")
+                    .setPositiveButton("Stop") { _, _ -> stopCapture("operator_stopped") }
+                    .setNegativeButton("Cancel", null).show()
+            }
         })
         controls.addView(Button(this).apply {
             text = "Review clip"
@@ -317,6 +322,7 @@ class MediaActivity : Activity() {
 
     private fun stopCapture(reason: String) {
         val stream = capture ?: return
+        publisher?.requestStop(true)
         val wasPublisherPreview = publisherPreview
         publisherPreview = false
         capture = null

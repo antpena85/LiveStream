@@ -79,6 +79,16 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Activity stop confirmation — 2026-11-10
+
+The diagnostic activity now asks for confirmation before an operator stop and
+requests publisher-session stop before releasing capture; lifecycle and error
+cleanup remain immediate. A T06 UI check failed before the dialog was added.
+After adding a bounded wait for the dialog window, the instrumentation passed
+on the Pixel 8 Pro (build CP3A.261005.005); both APKs built offline. The UI test
+checks dialog visibility, not a live publisher stop or termination confirmation.
+Real publisher start remains disabled.
+
 ### Off-air diagnostic scoring — 2026-11-10
 
 The diagnostic score controls now accept and display a point when capture is

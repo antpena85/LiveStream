@@ -45,9 +45,18 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     check(findText(root, "Off-air diagnostic score: > ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") != null) {
                         "Off-air scoring did not show the accepted score"
                     }
+                    (findText(root, "Stop") ?: error("Stop control missing")).performClick()
                     } catch (failure: Throwable) { uiFailure = failure }
                 }
                 uiFailure?.let { throw it }
+                waitForIdleSync()
+                val deadline = android.os.SystemClock.uptimeMillis() + 3000
+                var confirmationVisible = false
+                while (android.os.SystemClock.uptimeMillis() < deadline && !confirmationVisible) {
+                    confirmationVisible = uiAutomation.rootInActiveWindow?.findAccessibilityNodeInfosByText("Confirm stop")?.isNotEmpty() == true
+                    if (!confirmationVisible) android.os.SystemClock.sleep(100)
+                }
+                check(confirmationVisible) { "Stop did not ask for confirmation" }
             } finally { activity.finish() }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
