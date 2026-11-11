@@ -103,6 +103,19 @@ class SafetyStoreInstrumentation : Instrumentation() {
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var endpoint = ""
+                var stops = 0
+                val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = { stops++ }, lifecycle = lifecycle, sessionId = "manual-unified")
+                check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.Accepted) { "Manual start did not use the durable session" }
+                check(endpoint == "rtmps://example.test/live/fictional-key" && store.pendingStopSessions() == setOf("manual-unified")) { "Manual start did not dispatch with a durable claim" }
+                adapter.connectionSucceeded()
+                check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Live) { "Manual session did not report live" }
+                adapter.requestStop(true)
+                check(stops == 1 && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping && store.pendingStopSessions() == setOf("manual-unified")) { "Manual stop lost the unresolved claim" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var endpoint = ""
                 val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = {}, lifecycle = lifecycle, sessionId = "integrated-start")
                 val started = adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true)
                 check(started && endpoint == "rtmps://example.test/live/fictional-key") { "Diagnostic adapter did not dispatch manual start" }

@@ -79,6 +79,16 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Manual session path with controlled publisher — 2026-11-11
+
+The adapter's manual `start()` now joins assessment, durable Android session
+claim, connection callback and confirmed stop in the existing controlled-publisher
+configuration. At T02, the integrated test failed before the change and passed
+on the Pixel 8 Pro (build CP3A.261005.005); both APKs built offline. It uses
+real Android SQLite and a network double. The `GenericStream` constructor remains
+fail-closed: diagnostic bitmap fit is not broadcast-fit approval, and session
+termination confirmation and the real network path remain unresolved.
+
 ### Unresolved-session operator notice — 2026-11-11
 
 At the confirmed T06 activity boundary, a test reopening the diagnostic UI

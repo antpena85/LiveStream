@@ -3,6 +3,8 @@ package livestream.feasibility.mediaprobe
 import livestream.feasibility.StartResult
 import livestream.feasibility.ManualPublisherControl
 import livestream.feasibility.StreamSession
+import livestream.feasibility.ManualDestination
+import livestream.feasibility.DestinationResult
 import com.pedro.library.generic.GenericStream
 
 /** Android integration under construction; no real trial is authorized yet. */
@@ -36,11 +38,24 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
     )
 
     fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult {
+        if (!confirmed) return StartResult.Cancelled
         if (confirmed && lifecycle != null) when (lifecycle.status()) {
             DiagnosticPublisherStatus.Connecting -> return StartResult.AlreadyConnecting
             DiagnosticPublisherStatus.Live -> return StartResult.AlreadyLive
             DiagnosticPublisherStatus.Stopping -> return StartResult.PendingStop
             DiagnosticPublisherStatus.Stopped -> Unit
+        }
+        if (lifecycle != null && diagnosticOnly) {
+            if (ManualDestination.validate(server, key) != DestinationResult.Ready) return StartResult.InvalidDestination
+            if (!camera) return StartResult.CameraPermissionRequired
+            if (!microphone) return StartResult.MicrophonePermissionRequired
+            return try {
+                val assessment = diagnosticAssessment()
+                if (!assessment.fits) StartResult.NumericFitUnresolved
+                else if (lifecycle.startDiagnostic(sessionId, server, key, true, true, true, true, assessment.snapshot, stop, connect)) StartResult.Accepted
+                else if (lifecycle.status() == DiagnosticPublisherStatus.Stopping) StartResult.PublisherFailed
+                else StartResult.SafetyStateUnavailable
+            } catch (_: Exception) { StartResult.SafetyStateUnavailable }
         }
         return control.start(server, key, confirmed, camera, microphone, fitReady = false, assessed = null)
     }
