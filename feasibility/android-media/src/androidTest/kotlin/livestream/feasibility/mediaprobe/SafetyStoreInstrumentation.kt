@@ -8,11 +8,17 @@ import livestream.feasibility.StartResult
 import livestream.feasibility.StreamSession
 
 class SafetyStoreInstrumentation : Instrumentation() {
+    override fun newActivity(cl: ClassLoader, className: String, intent: android.content.Intent): Activity {
+        val activity = super.newActivity(cl, className, intent)
+        if (activity is MediaActivity) activity.diagnosticDatabaseName = "off-air-ui-instrumentation.db"
+        return activity
+    }
     override fun onCreate(arguments: Bundle?) { super.onCreate(arguments); start() }
 
     override fun onStart() {
         val name = "safety-instrumentation-test.db"
         targetContext.deleteDatabase(name)
+        targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         val result = Bundle()
         try {
             val activity = startActivitySync(android.content.Intent(targetContext, MediaActivity::class.java).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -34,6 +40,10 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     start.performClick()
                     check(findText(root, "Start a local camera/audio test before checking publisher start. No broadcast was started.") != null) {
                         "Publisher control did not explain why start is unavailable"
+                    }
+                    (findText(root, "+ ABC") ?: error("Score control missing")).performClick()
+                    check(findText(root, "Off-air diagnostic score: > ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") != null) {
+                        "Off-air scoring did not show the accepted score"
                     }
                     } catch (failure: Throwable) { uiFailure = failure }
                 }
@@ -299,6 +309,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
             finish(Activity.RESULT_CANCELED, result)
         } finally {
             targetContext.deleteDatabase(name)
+            targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         }
     }
 }

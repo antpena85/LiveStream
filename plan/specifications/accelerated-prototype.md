@@ -79,6 +79,15 @@ the owner when needed rather than treating a proposed value as confirmed.
 
 ## Manual publisher control slice — 2026-11-08
 
+### Off-air diagnostic scoring — 2026-11-10
+
+The diagnostic score controls now accept and display a point when capture is
+stopped, using the existing Android score store. A T06 activity test with a
+dedicated test database failed before the change and passed on the Pixel 8 Pro
+(build CP3A.261005.005) afterward; both APKs built offline. The test does not
+modify the normal diagnostic database. This is simplified fixture scoring, not
+full match logic or proof of a broadcast or fit-triggered live shutdown.
+
 ### Session-scoped disconnect routing — 2026-11-10
 
 The capture-scoped callback now routes disconnect separately from connection

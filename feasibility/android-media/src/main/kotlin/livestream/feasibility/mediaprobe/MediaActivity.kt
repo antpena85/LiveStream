@@ -43,6 +43,7 @@ import org.json.JSONObject
 
 /** Operator-initiated local M2 experiment. This activity never starts a network stream. */
 class MediaActivity : Activity() {
+    internal var diagnosticDatabaseName = "local-diagnostic-score.db"
     private val handler = Handler(Looper.getMainLooper())
     private val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
     private var pendingCapture = false
@@ -62,7 +63,7 @@ class MediaActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        diagnosticScore = AndroidSafetyStore(this, "local-diagnostic-score.db")
+        diagnosticScore = AndroidSafetyStore(this, diagnosticDatabaseName)
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(32, 48, 32, 24)
@@ -396,10 +397,11 @@ class MediaActivity : Activity() {
     private fun saveReport() { filesDir.resolve("media-report.json").writeText(report.toString(2)) }
 
     private fun scorePoint(left: Boolean) {
-        if (capture == null || transitionTest) return
+        if (capture != null && transitionTest) return
         try {
             diagnosticScore.scorePoint(left)
-            updateScoreFilter()
+            if (capture == null) status.text = "Off-air diagnostic score: ${diagnosticScore.scoreDisplay()}"
+            else updateScoreFilter()
         } catch (_: DiagnosticOverlayDoesNotFit) {
             stopCapture("score_does_not_fit")
             status.text = "Local capture stopped: full diagnostic score does not fit. Score was saved."
