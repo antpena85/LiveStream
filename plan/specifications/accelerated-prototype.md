@@ -38,6 +38,17 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Diagnostic helper admission — 2026-11-12
+
+The diagnostic helper now delegates to the same submitted-assessment Start
+path rather than independently rendering a new assessment. The focused T02
+instrumentation on the Pixel 10 Pro XL first failed because the helper started
+without a submitted projection, then passed after the change, with no claim or
+connection for that denied start. Both Android APKs built; the JVM test task
+was up to date. The publisher-only instrumentation skips the unresolved UI
+confirmation check and does not exercise real networking or encoded output.
+The real publisher remains blocked; encoded fit and stop recovery remain open.
+
 ### Submitted assessment admission — 2026-11-12
 
 The diagnostic manual Start now requires an assessment retained only after the

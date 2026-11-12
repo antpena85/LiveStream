@@ -163,6 +163,9 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var endpoint = ""
                 val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = {}, lifecycle = lifecycle, sessionId = "integrated-start")
+                check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true)) { "Diagnostic helper started without submitted output" }
+                check(endpoint.isEmpty() && store.pendingStopSessions().isEmpty()) { "Denied helper start had external effects" }
+                check(adapter.renderDiagnosticProjection { bitmap, _ -> bitmap.recycle() })
                 val started = adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true)
                 check(started && endpoint == "rtmps://example.test/live/fictional-key") { "Diagnostic adapter did not dispatch manual start" }
                 check(store.pendingStopSessions() == setOf("integrated-start")) { "Diagnostic adapter did not claim session" }
@@ -179,6 +182,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, false))
                 check(!adapter.startDiagnostic("invalid", "fictional-key", true, true, true))
                 check(connects == 0 && store.pendingStopSessions().isEmpty() && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopped) { "Denied start changed publisher state" }
+                check(adapter.renderDiagnosticProjection { bitmap, _ -> bitmap.recycle() })
                 check(adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true))
                 check(!adapter.startDiagnostic("rtmps://example.test/live", "fictional-key", true, true, true))
                 check(connects == 1 && store.pendingStopSessions() == setOf("guarded-adapter")) { "Duplicate start dispatched or changed claim" }

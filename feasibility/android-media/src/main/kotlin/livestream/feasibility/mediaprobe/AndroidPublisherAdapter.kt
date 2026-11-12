@@ -14,10 +14,7 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
     /** Test-double path only; never use the fixture as real broadcast authorization. */
     fun startDiagnostic(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): Boolean {
         if (!diagnosticOnly || lifecycle == null) return false
-        return try {
-            val assessment = diagnosticAssessment()
-            lifecycle.startDiagnostic(sessionId, server, key, confirmed, camera, microphone, assessment.fits, assessment.snapshot, stop, connect)
-        } catch (_: Exception) { false }
+        return start(server, key, confirmed, camera, microphone) == StartResult.Accepted
     }
     fun diagnosticStatus(): DiagnosticPublisherStatus = lifecycle?.status() ?: when (control.status()) {
         livestream.feasibility.StreamStatus.Stopped -> DiagnosticPublisherStatus.Stopped
