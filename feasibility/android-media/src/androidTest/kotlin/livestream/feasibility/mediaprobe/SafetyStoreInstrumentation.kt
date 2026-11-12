@@ -102,6 +102,25 @@ class SafetyStoreInstrumentation : Instrumentation() {
             }
             targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
+                store.scorePoint(true)
+                store.scorePoint(false)
+                store.scorePoint(false)
+                val adapter = AndroidPublisherAdapter(store, connect = {}, stop = {})
+                var rendered = false
+                val accepted = adapter.renderDiagnosticProjection { bitmap, assessment ->
+                    val expected = DiagnosticOverlay.render("> ABC 1 S0 T/O2 | XYZ 2 S0 T/O2") ?: error("Expected score did not fit")
+                    check(bitmap.sameAs(expected)) { "Output bitmap did not contain the assessed score" }
+                    check(assessment.display == "> ABC 1 S0 T/O2 | XYZ 2 S0 T/O2" && assessment.snapshot == ProbeSnapshot(3, 3, 0) && assessment.fits) {
+                        "Output did not carry its assessed score and committed revision"
+                    }
+                    expected.recycle()
+                    bitmap.recycle()
+                    rendered = true
+                }
+                check(accepted && rendered) { "Assessed score was not delivered to the output" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "score-change")

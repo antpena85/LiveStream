@@ -38,6 +38,22 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Assessed diagnostic projection to GL filter — 2026-11-12
+
+The local preview/recording path now supplies its dynamic scoreboard bitmap to
+the GenericStream image filter from the same committed projection that produces
+its diagnostic assessment and revision. At T05, Android instrumentation on the
+Pixel 10 Pro XL first failed because the projection was not delivered, then
+passed for an asymmetric score and revision. The Android APKs built and the JVM
+suite passed. One intermediate instrumentation run failed at the pre-existing
+stop-confirmation UI check; a rerun after waking the device passed. No recording
+or network stream was initiated by this test.
+
+The output consumer currently does not retain the assessment for Start, and the
+real GenericStream Start path remains blocked. The test checks the bitmap supplied
+to a consumer, not GL application, encoded geometry/readability, real publishing,
+live update safety, or received output. Those remain necessary before the gate.
+
 ### Connecting score change — 2026-11-12
 
 At the confirmed T02 boundary, the Android instrumentation changed a score

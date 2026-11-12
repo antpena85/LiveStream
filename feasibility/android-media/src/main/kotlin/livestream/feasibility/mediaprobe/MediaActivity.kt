@@ -273,13 +273,13 @@ class MediaActivity : Activity() {
             val audio = getSystemService(AudioManager::class.java)
             val builtin = audio.getDevices(AudioManager.GET_DEVICES_INPUTS).firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC }
             report.put("builtinPreferenceAccepted", builtin != null && microphone.setPreferredDevice(builtin))
-            val image = if (transitionTest) scoreboard() else dynamicScoreboard()
-            val filter = ImageFilterRender().apply {
-                setImage(image)
-                setScale(image.width / 12f, 18f)
-                setPosition(5f, 5f)
-            }
+            val filter = ImageFilterRender().apply { setPosition(5f, 5f) }
             scoreFilter = filter
+            if (transitionTest) {
+                val image = scoreboard()
+                filter.setImage(image)
+                filter.setScale(image.width / 12f, 18f)
+            } else updateScoreFilter()
             stream.getGlInterface().addFilter(filter)
             stream.startPreview(preview)
             if (publisherPreview) {
@@ -447,14 +447,15 @@ class MediaActivity : Activity() {
     }
 
     private fun updateScoreFilter() {
-        val image = dynamicScoreboard()
-        scoreFilter?.apply { setImage(image); setScale(image.width / 12f, 18f) }
+        val filter = checkNotNull(scoreFilter)
+        val adapter = checkNotNull(publisher)
+        if (!adapter.renderDiagnosticProjection { image, _ ->
+            filter.setImage(image)
+            filter.setScale(image.width / 12f, 18f)
+        }) throw DiagnosticOverlayDoesNotFit()
     }
 
     private class DiagnosticOverlayDoesNotFit : Exception()
-    private fun dynamicScoreboard(): Bitmap = DiagnosticOverlay.render(diagnosticScore.scoreDisplay())
-        ?: throw DiagnosticOverlayDoesNotFit()
-
     private fun scoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
         val canvas = Canvas(this)
         canvas.drawColor(Color.argb(235, 0, 0, 0))

@@ -31,6 +31,13 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
         return DiagnosticAssessment(display, snapshot, bitmap != null)
     }
     fun diagnosticFit(): Boolean = diagnosticAssessment().fits
+    /** Supplies the bitmap and assessment from the same committed projection; the consumer owns the bitmap. */
+    fun renderDiagnosticProjection(consumer: (android.graphics.Bitmap, DiagnosticAssessment) -> Unit): Boolean {
+        val (display, snapshot) = store.diagnosticProjection()
+        val bitmap = DiagnosticOverlay.render(display) ?: return false
+        consumer(bitmap, DiagnosticAssessment(display, snapshot, true))
+        return true
+    }
     fun scorePoint(left: Boolean) {
         try {
             store.scorePoint(left)
