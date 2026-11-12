@@ -38,6 +38,18 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Connecting score change — 2026-11-12
+
+At the confirmed T02 boundary, the Android instrumentation changed a score
+after a controlled publisher start but before its connection callback. The
+Pixel 10 Pro XL run first failed because no stop was dispatched; after the
+change it passed with the score saved, stop dispatched, and the durable claim
+retained. The activity now routes its score controls through this adapter when
+one is present. Both Android APKs built offline and the forced JVM suite passed.
+The publisher was a network double: this does not establish real stop, encoded
+fit, live-score safety, or a received broadcast. The real start gate remains
+closed; integrating and validating those safeguards remains necessary.
+
 ### Next-session handoff — 2026-11-11
 
 The owner wants integrated broadcast progress, not further speculative

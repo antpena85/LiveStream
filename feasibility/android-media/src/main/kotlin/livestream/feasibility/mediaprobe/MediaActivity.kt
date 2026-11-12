@@ -432,7 +432,9 @@ class MediaActivity : Activity() {
     private fun scorePoint(left: Boolean) {
         if (capture != null && transitionTest) return
         try {
-            diagnosticScore.scorePoint(left)
+            val activePublisher = publisher
+            if (activePublisher != null) activePublisher.scorePoint(left) else diagnosticScore.scorePoint(left)
+            updatePublisherStatus()
             if (capture == null) status.text = "Off-air diagnostic score: ${diagnosticScore.scoreDisplay()}"
             else updateScoreFilter()
         } catch (_: DiagnosticOverlayDoesNotFit) {

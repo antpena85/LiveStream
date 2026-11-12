@@ -31,6 +31,13 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
         return DiagnosticAssessment(display, snapshot, bitmap != null)
     }
     fun diagnosticFit(): Boolean = diagnosticAssessment().fits
+    fun scorePoint(left: Boolean) {
+        try {
+            store.scorePoint(left)
+        } finally {
+            if (lifecycle?.status() == DiagnosticPublisherStatus.Connecting) lifecycle.requestStop(sessionId, true, stop)
+        }
+    }
     private val control = ManualPublisherControl(StreamSession(store), stop = stop, connect = connect)
 
     constructor(store: AndroidSafetyStore, stream: GenericStream, lifecycle: DiagnosticPublisherLifecycle, sessionId: String) : this(

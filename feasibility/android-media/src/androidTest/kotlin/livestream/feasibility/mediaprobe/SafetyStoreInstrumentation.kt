@@ -103,6 +103,17 @@ class SafetyStoreInstrumentation : Instrumentation() {
             targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stops = 0
+                val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "score-change")
+                check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.Accepted)
+                adapter.scorePoint(true)
+                check(store.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") { "Score change was not saved" }
+                check(stops == 1 && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping) { "Score change while connecting did not stop the stale publisher" }
+                check(store.pendingStopSessions() == setOf("score-change")) { "Score change lost the unresolved publisher claim" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 var endpoint = ""
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = { stops++ }, lifecycle = lifecycle, sessionId = "manual-unified")
