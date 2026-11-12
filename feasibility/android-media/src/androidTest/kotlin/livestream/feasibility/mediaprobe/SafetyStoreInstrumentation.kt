@@ -8,12 +8,17 @@ import livestream.feasibility.StartResult
 import livestream.feasibility.StreamSession
 
 class SafetyStoreInstrumentation : Instrumentation() {
+    private var publisherOnly = false
     override fun newActivity(cl: ClassLoader, className: String, intent: android.content.Intent): Activity {
         val activity = super.newActivity(cl, className, intent)
         if (activity is MediaActivity) activity.diagnosticDatabaseName = "off-air-ui-instrumentation.db"
         return activity
     }
-    override fun onCreate(arguments: Bundle?) { super.onCreate(arguments); start() }
+    override fun onCreate(arguments: Bundle?) {
+        super.onCreate(arguments)
+        publisherOnly = arguments?.getString("publisherOnly") == "true"
+        start()
+    }
 
     override fun onStart() {
         val name = "safety-instrumentation-test.db"
@@ -21,6 +26,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         val result = Bundle()
         try {
+            if (!publisherOnly) {
             AndroidSafetyStore(targetContext, "off-air-ui-instrumentation.db").use { store ->
                 check(store.claimPublisherSession("previous-session", store.snapshot()))
             }
@@ -65,6 +71,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 }
                 check(confirmationVisible) { "Stop did not ask for confirmation" }
             } finally { activity.finish() }
+            }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->
@@ -124,9 +131,16 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "score-change")
+                check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.NumericFitUnresolved) { "Start accepted a score never submitted to output" }
+                check(store.pendingStopSessions().isEmpty()) { "Rejected start claimed a session" }
+                check(adapter.renderDiagnosticProjection { bitmap, _ -> bitmap.recycle() })
+                AndroidSafetyStore(targetContext, name).use { it.scorePoint(false) }
+                check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.NumericFitUnresolved) { "Start accepted a stale output revision" }
+                check(store.pendingStopSessions().isEmpty()) { "Stale output claimed a session" }
+                check(adapter.renderDiagnosticProjection { bitmap, _ -> bitmap.recycle() })
                 check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.Accepted)
                 adapter.scorePoint(true)
-                check(store.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") { "Score change was not saved" }
+                check(store.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 1 S0 T/O2") { "Score change was not saved" }
                 check(stops == 1 && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping) { "Score change while connecting did not stop the stale publisher" }
                 check(store.pendingStopSessions() == setOf("score-change")) { "Score change lost the unresolved publisher claim" }
             }
@@ -136,6 +150,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 var endpoint = ""
                 var stops = 0
                 val adapter = AndroidPublisherAdapter(store, connect = { endpoint = it }, stop = { stops++ }, lifecycle = lifecycle, sessionId = "manual-unified")
+                check(adapter.renderDiagnosticProjection { bitmap, _ -> bitmap.recycle() })
                 check(adapter.start("rtmps://example.test/live", "fictional-key", true, true, true) == StartResult.Accepted) { "Manual start did not use the durable session" }
                 check(endpoint == "rtmps://example.test/live/fictional-key" && store.pendingStopSessions() == setOf("manual-unified")) { "Manual start did not dispatch with a durable claim" }
                 adapter.connectionSucceeded()

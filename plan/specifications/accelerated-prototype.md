@@ -38,6 +38,26 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Submitted assessment admission — 2026-11-12
+
+The diagnostic manual Start now requires an assessment retained only after the
+output consumer accepts the rendered bitmap, and checks its revision before
+the existing transactional publisher claim. On a Pixel 10 Pro XL, a T02 test
+first failed because Start accepted an assessment never submitted to output;
+the focused publisher instrumentation then passed with the missing assessment
+denied, a submitted current score accepted, and its durable claim retained. A
+stale-revision check also passed on its first run; it is verification, not a
+separate red/green cycle. The Android APKs built and the JVM test task was
+up to date. The complete instrumentation run failed at the existing UI
+stop-confirmation check on both tested phones; a publisher-only invocation
+skipped that UI check, so this is not a full instrumentation-suite pass.
+
+This controls the manual test-double path only. The older startDiagnostic test
+helper independently assesses the fixture, and the real GenericStream Start
+remains blocked. Consumer return does not prove GL application, encoded fit or
+readability. Live updates, actual shutdown confirmation/recovery, and received
+output still require integration and evidence before a trial.
+
 ### Assessed diagnostic projection to GL filter — 2026-11-12
 
 The local preview/recording path now supplies its dynamic scoreboard bitmap to

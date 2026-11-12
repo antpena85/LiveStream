@@ -10,6 +10,7 @@ import com.pedro.library.generic.GenericStream
 /** Android integration under construction; no real trial is authorized yet. */
 class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val connect: (String) -> Unit, private val stop: () -> Unit,
     private val lifecycle: DiagnosticPublisherLifecycle? = null, private val sessionId: String = "", private val diagnosticOnly: Boolean = true) {
+    private var submittedAssessment: DiagnosticAssessment? = null
     /** Test-double path only; never use the fixture as real broadcast authorization. */
     fun startDiagnostic(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): Boolean {
         if (!diagnosticOnly || lifecycle == null) return false
@@ -32,10 +33,13 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
     }
     fun diagnosticFit(): Boolean = diagnosticAssessment().fits
     /** Supplies the bitmap and assessment from the same committed projection; the consumer owns the bitmap. */
-    fun renderDiagnosticProjection(consumer: (android.graphics.Bitmap, DiagnosticAssessment) -> Unit): Boolean {
+    @Synchronized fun renderDiagnosticProjection(consumer: (android.graphics.Bitmap, DiagnosticAssessment) -> Unit): Boolean {
+        submittedAssessment = null
         val (display, snapshot) = store.diagnosticProjection()
         val bitmap = DiagnosticOverlay.render(display) ?: return false
-        consumer(bitmap, DiagnosticAssessment(display, snapshot, true))
+        val assessment = DiagnosticAssessment(display, snapshot, true)
+        consumer(bitmap, assessment)
+        submittedAssessment = assessment
         return true
     }
     fun scorePoint(left: Boolean) {
@@ -51,7 +55,7 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
         store, connect = { stream.startStream(it) }, stop = { stream.stopStream() }, lifecycle = lifecycle, sessionId = sessionId, diagnosticOnly = false
     )
 
-    fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult {
+    @Synchronized fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult {
         if (!confirmed) return StartResult.Cancelled
         if (confirmed && lifecycle != null) when (lifecycle.status()) {
             DiagnosticPublisherStatus.Connecting -> return StartResult.AlreadyConnecting
@@ -64,8 +68,8 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
             if (!camera) return StartResult.CameraPermissionRequired
             if (!microphone) return StartResult.MicrophonePermissionRequired
             return try {
-                val assessment = diagnosticAssessment()
-                if (!assessment.fits) StartResult.NumericFitUnresolved
+                val assessment = submittedAssessment
+                if (assessment == null || !assessment.fits || assessment.snapshot != store.snapshot()) StartResult.NumericFitUnresolved
                 else if (lifecycle.startDiagnostic(sessionId, server, key, true, true, true, true, assessment.snapshot, stop, connect)) StartResult.Accepted
                 else if (lifecycle.status() == DiagnosticPublisherStatus.Stopping) StartResult.PublisherFailed
                 else StartResult.SafetyStateUnavailable
