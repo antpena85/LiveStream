@@ -130,6 +130,10 @@ switch/mute test retains the asymmetric fixture (ABC 99/S2/T/O2/serve and XYZ
 The simplified score is not match logic and must not be used for a broadcast
 or real match. The dynamic fixture displays fixed S0, T/O2 and left-serve
 values; these do not update with scoring and are not actual match state.
+The diagnostic score persists between recordings and app updates. To clear it,
+stop the preview or recording, select **Reset diagnostic score**, and confirm.
+Cancel leaves the score unchanged; reset does not erase the clip or clear an
+unresolved publisher-stop record. Scroll the controls if a button is off-screen.
 For a side-by-side encoded-frame review, run the 10-second test and make exactly
 one score change roughly halfway through, at least 1.5 seconds after the start
 and before the end. Once the test finishes, select **Review score change frames**.

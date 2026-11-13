@@ -38,6 +38,20 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Confirmed diagnostic score reset — 2026-11-12
+
+The owner requested an explicit off-air reset after observing that the diagnostic
+score persists across updates. The reset uses one transaction to zero both
+fixture scores and advance the snapshot epoch, retaining pending-stop records.
+At T01 the Pixel 10 Pro XL focused instrumentation first failed on reopen with
+the old score, then passed cancellation, confirmed reset, reopen, generation,
+and pending-stop checks. A confirmation button is now present and refuses reset
+while a preview or recording is active. The complete T06 instrumentation run
+fails at the layout visibility assertion on this run, before exercising the
+button; confirmation and active-capture UI behavior remain unverified on-device.
+No owner's score or private clip was reset by instrumentation, which uses a
+separate test database. The actual publisher remains blocked.
+
 ### Local controls layout and short clip — 2026-11-12
 
 The owner reported a roughly two-second Pixel 10 recording and controls moving

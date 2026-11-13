@@ -39,6 +39,17 @@ class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(cont
 
     fun scorePoint(left: Boolean) = recordScore(left, null)
 
+    fun resetDiagnosticScore(confirmed: Boolean) {
+        if (!confirmed) return
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            db.execSQL("UPDATE diagnostic_score SET left_points=0, right_points=0 WHERE id=1")
+            db.execSQL("UPDATE state SET points=0, revision=0, epoch=epoch+1 WHERE id=1")
+            db.setTransactionSuccessful()
+        } finally { db.endTransaction() }
+    }
+
     private fun recordScore(left: Boolean, sessionId: String?) {
         val db = writableDatabase
         db.beginTransaction()

@@ -65,6 +65,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                         "Unresolved publisher session was not shown on reopening"
                     }
                     check(findText(root, "Publisher: stop unconfirmed") != null) { "Publisher state was not visible" }
+                    check(findText(root, "Reset diagnostic score") != null) { "Diagnostic score reset control missing" }
                     check(findText(root, "Prepare publisher preview") != null) { "Publisher preview preparation is missing" }
                     val frameReview = findText(root, "Review score change frames")
                     check(frameReview != null) { "Score change frame review control is missing" }
@@ -107,6 +108,20 @@ class SafetyStoreInstrumentation : Instrumentation() {
             }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
+            AndroidSafetyStore(targetContext, name).use { store ->
+                store.scorePoint(true)
+                store.scorePoint(false)
+                check(store.claimPublisherSession("reset-pending", store.snapshot()))
+                store.resetDiagnosticScore(false)
+                check(store.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 1 S0 T/O2") { "Canceled reset changed score" }
+                store.resetDiagnosticScore(true)
+            }
+            AndroidSafetyStore(targetContext, name).use { store ->
+                check(store.scoreDisplay() == "> ABC 0 S0 T/O2 | XYZ 0 S0 T/O2") { "Confirmed reset did not survive reopening" }
+                check(store.snapshot() == ProbeSnapshot(0, 0, 1)) { "Reset did not advance the generation" }
+                check(store.pendingStopSessions() == setOf("reset-pending")) { "Reset cleared unresolved publisher stop" }
+            }
+            targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 check(lifecycle.claim("disconnect-event", store.snapshot()))

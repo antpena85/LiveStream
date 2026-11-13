@@ -90,7 +90,7 @@ class MediaActivity : Activity() {
             text = "Local M2 test; no broadcast. Sets, timeouts and serve are fixed fixture values, not match state. Transition test: speak/count throughout. Mute at 4s, unmute at 8s, front at 12s, rear at 16s; stop at 20s. Each run replaces the private clip."
         }
         info.addView(status)
-        sidebar.addView(ScrollView(this).apply { addView(info) }, LinearLayout.LayoutParams(-1, 0, 1f))
+        sidebar.addView(ScrollView(this).apply { addView(info) }, LinearLayout.LayoutParams(-1, (56 * resources.displayMetrics.density).toInt()))
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         controls.addView(Button(this).apply {
             text = "Prepare publisher preview"
@@ -150,6 +150,25 @@ class MediaActivity : Activity() {
         })
         controls.addView(scoreControls)
         controls.addView(Button(this).apply {
+            text = "Reset diagnostic score"
+            setOnClickListener {
+                if (capture != null) {
+                    status.text = "Stop the preview or recording before resetting the diagnostic score."
+                } else {
+                    AlertDialog.Builder(this@MediaActivity).setTitle("Reset diagnostic score?")
+                        .setMessage("Reset ABC and XYZ to zero? Unresolved publisher stops and the recorded clip will be retained.")
+                        .setPositiveButton("Reset") { _, _ ->
+                            if (capture != null) status.text = "Stop the preview or recording before resetting the diagnostic score."
+                            else try {
+                                diagnosticScore.resetDiagnosticScore(true)
+                                status.text = "Off-air diagnostic score: ${diagnosticScore.scoreDisplay()}"
+                                updatePublisherStatus()
+                            } catch (_: Exception) { status.text = "Diagnostic score reset failed; score state is unavailable." }
+                        }.setNegativeButton("Cancel", null).show()
+                }
+            }
+        })
+        controls.addView(Button(this).apply {
             text = "Stop"
             setOnClickListener {
                 AlertDialog.Builder(this@MediaActivity).setTitle("Confirm stop")
@@ -199,7 +218,7 @@ class MediaActivity : Activity() {
         }
         controls.addView(transitionButton)
         val grid = android.widget.GridLayout(this).apply { columnCount = 3 }
-        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Decoded frame", "Run 20-second switch/mute test")
+        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Reset diagnostic score", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Decoded frame", "Run 20-second switch/mute test")
         val buttons = mutableListOf<Button>()
         fun collectButtons(group: android.view.ViewGroup) {
             for (index in 0 until group.childCount) {
@@ -222,7 +241,7 @@ class MediaActivity : Activity() {
             }
             grid.addView(button, params)
         }
-        sidebar.addView(grid)
+        sidebar.addView(ScrollView(this).apply { addView(grid) }, LinearLayout.LayoutParams(-1, 0, 1f))
         content.addView(sidebar, LinearLayout.LayoutParams(0, -1, 3f))
         preview = SurfaceView(this)
         content.addView(preview, LinearLayout.LayoutParams(0, -1, 2f))
