@@ -406,7 +406,10 @@ class MediaActivity : Activity() {
     private fun stopCapture(reason: String) {
         val stream = capture
         if (stream == null) {
-            publisher?.requestStop(true)
+            if (reason == "operator_stopped") {
+                publisher?.requestStop(true)
+                status.text = "Publisher stop remains unconfirmed; local capture resources are released."
+            }
             updatePublisherStatus()
             return
         }
@@ -424,7 +427,10 @@ class MediaActivity : Activity() {
         report.put("stopReason", reason).put("stoppedElapsedMs", SystemClock.elapsedRealtime())
         try { if (stream.isRecording) stream.stopRecord() }
         catch (failure: Exception) { report.put("stopError", failure.javaClass.simpleName) }
-        try { stream.release() }
+        try {
+            val adapter = publisher
+            if (adapter != null) adapter.releaseCapture { stream.release() } else stream.release()
+        }
         catch (failure: Exception) { report.put("releaseError", failure.javaClass.simpleName) }
         if (wasPublisherPreview) {
             runButton.isEnabled = true

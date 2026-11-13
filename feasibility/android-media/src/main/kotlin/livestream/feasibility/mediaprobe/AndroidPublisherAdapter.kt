@@ -11,6 +11,13 @@ import com.pedro.library.generic.GenericStream
 class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val connect: (String) -> Unit, private val stop: () -> Unit,
     private val lifecycle: DiagnosticPublisherLifecycle? = null, private val sessionId: String = "", private val diagnosticOnly: Boolean = true) {
     private var submittedAssessment: DiagnosticAssessment? = null
+    private var captureReleased = false
+    @Synchronized fun releaseCapture(release: () -> Unit) {
+        if (captureReleased) return
+        captureReleased = true
+        release()
+    }
+    @Synchronized private fun stopIfCaptureAvailable() { if (!captureReleased) stop() }
     /** Test-double path only; never use the fixture as real broadcast authorization. */
     fun startDiagnostic(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): Boolean {
         if (!diagnosticOnly || lifecycle == null) return false
@@ -54,16 +61,16 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
         }
     }
     private fun stopForOutputFailure() {
-        lifecycle?.requestStop(sessionId, true, stop)
+        lifecycle?.requestStop(sessionId, true, ::stopIfCaptureAvailable)
     }
-    fun scorePoint(left: Boolean) {
+    @Synchronized fun scorePoint(left: Boolean) {
         try {
             store.scorePoint(left)
         } finally {
-            if (lifecycle?.status() == DiagnosticPublisherStatus.Connecting) lifecycle.requestStop(sessionId, true, stop)
+            if (lifecycle?.status() == DiagnosticPublisherStatus.Connecting) lifecycle.requestStop(sessionId, true, ::stopIfCaptureAvailable)
         }
     }
-    private val control = ManualPublisherControl(StreamSession(store), stop = stop, connect = connect)
+    private val control = ManualPublisherControl(StreamSession(store), stop = ::stopIfCaptureAvailable, connect = connect)
 
     constructor(store: AndroidSafetyStore, stream: GenericStream, lifecycle: DiagnosticPublisherLifecycle, sessionId: String) : this(
         store, connect = { stream.startStream(it) }, stop = { stream.stopStream() }, lifecycle = lifecycle, sessionId = sessionId, diagnosticOnly = false
@@ -71,6 +78,7 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
 
     @Synchronized fun start(server: String, key: String, confirmed: Boolean, camera: Boolean, microphone: Boolean): StartResult {
         if (!confirmed) return StartResult.Cancelled
+        if (captureReleased) return StartResult.SafetyStateUnavailable
         if (confirmed && lifecycle != null) when (lifecycle.status()) {
             DiagnosticPublisherStatus.Connecting -> return StartResult.AlreadyConnecting
             DiagnosticPublisherStatus.Live -> return StartResult.AlreadyLive
@@ -84,7 +92,7 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
             return try {
                 val assessment = submittedAssessment
                 if (assessment == null || !assessment.fits || assessment.snapshot != store.snapshot()) StartResult.NumericFitUnresolved
-                else if (lifecycle.startDiagnostic(sessionId, server, key, true, true, true, true, assessment.snapshot, stop, connect)) StartResult.Accepted
+                else if (lifecycle.startDiagnostic(sessionId, server, key, true, true, true, true, assessment.snapshot, ::stopIfCaptureAvailable, connect)) StartResult.Accepted
                 else if (lifecycle.status() == DiagnosticPublisherStatus.Stopping) StartResult.PublisherFailed
                 else StartResult.SafetyStateUnavailable
             } catch (_: Exception) { StartResult.SafetyStateUnavailable }
@@ -92,13 +100,13 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
         return control.start(server, key, confirmed, camera, microphone, fitReady = false, assessed = null)
     }
 
-    fun connectionSucceeded() {
-        if (lifecycle != null) lifecycle.connected(sessionId, stop) else control.connectionSucceeded()
+    @Synchronized fun connectionSucceeded() {
+        if (lifecycle != null) lifecycle.connected(sessionId, ::stopIfCaptureAvailable) else control.connectionSucceeded()
     }
-    fun disconnected() {
-        if (lifecycle != null) lifecycle.disconnected(sessionId, stop) else control.requestStop(true)
+    @Synchronized fun disconnected() {
+        if (lifecycle != null) lifecycle.disconnected(sessionId, ::stopIfCaptureAvailable) else control.requestStop(true)
     }
-    fun requestStop(confirmed: Boolean) {
-        if (lifecycle != null) lifecycle.requestStop(sessionId, confirmed, stop) else control.requestStop(confirmed)
+    @Synchronized fun requestStop(confirmed: Boolean) {
+        if (lifecycle != null) lifecycle.requestStop(sessionId, confirmed, ::stopIfCaptureAvailable) else if (!captureReleased) control.requestStop(confirmed)
     }
 }

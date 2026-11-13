@@ -38,6 +38,21 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Stop/release coordination — 2026-11-13
+
+The Android adapter now serializes its stop dispatch and local capture release;
+once release begins, later Stop and callback cleanup cannot invoke the released
+publisher object. The activity routes local stream release through that adapter,
+keeps an unresolved claim and reports that local resources were released rather
+than claiming a successful retry. The controlled T02 test on Pixel 10 Pro XL
+first failed because Stop was dispatched again after release, then passed with
+one stop, one release, Stopping status and the durable claim retained. Both
+Android APKs built; the focused instrumentation passed and the JVM test task was
+up to date. The complete instrumentation was blocked by the device's System UI
+covering the app. This is not proof of real publisher termination, failed-release
+recovery, GL/network behavior or process-restart reconciliation. No broadcast
+was attempted and the real Start gate remains closed.
+
 ### RootEncoder stop/release review — 2026-11-13
 
 The pinned RootEncoder 2.8.1 source was reviewed against the activity's owned

@@ -135,6 +135,21 @@ class SafetyStoreInstrumentation : Instrumentation() {
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var stops = 0
+                var releases = 0
+                val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "released-owner")
+                check(lifecycle.claim("released-owner", store.snapshot()))
+                adapter.requestStop(true)
+                adapter.releaseCapture { releases++ }
+                adapter.requestStop(true)
+                check(releases == 1 && stops == 1) { "Stop retried a released publisher" }
+                check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping && store.pendingStopSessions() == setOf("released-owner")) {
+                    "Release or retry cleared the unresolved claim"
+                }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
                 store.scorePoint(true)
                 store.scorePoint(false)
                 check(store.claimPublisherSession("reset-pending", store.snapshot()))
