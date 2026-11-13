@@ -136,6 +136,18 @@ class SafetyStoreInstrumentation : Instrumentation() {
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
+                val adapter = AndroidPublisherAdapter(store, connect = {}, stop = {}, lifecycle = lifecycle, sessionId = "release-failure")
+                check(lifecycle.claim("release-failure", store.snapshot()))
+                adapter.requestStop(true)
+                try { adapter.releaseCapture { throw IllegalStateException("release failed") } } catch (_: IllegalStateException) { }
+                check(!adapter.localReleaseConfirmed()) { "Failed local release was reported as confirmed" }
+                check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping && store.pendingStopSessions() == setOf("release-failure")) {
+                    "Failed local release lost unresolved publisher claim"
+                }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
                 var stops = 0
                 var releases = 0
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = { stops++ }, lifecycle = lifecycle, sessionId = "released-owner")

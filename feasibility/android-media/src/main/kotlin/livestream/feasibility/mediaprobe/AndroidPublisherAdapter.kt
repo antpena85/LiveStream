@@ -12,10 +12,13 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
     private val lifecycle: DiagnosticPublisherLifecycle? = null, private val sessionId: String = "", private val diagnosticOnly: Boolean = true) {
     private var submittedAssessment: DiagnosticAssessment? = null
     private var captureReleased = false
+    private var localReleaseSucceeded = false
+    @Synchronized fun localReleaseConfirmed(): Boolean = localReleaseSucceeded
     @Synchronized fun releaseCapture(release: () -> Unit) {
         if (captureReleased) return
         captureReleased = true
         release()
+        localReleaseSucceeded = true
     }
     @Synchronized private fun stopIfCaptureAvailable() { if (!captureReleased) stop() }
     /** Test-double path only; never use the fixture as real broadcast authorization. */

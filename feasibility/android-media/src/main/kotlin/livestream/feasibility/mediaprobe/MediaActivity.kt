@@ -408,7 +408,9 @@ class MediaActivity : Activity() {
         if (stream == null) {
             if (reason == "operator_stopped") {
                 publisher?.requestStop(true)
-                status.text = "Publisher stop remains unconfirmed; local capture resources are released."
+                status.text = if (publisher?.localReleaseConfirmed() == true)
+                    "Publisher stop remains unconfirmed; local capture release returned successfully."
+                else "Publisher stop and local capture release remain unconfirmed."
             }
             updatePublisherStatus()
             return

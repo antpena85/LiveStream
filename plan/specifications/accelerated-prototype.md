@@ -38,6 +38,17 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Failed local release reporting — 2026-11-13
+
+The adapter now records a successful return from local release separately from
+the fact that release was attempted; the activity reports unconfirmed local
+release when that operation throws. At T02 a controlled release failure on the
+Pixel 10 Pro XL first failed because success was reported, then passed with the
+publisher claim still pending. Both APKs built and focused instrumentation
+passed; the JVM test task was up to date. This does not verify the activity's
+failure message on-device, retry failed release, or establish real publisher
+termination. The real Start gate remains closed and no broadcast was attempted.
+
 ### Stop/release coordination — 2026-11-13
 
 The Android adapter now serializes its stop dispatch and local capture release;
