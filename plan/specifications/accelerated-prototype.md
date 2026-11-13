@@ -38,6 +38,19 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Live diagnostic output failure — 2026-11-12
+
+At the T02/T05 boundaries, a controlled live publisher's output consumer
+throws while receiving an assessed projection. Pixel 10 Pro XL instrumentation
+first failed because no stop was requested; after the change it passed with
+Stopping displayed and the session claim retained. Projection read, render, or
+submission failure now requests the owned lifecycle's stop and invalidates the
+submitted assessment. Android APK builds succeeded and the JVM test task was
+up to date. The focused run skips the previously failing UI confirmation check.
+It uses a publisher double and a synchronous submission exception: asynchronous
+GL failures, actual encoder output, real shutdown and provider reception are not
+established. The actual publisher Start remains blocked.
+
 ### Diagnostic helper admission — 2026-11-12
 
 The diagnostic helper now delegates to the same submitted-assessment Start

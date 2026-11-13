@@ -32,12 +32,24 @@ class AndroidPublisherAdapter(private val store: AndroidSafetyStore, private val
     /** Supplies the bitmap and assessment from the same committed projection; the consumer owns the bitmap. */
     @Synchronized fun renderDiagnosticProjection(consumer: (android.graphics.Bitmap, DiagnosticAssessment) -> Unit): Boolean {
         submittedAssessment = null
-        val (display, snapshot) = store.diagnosticProjection()
-        val bitmap = DiagnosticOverlay.render(display) ?: return false
-        val assessment = DiagnosticAssessment(display, snapshot, true)
-        consumer(bitmap, assessment)
-        submittedAssessment = assessment
-        return true
+        try {
+            val (display, snapshot) = store.diagnosticProjection()
+            val bitmap = DiagnosticOverlay.render(display)
+            if (bitmap == null) {
+                stopForOutputFailure()
+                return false
+            }
+            val assessment = DiagnosticAssessment(display, snapshot, true)
+            consumer(bitmap, assessment)
+            submittedAssessment = assessment
+            return true
+        } catch (failure: Exception) {
+            stopForOutputFailure()
+            throw failure
+        }
+    }
+    private fun stopForOutputFailure() {
+        lifecycle?.requestStop(sessionId, true, stop)
     }
     fun scorePoint(left: Boolean) {
         try {

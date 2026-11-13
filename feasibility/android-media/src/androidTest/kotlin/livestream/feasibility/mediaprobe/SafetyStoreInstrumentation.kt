@@ -155,8 +155,15 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 check(endpoint == "rtmps://example.test/live/fictional-key" && store.pendingStopSessions() == setOf("manual-unified")) { "Manual start did not dispatch with a durable claim" }
                 adapter.connectionSucceeded()
                 check(adapter.diagnosticStatus() == DiagnosticPublisherStatus.Live) { "Manual session did not report live" }
-                adapter.requestStop(true)
-                check(stops == 1 && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping && store.pendingStopSessions() == setOf("manual-unified")) { "Manual stop lost the unresolved claim" }
+                try {
+                    adapter.renderDiagnosticProjection { bitmap, _ -> bitmap.recycle(); throw IllegalStateException("output failed") }
+                    error("Output failure was not reported")
+                } catch (failure: IllegalStateException) {
+                    check(failure.message == "output failed")
+                }
+                check(stops == 1 && adapter.diagnosticStatus() == DiagnosticPublisherStatus.Stopping && store.pendingStopSessions() == setOf("manual-unified")) {
+                    "Live output failure did not request stop and retain its claim"
+                }
             }
             targetContext.deleteDatabase(name)
             AndroidSafetyStore(targetContext, name).use { store ->
