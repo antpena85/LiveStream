@@ -38,6 +38,16 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Stop-confirmation test blocker — 2026-11-12
+
+The complete Android instrumentation previously failed while looking for the
+Stop confirmation. Its accessibility root was System UI rather than the app;
+after the owner unlocked the Pixel 10 Pro XL, the same full instrumentation
+passed, including the confirmation check and publisher safety cases. The test
+now includes active-window diagnostics on failure. This resolves the observed
+test-environment blocker, not real publisher stop confirmation or recovery.
+No capture or network broadcast was started by the instrumentation.
+
 ### Provisional diagnostic output geometry — 2026-11-12
 
 The diagnostic projection now checks output dimensions against the same filter

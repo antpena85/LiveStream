@@ -111,7 +111,9 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     confirmationVisible = uiAutomation.rootInActiveWindow?.findAccessibilityNodeInfosByText("Confirm stop")?.isNotEmpty() == true
                     if (!confirmationVisible) android.os.SystemClock.sleep(100)
                 }
-                check(confirmationVisible) { "Stop did not ask for confirmation" }
+                check(confirmationVisible) {
+                    "Stop did not ask for confirmation; active window package=${uiAutomation.rootInActiveWindow?.packageName}, windows=${uiAutomation.windows.map { it.root?.packageName }}"
+                }
             } finally { activity.finish() }
             }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
