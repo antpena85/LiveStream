@@ -7,6 +7,12 @@ Camera2 → GL scoreboard → AVC path and microphone → AAC path. RootEncoder'
 and resolved dependencies still belong to the final stack/license review.
 It is a diagnostic candidate, not the release application or a v1 recording feature.
 
+The always-visible **Dev build** label is the installed diagnostic APK's
+`versionName`, derived from a hash of Android media source, shared feasibility
+Kotlin source, and the media build script. Identical inputs give the same label;
+changes outside those inputs, dependencies, or build environment are not tracked.
+It is not a release version or proof that a particular device test passed.
+
 To open this isolated project in Android Studio, select this directory—the one
 containing `settings.gradle.kts`—with **File → Open**. Use the project-local
 JDK/Gradle/SDK and M2-only scope described in the root

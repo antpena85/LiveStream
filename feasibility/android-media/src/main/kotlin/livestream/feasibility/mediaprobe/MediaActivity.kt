@@ -72,9 +72,16 @@ class MediaActivity : Activity() {
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             setPadding(8, 8, 8, 8)
+            setOnApplyWindowInsetsListener { view, windowInsets ->
+                val safe = windowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout())
+                view.setPadding(safe.left + 8, safe.top + 8, safe.right + 8, safe.bottom + 8)
+                windowInsets
+            }
         }
         val sidebar = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val info = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val versionName = packageManager.getPackageInfo(packageName, 0).versionName ?: "unknown"
+        sidebar.addView(TextView(this).apply { text = "Dev build: $versionName" })
         val safetyNotice = try {
             if (diagnosticScore.pendingStopSessions().isNotEmpty())
                 "Previous publisher session is unresolved. Publishing remains blocked; shutdown is not confirmed."
@@ -331,12 +338,12 @@ class MediaActivity : Activity() {
             val audio = getSystemService(AudioManager::class.java)
             val builtin = audio.getDevices(AudioManager.GET_DEVICES_INPUTS).firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC }
             report.put("builtinPreferenceAccepted", builtin != null && microphone.setPreferredDevice(builtin))
-            val filter = ImageFilterRender().apply { setPosition(5f, 5f) }
+            val filter = ImageFilterRender().apply { setPosition(DiagnosticOverlay.positionPercent, DiagnosticOverlay.positionPercent) }
             scoreFilter = filter
             if (transitionTest) {
                 val image = scoreboard()
                 filter.setImage(image)
-                filter.setScale(image.width / 12f, 18f)
+                filter.setScale(DiagnosticOverlay.widthPercent(image), DiagnosticOverlay.heightPercent)
             } else updateScoreFilter()
             stream.getGlInterface().addFilter(filter)
             stream.startPreview(preview)
@@ -518,7 +525,7 @@ class MediaActivity : Activity() {
         val adapter = checkNotNull(publisher)
         if (!adapter.renderDiagnosticProjection { image, _ ->
             filter.setImage(image)
-            filter.setScale(image.width / 12f, 18f)
+            filter.setScale(DiagnosticOverlay.widthPercent(image), DiagnosticOverlay.heightPercent)
         }) throw DiagnosticOverlayDoesNotFit()
     }
 

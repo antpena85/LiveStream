@@ -38,6 +38,20 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Provisional diagnostic output geometry — 2026-11-12
+
+The diagnostic projection now checks output dimensions against the same filter
+position and scale used by the local GenericStream path. An illustrative 24px
+minimum nominal text size and 5% bounds are provisional experiment parameters,
+not established readability or approved product limits. The T05 Pixel 10 Pro XL
+test first failed because an undersized 320×180 output accepted the projection;
+it then passed with that output rejected and the normal 1280×720 fixture still
+delivered. The focused run skipped the known UI failure. Both APKs built; JVM
+tests were up to date. No encoded recording was inspected for this change.
+The assessment assumes the intended filter transform and does not validate
+encoded pixels, clipping, compression or human legibility; network Start stays
+blocked until the outstanding real publisher and stop safeguards are resolved.
+
 ### Confirmed diagnostic score reset — 2026-11-12
 
 The owner requested an explicit off-air reset after observing that the diagnostic

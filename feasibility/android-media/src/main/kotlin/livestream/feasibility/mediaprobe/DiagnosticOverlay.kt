@@ -10,6 +10,16 @@ import kotlin.math.ceil
 
 /** Local diagnostic renderer only; never a broadcast fit authorization. */
 object DiagnosticOverlay {
+    // Provisional 720p geometry; this is not a measured legibility threshold.
+    const val positionPercent = 5f
+    const val heightPercent = 18f
+    fun widthPercent(bitmap: Bitmap): Float = bitmap.width / 12f
+    fun fitsOutput(bitmap: Bitmap, width: Int, height: Int): Boolean {
+        val scaleWidth = widthPercent(bitmap)
+        val renderedTextHeight = 32f * height * heightPercent / 100f / bitmap.height
+        return width > 0 && height > 0 && positionPercent + scaleWidth <= 95f &&
+            positionPercent + heightPercent <= 95f && renderedTextHeight >= 24f
+    }
     fun render(text: String): Bitmap? {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 32f; typeface = Typeface.MONOSPACE }
         val bounds = Rect()

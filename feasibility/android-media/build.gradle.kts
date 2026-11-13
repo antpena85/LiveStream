@@ -3,10 +3,22 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import java.security.MessageDigest
 
 plugins {
     id("com.android.application") version "9.2.0"
 }
+
+// Stable for identical source inputs, including uncommitted changes; not a release version.
+val diagnosticDigest = MessageDigest.getInstance("SHA-256")
+val diagnosticInputs = (fileTree("src/main") { include("**/*") }.files +
+    fileTree("../src/main/kotlin/livestream/feasibility") { include("*.kt") }.files +
+    setOf(file("build.gradle.kts"))).filter { it.isFile }.sortedBy { it.absolutePath }
+diagnosticInputs.forEach { input ->
+    diagnosticDigest.update(input.name.toByteArray(Charsets.UTF_8))
+    diagnosticDigest.update(input.readBytes())
+}
+val diagnosticVersion = "m2-dev-" + diagnosticDigest.digest().take(6).joinToString("") { "%02x".format(it.toInt() and 0xff) }
 
 abstract class CopySessionProbe : DefaultTask() {
     @get:InputFile abstract val sessionSource: RegularFileProperty
@@ -48,7 +60,7 @@ android {
         minSdk = 31
         targetSdk = 37
         versionCode = 1
-        versionName = "m2-media-1"
+        versionName = diagnosticVersion
         testInstrumentationRunner = "livestream.feasibility.mediaprobe.SafetyStoreInstrumentation"
     }
     signingConfigs.getByName("debug") {

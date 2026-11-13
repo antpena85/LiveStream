@@ -43,6 +43,14 @@ class SafetyStoreInstrumentation : Instrumentation() {
                         return null
                     }
                     val root = activity.window.decorView
+                    val content = activity.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0)
+                    val insets = root.rootWindowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout())
+                    check(content.paddingLeft >= insets.left && content.paddingTop >= insets.top &&
+                        content.paddingRight >= insets.right && content.paddingBottom >= insets.bottom) {
+                        "Content does not account for system bars and display cutout"
+                    }
+                    val version = targetContext.packageManager.getPackageInfo(targetContext.packageName, 0).versionName
+                    check(findText(root, "Dev build: $version") != null) { "Installed development build identifier is not visible" }
                     for (label in listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Review score change frames")) {
                         val button = findText(root, label) ?: error("Missing control: $label")
                         val visible = android.graphics.Rect()
@@ -161,6 +169,10 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 store.scorePoint(false)
                 store.scorePoint(false)
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = {})
+                var smallOutputDelivered = false
+                check(!adapter.renderDiagnosticProjection(320, 180) { bitmap, _ -> smallOutputDelivered = true; bitmap.recycle() } && !smallOutputDelivered) {
+                    "Scoreboard too small at encoded output was submitted"
+                }
                 var rendered = false
                 val accepted = adapter.renderDiagnosticProjection { bitmap, assessment ->
                     val expected = DiagnosticOverlay.render("> ABC 1 S0 T/O2 | XYZ 2 S0 T/O2") ?: error("Expected score did not fit")
