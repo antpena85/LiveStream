@@ -43,16 +43,49 @@ class SafetyStoreInstrumentation : Instrumentation() {
                         return null
                     }
                     val root = activity.window.decorView
+                    for (label in listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Review score change frames")) {
+                        val button = findText(root, label) ?: error("Missing control: $label")
+                        val visible = android.graphics.Rect()
+                        val display = android.graphics.Rect()
+                        root.getWindowVisibleDisplayFrame(display)
+                        check(button.getGlobalVisibleRect(visible) && visible.height() == button.height && visible.width() == button.width && display.contains(visible)) {
+                            "Control not fully visible: $label"
+                        }
+                    }
+                    fun findPreview(view: android.view.View): android.view.SurfaceView? {
+                        if (view is android.view.SurfaceView) return view
+                        if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
+                            findPreview(view.getChildAt(index))?.let { return it }
+                        }
+                        return null
+                    }
+                    val surface = findPreview(root) ?: error("Preview missing")
+                    check(surface.height >= 80 && surface.getGlobalVisibleRect(android.graphics.Rect())) { "Preview not visible" }
                     check(findText(root, "Previous publisher session is unresolved. Publishing remains blocked; shutdown is not confirmed.") != null) {
                         "Unresolved publisher session was not shown on reopening"
                     }
                     check(findText(root, "Publisher: stop unconfirmed") != null) { "Publisher state was not visible" }
                     check(findText(root, "Prepare publisher preview") != null) { "Publisher preview preparation is missing" }
+                    val frameReview = findText(root, "Review score change frames")
+                    check(frameReview != null) { "Score change frame review control is missing" }
+                    frameReview.performClick()
+                    check(findText(root, "No score-change frames available. Run a local recording and change a score.") != null) {
+                        "Unavailable score-change frames were not explained"
+                    }
                     val start = findText(root, "Manual publisher start")
                     check(start != null) { "Manual publisher control is missing" }
                     start.performClick()
                     check(findText(root, "Start a local camera/audio test before checking publisher start. No broadcast was started.") != null) {
                         "Publisher control did not explain why start is unavailable"
+                    }
+                    for (label in listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Review score change frames")) {
+                        val button = findText(root, label) ?: error("Missing control: $label")
+                        val visible = android.graphics.Rect()
+                        val display = android.graphics.Rect()
+                        root.getWindowVisibleDisplayFrame(display)
+                        check(button.getGlobalVisibleRect(visible) && visible.height() == button.height && display.contains(visible)) {
+                            "Control not visible after status update: $label"
+                        }
                     }
                     (findText(root, "+ ABC") ?: error("Score control missing")).performClick()
                     check(findText(root, "Off-air diagnostic score: > ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") != null) {

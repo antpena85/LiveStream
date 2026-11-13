@@ -130,6 +130,15 @@ switch/mute test retains the asymmetric fixture (ABC 99/S2/T/O2/serve and XYZ
 The simplified score is not match logic and must not be used for a broadcast
 or real match. The dynamic fixture displays fixed S0, T/O2 and left-serve
 values; these do not update with scoring and are not actual match state.
+For a side-by-side encoded-frame review, run the 10-second test and make exactly
+one score change roughly halfway through, at least 1.5 seconds after the start
+and before the end. Once the test finishes, select **Review score change frames**.
+The two frames are requested approximately one second before and after the
+change; encoder timing and frame selection can shift them. Inspect both images
+and the complete clip yourself. Multiple changes, insufficient timing, missing
+frames, or a new run make the comparison unavailable. Frames and timing are
+kept only in the app session, not collected in the metadata report. This is not
+an automatic fit, legibility, or broadcast confirmation.
 Its local renderer measures the diagnostic text and widens its
 bitmap within a provisional limit; if it still cannot fit, the saved score is
 retained and local capture stops with a notice. This is not the full numeric-fit

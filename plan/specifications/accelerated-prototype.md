@@ -38,6 +38,35 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Local controls layout and short clip — 2026-11-12
+
+The owner reported a roughly two-second Pixel 10 recording and controls moving
+off-screen as status text grew. The sanitized Pixel 10 Pro XL metadata recorded
+`operator_stopped`, 63 video samples and no reported setup, stop or inspection
+error; it does not establish why Stop was invoked. No clip was read or replaced.
+The activity now uses a bounded scrollable status area, a compact three-column
+control grid and a separate preview pane. A physical T06 visibility check failed
+before the change because the recording control was outside the display; after
+the change the initial and expanded-status visibility checks passed on the Pixel
+10 Pro XL. The existing later stop-confirmation UI check still failed, so the
+full instrumentation run did not pass. The APKs built. A fresh operator-run
+recording and manual ergonomic review are still needed; a ten-second result or
+the cause of the earlier operator stop cannot be claimed from this check.
+
+### Local encoded-frame review control — 2026-11-12
+
+The media experiment now offers an on-device side-by-side review of two
+approximately selected frames surrounding a single operator score change in
+the existing local recording. Missing, multiple, or insufficiently separated
+changes do not produce a comparison. At T06, the Pixel 10 Pro XL run first
+failed because the review control was missing; after implementation it passed
+that control and unavailable-state check, then failed at the pre-existing
+stop-confirmation UI check. The complete instrumentation run is not green.
+Both Android APKs built. No local recording was initiated in this checkpoint;
+actual frame selection, encoded pixels and human legibility remain unverified.
+An operator must initiate the local capture and review the full clip and frames;
+this is neither broadcast authorization nor evidence of received output.
+
 ### Live diagnostic output failure — 2026-11-12
 
 At the T02/T05 boundaries, a controlled live publisher's output consumer

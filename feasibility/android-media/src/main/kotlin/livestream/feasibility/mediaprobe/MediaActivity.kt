@@ -26,6 +26,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.VideoView
 import com.pedro.encoder.input.gl.render.filters.`object`.ImageFilterRender
@@ -55,6 +56,9 @@ class MediaActivity : Activity() {
     private lateinit var diagnosticScore: AndroidSafetyStore
     private var report = JSONObject()
     private var decodedFrame: Bitmap? = null
+    private var firstScoreChangeMs: Long? = null
+    private var multipleScoreChanges = false
+    private var scoreReviewDurationMs: Long? = null
     private lateinit var preview: SurfaceView
     private lateinit var status: TextView
     private lateinit var publisherStatus: TextView
@@ -66,9 +70,11 @@ class MediaActivity : Activity() {
         super.onCreate(savedInstanceState)
         diagnosticScore = AndroidSafetyStore(this, diagnosticDatabaseName)
         val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(32, 48, 32, 24)
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(8, 8, 8, 8)
         }
+        val sidebar = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val info = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val safetyNotice = try {
             if (diagnosticScore.pendingStopSessions().isNotEmpty())
                 "Previous publisher session is unresolved. Publishing remains blocked; shutdown is not confirmed."
@@ -76,14 +82,15 @@ class MediaActivity : Activity() {
         } catch (_: Exception) {
             "Publisher safety state is unavailable. Publishing remains blocked; shutdown is not confirmed."
         }
-        if (safetyNotice != null) content.addView(TextView(this).apply { text = safetyNotice })
+        if (safetyNotice != null) info.addView(TextView(this).apply { text = safetyNotice })
         publisherStatus = TextView(this)
-        content.addView(publisherStatus)
+        info.addView(publisherStatus)
         updatePublisherStatus()
         status = TextView(this).apply {
             text = "Local M2 test; no broadcast. Sets, timeouts and serve are fixed fixture values, not match state. Transition test: speak/count throughout. Mute at 4s, unmute at 8s, front at 12s, rear at 16s; stop at 20s. Each run replaces the private clip."
         }
-        content.addView(status)
+        info.addView(status)
+        sidebar.addView(ScrollView(this).apply { addView(info) }, LinearLayout.LayoutParams(-1, 0, 1f))
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         controls.addView(Button(this).apply {
             text = "Prepare publisher preview"
@@ -166,6 +173,10 @@ class MediaActivity : Activity() {
             }
         })
         controls.addView(Button(this).apply {
+            text = "Review score change frames"
+            setOnClickListener { reviewScoreChangeFrames() }
+        })
+        controls.addView(Button(this).apply {
             text = "Decoded frame"
             setOnClickListener {
                 decodedFrame?.let { frame ->
@@ -175,7 +186,6 @@ class MediaActivity : Activity() {
                 }
             }
         })
-        content.addView(controls)
         transitionButton = Button(this).apply {
             text = "Run 20-second switch/mute test"
             setOnClickListener {
@@ -187,9 +197,35 @@ class MediaActivity : Activity() {
                 } else startCapture()
             }
         }
-        content.addView(transitionButton)
+        controls.addView(transitionButton)
+        val grid = android.widget.GridLayout(this).apply { columnCount = 3 }
+        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Decoded frame", "Run 20-second switch/mute test")
+        val buttons = mutableListOf<Button>()
+        fun collectButtons(group: android.view.ViewGroup) {
+            for (index in 0 until group.childCount) {
+                val child = group.getChildAt(index)
+                if (child is Button) buttons.add(child) else if (child is android.view.ViewGroup) collectButtons(child)
+            }
+        }
+        collectButtons(controls)
+        ordered.forEachIndexed { index, label ->
+            val button = buttons.first { it.text.toString() == label }
+            (button.parent as android.view.ViewGroup).removeView(button)
+            button.setPadding(4, 0, 4, 0)
+            button.textSize = 11f
+            button.isAllCaps = false
+            val params = android.widget.GridLayout.LayoutParams().apply {
+                width = 0
+                height = (48 * resources.displayMetrics.density).toInt()
+                columnSpec = android.widget.GridLayout.spec(index % 3, 1f)
+                rowSpec = android.widget.GridLayout.spec(index / 3)
+            }
+            grid.addView(button, params)
+        }
+        sidebar.addView(grid)
+        content.addView(sidebar, LinearLayout.LayoutParams(0, -1, 3f))
         preview = SurfaceView(this)
-        content.addView(preview, LinearLayout.LayoutParams(-1, 0, 1f))
+        content.addView(preview, LinearLayout.LayoutParams(0, -1, 2f))
         setContentView(content)
     }
 
@@ -244,6 +280,9 @@ class MediaActivity : Activity() {
         transitionButton.isEnabled = false
         decodedFrame?.recycle()
         decodedFrame = null
+        firstScoreChangeMs = null
+        multipleScoreChanges = false
+        scoreReviewDurationMs = null
         report = JSONObject().put("probeVersion", "m2-media-1").put("model", Build.MODEL)
             .put("buildId", Build.ID).put("targetWidth", 1280).put("targetHeight", 720)
             .put("targetFps", 30).put("requestedVideoBitrate", 2_000_000)
@@ -338,6 +377,9 @@ class MediaActivity : Activity() {
         val stream = capture ?: return
         publisher?.requestStop(true)
         val wasPublisherPreview = publisherPreview
+        if (!wasPublisherPreview && !transitionTest && report.has("startedElapsedMs")) {
+            scoreReviewDurationMs = SystemClock.elapsedRealtime() - report.getLong("startedElapsedMs")
+        }
         publisherPreview = false
         capture = null
         publisher = null
@@ -436,7 +478,13 @@ class MediaActivity : Activity() {
             if (activePublisher != null) activePublisher.scorePoint(left) else diagnosticScore.scorePoint(left)
             updatePublisherStatus()
             if (capture == null) status.text = "Off-air diagnostic score: ${diagnosticScore.scoreDisplay()}"
-            else updateScoreFilter()
+            else {
+                updateScoreFilter()
+                if (!publisherPreview && report.has("startedElapsedMs")) {
+                    if (firstScoreChangeMs == null) firstScoreChangeMs = SystemClock.elapsedRealtime() - report.getLong("startedElapsedMs")
+                    else multipleScoreChanges = true
+                }
+            }
         } catch (_: DiagnosticOverlayDoesNotFit) {
             stopCapture("score_does_not_fit")
             status.text = "Local capture stopped: full diagnostic score does not fit. Score was saved."
@@ -456,6 +504,42 @@ class MediaActivity : Activity() {
     }
 
     private class DiagnosticOverlayDoesNotFit : Exception()
+
+    private fun reviewScoreChangeFrames() {
+        val change = firstScoreChangeMs
+        val duration = scoreReviewDurationMs
+        if (capture != null || change == null || duration == null || multipleScoreChanges || change < 1500 || duration - change < 1500 || !clip.exists()) {
+            status.text = "No score-change frames available. Run a local recording and change a score."
+            return
+        }
+        val retriever = MediaMetadataRetriever()
+        var before: Bitmap? = null
+        var after: Bitmap? = null
+        try {
+            retriever.setDataSource(clip.absolutePath)
+            before = retriever.getFrameAtTime((change - 1000) * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
+            after = retriever.getFrameAtTime((change + 1000) * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
+        } catch (_: Exception) {
+            // Report unavailable rather than displaying a partial comparison.
+        } finally { retriever.release() }
+        if (before == null || after == null) {
+            before?.recycle()
+            after?.recycle()
+            status.text = "No score-change frames available. Run a local recording and change a score."
+            return
+        }
+        val frames = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(ImageView(this@MediaActivity).apply { setImageBitmap(before); adjustViewBounds = true }, LinearLayout.LayoutParams(0, -2, 1f))
+            addView(ImageView(this@MediaActivity).apply { setImageBitmap(after); adjustViewBounds = true }, LinearLayout.LayoutParams(0, -2, 1f))
+        }
+        AlertDialog.Builder(this).setTitle("Approximate frames: before / after")
+            .setMessage("Verify both scores and full scoreboard yourself. Timing is approximate; this does not verify a broadcast.")
+            .setView(frames).setPositiveButton("Close", null).create().apply {
+                setOnDismissListener { before.recycle(); after.recycle() }
+                show()
+            }
+    }
     private fun scoreboard(): Bitmap = Bitmap.createBitmap(480, 128, Bitmap.Config.ARGB_8888).apply {
         val canvas = Canvas(this)
         canvas.drawColor(Color.argb(235, 0, 0, 0))
