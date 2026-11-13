@@ -8,7 +8,23 @@ import livestream.feasibility.ProbeSnapshot
 import livestream.feasibility.SessionSafetyState
 
 /** Isolated diagnostic store; not a complete match or publishing authorization. */
-class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 1), SessionSafetyState {
+class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(context, name, null, 2), SessionSafetyState {
+    fun claimYouTubePublisherSession(sessionId: String, assessed: ProbeSnapshot, broadcastId: String): Boolean {
+        require(sessionId.isNotBlank())
+        require(broadcastId.matches(Regex("[A-Za-z0-9_-]{11}")))
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            val view = safetyView()
+            if (view.snapshot != assessed || view.pendingStops.isNotEmpty()) return false
+            db.execSQL("INSERT INTO pending_stops (session, youtube_broadcast_id) VALUES (?, ?)", arrayOf(sessionId, broadcastId))
+            db.setTransactionSuccessful()
+            return true
+        } finally { db.endTransaction() }
+    }
+    fun youtubeBroadcastForSession(sessionId: String): String? = readableDatabase.rawQuery(
+        "SELECT youtube_broadcast_id FROM pending_stops WHERE session = ?", arrayOf(sessionId)
+    ).use { rows -> if (rows.moveToFirst() && !rows.isNull(0)) rows.getString(0) else null }
     fun claimPublisherSession(sessionId: String, assessed: ProbeSnapshot): Boolean {
         require(sessionId.isNotBlank())
         val db = writableDatabase
@@ -73,11 +89,13 @@ class AndroidSafetyStore(context: Context, name: String) : SQLiteOpenHelper(cont
         db.execSQL("INSERT INTO state VALUES (1, 0, 0, 0)")
         db.execSQL("CREATE TABLE diagnostic_score (id INTEGER PRIMARY KEY CHECK(id=1), left_points INTEGER NOT NULL, right_points INTEGER NOT NULL)")
         db.execSQL("INSERT INTO diagnostic_score VALUES (1, 0, 0)")
-        db.execSQL("CREATE TABLE pending_stops (session TEXT PRIMARY KEY NOT NULL)")
+        db.execSQL("CREATE TABLE pending_stops (session TEXT PRIMARY KEY NOT NULL, youtube_broadcast_id TEXT)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        throw IllegalStateException("Unsupported diagnostic database upgrade")
+        if (oldVersion == 1 && newVersion == 2) {
+            db.execSQL("ALTER TABLE pending_stops ADD COLUMN youtube_broadcast_id TEXT")
+        } else throw IllegalStateException("Unsupported diagnostic database upgrade")
     }
 
     fun recordPointWithPendingStop(sessionId: String) {

@@ -38,6 +38,51 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### YouTube claim binding fixture — 2026-11-13
+
+The Android diagnostic store can now atomically bind a supplied YouTube
+broadcast ID to a local pending-session claim without storing a token or key.
+The T01/T03 Pixel 10 Pro XL test first failed because the binding was absent,
+then passed after closing and reopening the real SQLite store. A separate
+version-1 fixture upgrade passed on its first run, preserving the score and an
+unidentified legacy pending claim, which continued to block a new session.
+Both Android APKs built; focused instrumentation passed; the JVM task was up
+to date. No account or provider was contacted. The ID is supplied by a test,
+not selected or authenticated in the UI, and this store API is not wired into
+the real publisher. It does not prove the binding identifies the correct ingest
+or permit clearing any claim. OAuth, selection, evidence freshness, actual stop
+reconciliation, and the real Start gate remain open.
+
+### YouTube reconciliation direction — 2026-11-13
+
+The owner selected YouTube as the first destination for investigating
+authenticated, session-specific stop reconciliation; manual RTMP remains
+fail-closed. This is a scoped M2 investigation, not a final provider or stack
+decision and not permission to transmit or create a broadcast automatically.
+
+Official YouTube documentation distinguishes a broadcast from its bound ingest
+stream. `liveBroadcasts.list` can query a specific broadcast ID with the `status`
+part, but requires OAuth authorization; `status.lifeCycleStatus` describes the
+broadcast, while `liveStreams.status.streamStatus` describes ingest. Neither a
+generic RTMP URL nor the existing random local session ID establishes a mapping
+to the exact broadcast or ingest session. A missing result, authorization error,
+unknown status, or merely inactive local transport must not clear a claim.
+Sources: [broadcast list](https://developers.google.com/youtube/data/live/reference/rest/v3/liveBroadcasts/list),
+[broadcast resource](https://developers.google.com/youtube/data/live/reference/rest/v3/liveBroadcasts),
+[stream resource](https://developers.google.com/youtube/data/live/reference/rest/v3/liveStreams),
+and [authorization](https://developers.google.com/youtube/data/live/authentication).
+
+The existing diagnostic has no YouTube OAuth integration, broadcast selection,
+or durable binding between its local claim and a YouTube resource. Therefore it
+cannot yet safely use a YouTube status to clear any existing marker. Next, design
+and implement the authorized YouTube setup and durable binding before any
+reconciliation, using the confirmed T03 setup and T02 session boundaries.
+Do not assume a broadcast lifecycle status alone establishes ingest termination;
+define and verify the precise evidence and freshness needed for the affected
+session. Never persist credentials in the marker or retain raw errors. Existing
+unidentified claims remain unresolved. Real Start stays blocked, and no account,
+credentials, network publisher or broadcast was accessed in this investigation.
+
 ### Failed local release reporting — 2026-11-13
 
 The adapter now records a successful return from local release separately from

@@ -135,6 +135,33 @@ class SafetyStoreInstrumentation : Instrumentation() {
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->
+                store.scorePoint(true)
+                check(store.claimYouTubePublisherSession("youtube-session", store.snapshot(), "abcDEF12345")) { "Selected YouTube broadcast was not bound to the publisher claim" }
+            }
+            AndroidSafetyStore(targetContext, name).use { reopened ->
+                check(reopened.pendingStopSessions() == setOf("youtube-session")) { "YouTube claim was not durable" }
+                check(reopened.youtubeBroadcastForSession("youtube-session") == "abcDEF12345") { "YouTube binding did not survive reopen" }
+                check(reopened.scoreDisplay() == "> ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") { "Binding changed the diagnostic score" }
+            }
+            targetContext.deleteDatabase(name)
+            targetContext.openOrCreateDatabase(name, 0, null).use { db ->
+                db.execSQL("CREATE TABLE state (id INTEGER PRIMARY KEY, points INTEGER NOT NULL, revision INTEGER NOT NULL, epoch INTEGER NOT NULL)")
+                db.execSQL("INSERT INTO state VALUES (1, 3, 3, 0)")
+                db.execSQL("CREATE TABLE diagnostic_score (id INTEGER PRIMARY KEY, left_points INTEGER NOT NULL, right_points INTEGER NOT NULL)")
+                db.execSQL("INSERT INTO diagnostic_score VALUES (1, 2, 1)")
+                db.execSQL("CREATE TABLE pending_stops (session TEXT PRIMARY KEY NOT NULL)")
+                db.execSQL("INSERT INTO pending_stops VALUES ('legacy-session')")
+                db.version = 1
+            }
+            AndroidSafetyStore(targetContext, name).use { upgraded ->
+                check(upgraded.scoreDisplay() == "> ABC 2 S0 T/O2 | XYZ 1 S0 T/O2") { "Upgrade lost score" }
+                check(upgraded.pendingStopSessions() == setOf("legacy-session") && upgraded.youtubeBroadcastForSession("legacy-session") == null) {
+                    "Upgrade lost or incorrectly identified the legacy claim"
+                }
+                check(!upgraded.claimYouTubePublisherSession("new-session", upgraded.snapshot(), "abcDEF12345")) { "Legacy claim did not block a new session" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
                 val lifecycle = DiagnosticPublisherLifecycle(store)
                 val adapter = AndroidPublisherAdapter(store, connect = {}, stop = {}, lifecycle = lifecycle, sessionId = "release-failure")
                 check(lifecycle.claim("release-failure", store.snapshot()))
