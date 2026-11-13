@@ -31,6 +31,11 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 check(store.claimPublisherSession("previous-session", store.snapshot()))
             }
             val activity = startActivitySync(android.content.Intent(targetContext, MediaActivity::class.java).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+            targetContext.deleteDatabase("retry-ui-test.db")
+            val retryStore = AndroidSafetyStore(targetContext, "retry-ui-test.db")
+            val retryLifecycle = DiagnosticPublisherLifecycle(retryStore)
+            check(retryLifecycle.claim("owned-retry", retryStore.snapshot()))
+            var retryCalls = 0
             try {
                 var uiFailure: Throwable? = null
                 runOnMainSync {
@@ -100,6 +105,8 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     check(findText(root, "Off-air diagnostic score: > ABC 1 S0 T/O2 | XYZ 0 S0 T/O2") != null) {
                         "Off-air scoring did not show the accepted score"
                     }
+                    (activity as MediaActivity).publisher = AndroidPublisherAdapter(retryStore, connect = {}, stop = { retryCalls++ }, lifecycle = retryLifecycle, sessionId = "owned-retry")
+                    activity.publisher?.requestStop(true)
                     (findText(root, "Stop") ?: error("Stop control missing")).performClick()
                     } catch (failure: Throwable) { uiFailure = failure }
                 }
@@ -114,7 +121,12 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 check(confirmationVisible) {
                     "Stop did not ask for confirmation; active window package=${uiAutomation.rootInActiveWindow?.packageName}, windows=${uiAutomation.windows.map { it.root?.packageName }}"
                 }
-            } finally { activity.finish() }
+                val confirm = uiAutomation.rootInActiveWindow?.findAccessibilityNodeInfosByViewId("android:id/button1")?.firstOrNull()
+                check(confirm?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK) == true) { "Confirm Stop unavailable" }
+                waitForIdleSync()
+                check(retryCalls == 2) { "Confirmed Stop did not retry unresolved owned session" }
+                check(retryStore.pendingStopSessions() == setOf("owned-retry")) { "Retry cleared unresolved claim" }
+            } finally { activity.finish(); retryStore.close(); targetContext.deleteDatabase("retry-ui-test.db") }
             }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }

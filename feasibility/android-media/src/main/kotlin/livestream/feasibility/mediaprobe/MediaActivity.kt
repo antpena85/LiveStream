@@ -51,7 +51,7 @@ class MediaActivity : Activity() {
     private var transitionTest = false
     private var publisherPreview = false
     private var capture: GenericStream? = null
-    private var publisher: AndroidPublisherAdapter? = null
+    internal var publisher: AndroidPublisherAdapter? = null
     private var scoreFilter: ImageFilterRender? = null
     private lateinit var diagnosticScore: AndroidSafetyStore
     private var report = JSONObject()
@@ -297,6 +297,10 @@ class MediaActivity : Activity() {
 
     private fun startCapture() {
         if (capture != null) return
+        if (publisher?.diagnosticStatus() == DiagnosticPublisherStatus.Stopping) {
+            status.text = "Publisher stop is unconfirmed. Retry Stop before starting another preview."
+            return
+        }
         val gate = LocalCaptureReadiness().request(true,
             checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED,
             checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
@@ -400,7 +404,12 @@ class MediaActivity : Activity() {
     }
 
     private fun stopCapture(reason: String) {
-        val stream = capture ?: return
+        val stream = capture
+        if (stream == null) {
+            publisher?.requestStop(true)
+            updatePublisherStatus()
+            return
+        }
         publisher?.requestStop(true)
         val wasPublisherPreview = publisherPreview
         if (!wasPublisherPreview && !transitionTest && report.has("startedElapsedMs")) {
@@ -408,7 +417,7 @@ class MediaActivity : Activity() {
         }
         publisherPreview = false
         capture = null
-        publisher = null
+        if (publisher?.diagnosticStatus() == DiagnosticPublisherStatus.Stopped) publisher = null
         updatePublisherStatus()
         scoreFilter = null
         handler.removeCallbacksAndMessages(null)

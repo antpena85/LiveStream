@@ -38,6 +38,50 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Next-session handoff — 2026-11-12
+
+Continue the owner-authorized M2 broadcast-first vertical slice; do not spend
+the next session on speculative probe-only permutations. The real GenericStream
+Start remains deliberately blocked (`fitReady = false`): the diagnostic geometry
+assessment is not evidence of encoded readability, and stop confirmation and
+recovery are not yet established. No broadcast has been attempted.
+
+The latest T06 test injects a controlled owned session after capture is absent;
+it demonstrates a confirmed Stop retry and retained durable claim, not actual
+GenericStream shutdown, releasing then retrying a real stream, process death,
+or provider termination. In particular, review how the activity retains the
+adapter while `stream.release()` runs, late callbacks are delivered, a store is
+closed on activity destruction, and another preview might be blocked. Do not
+clear a pending claim merely because `stopStream`, `release`, a disconnect
+callback, or `isStreaming` reports a local result. Determine a reliable,
+session-specific reconciliation before making the real Start path reachable.
+Continue one TDD behavior at the owner-confirmed boundaries, prioritizing an
+integrated stop/recovery step over additional artificial races.
+
+The owner reported that a local 10-second clip recorded with audio and an ABC
+score change, the reset button worked, and the cutout layout looked good; these
+are owner observations, not proof of full encoded-score legibility or received
+media. The installed diagnostic build for the latest slice is
+`m2-dev-d9069d8e18bd`. The most recent Android APK build and full Pixel 10 Pro XL
+instrumentation passed; the JVM test task was up to date. The phone must be
+authorized and unlocked for the UI test: when locked, the accessibility root
+can be System UI and a confirmation check can fail before exercising the app.
+Do not overwrite the owner's private clip except through an operator-initiated
+test. Before any later bounded network trial, satisfy the prototype gate above,
+recheck ADB, and let the owner enter credentials on-device and initiate it.
+
+### Owned stop retry — 2026-11-12
+
+At T06/T02 on the Pixel 10 Pro XL, confirmed Stop initially failed to retry a
+controlled unresolved session after capture was absent. After the change, the
+full instrumentation passed: Stop retried the same supplied publisher operation
+and retained its durable pending-stop claim. The activity keeps an unresolved
+adapter instead of replacing it with a new preview, and retries Stop when there
+is no capture. Both APKs built. This test uses a controlled publisher and
+injected owned session; it does not establish real GenericStream idempotence,
+termination, process-restart reconciliation or safe release/late-callback
+ordering. The real publisher Start remains blocked; no broadcast was attempted.
+
 ### Stop-confirmation test blocker — 2026-11-12
 
 The complete Android instrumentation previously failed while looking for the
