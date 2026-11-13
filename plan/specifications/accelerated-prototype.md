@@ -38,6 +38,16 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Activity exit after retry — 2026-11-13
+
+The existing T06 instrumentation now checks that, after a confirmed retry of
+an injected controlled publisher, finishing the activity does not dispatch an
+additional stop and does not remove the durable claim. The full Pixel 10 Pro XL
+instrumentation passed on the first run with unchanged application code; this is
+verification, not a red/green implementation cycle. The test does not exercise
+a real GenericStream, network shutdown, process death, or provider reconciliation.
+The real publisher gate and the remaining next-session handoff below stay open.
+
 ### Next-session handoff — 2026-11-12
 
 Continue the owner-authorized M2 broadcast-first vertical slice; do not spend

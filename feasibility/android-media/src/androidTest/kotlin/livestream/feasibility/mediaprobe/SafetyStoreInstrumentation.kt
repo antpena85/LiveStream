@@ -126,6 +126,10 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 waitForIdleSync()
                 check(retryCalls == 2) { "Confirmed Stop did not retry unresolved owned session" }
                 check(retryStore.pendingStopSessions() == setOf("owned-retry")) { "Retry cleared unresolved claim" }
+                runOnMainSync { activity.finish() }
+                waitForIdleSync()
+                check(retryCalls == 2) { "Leaving activity retried Stop without confirmation" }
+                check(retryStore.pendingStopSessions() == setOf("owned-retry")) { "Leaving activity cleared unresolved claim" }
             } finally { activity.finish(); retryStore.close(); targetContext.deleteDatabase("retry-ui-test.db") }
             }
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
