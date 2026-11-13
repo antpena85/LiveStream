@@ -38,6 +38,27 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### RootEncoder stop/release review — 2026-11-13
+
+The pinned RootEncoder 2.8.1 source was reviewed against the activity's owned
+retry. `StreamBase.stopStream()` sets its local streaming flag false, invokes
+the implementation stop, and may prepare encoders again. `GenericStream`'s
+stop implementation selects a client by its current type and then sets that
+type to NONE. `StreamBase.release()` stops and releases local sources. These
+are local operations, not provider confirmation. After release, calling Stop
+again through the retained adapter is not established to retry the original
+network disconnect and may act on released resources. The controlled Stop test
+therefore does not validate that real retry; do not expose real publishing or
+describe this as reliable recovery. See the version-pinned RootEncoder sources:
+`library/src/main/java/com/pedro/library/base/StreamBase.kt` and
+`library/src/main/java/com/pedro/library/generic/GenericStream.kt` at tag 2.8.1.
+
+Next integrated work must determine an evidence-backed session-specific
+termination/reconciliation strategy and safely coordinate resource ownership;
+do not rely on the return value, local streaming flag, or a delayed callback
+alone. Until then, keep the durable claim and real Start gate closed. No code
+fix or hardware/network validation is claimed by this source review.
+
 ### Activity exit after retry — 2026-11-13
 
 The existing T06 instrumentation now checks that, after a confirmed retry of
