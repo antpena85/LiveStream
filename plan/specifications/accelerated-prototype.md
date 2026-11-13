@@ -38,6 +38,19 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Bound diagnostic YouTube dispatch — 2026-11-13
+
+The isolated diagnostic lifecycle now offers a controlled YouTube session
+operation that commits the selected broadcast binding and pending claim before
+dispatching a supplied connection operation. T02/T03 instrumentation on the
+Pixel 10 Pro XL first failed because no dispatch occurred; after implementation
+it passed with the claim and binding visible before dispatch and after reopen.
+Both APKs built; focused instrumentation passed; the JVM task was up to date.
+The operation is a test-double boundary without destination validation, user
+confirmation, OAuth, or real network integration. It must not authorize an
+actual publisher. Broadcast identity and status are not proof of session
+termination; real Start and claim reconciliation remain blocked.
+
 ### YouTube claim binding fixture — 2026-11-13
 
 The Android diagnostic store can now atomically bind a supplied YouTube

@@ -135,6 +135,20 @@ class SafetyStoreInstrumentation : Instrumentation() {
             val packageInfo = targetContext.packageManager.getPackageInfo(targetContext.packageName, android.content.pm.PackageManager.GET_PERMISSIONS)
             check(packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true) { "Publisher APK cannot access the network" }
             AndroidSafetyStore(targetContext, name).use { store ->
+                val lifecycle = DiagnosticPublisherLifecycle(store)
+                var dispatched = false
+                val accepted = lifecycle.startYouTubeDiagnostic("youtube-start", "abcDEF12345", store.snapshot(), stop = {}) {
+                    check(store.pendingStopSessions() == setOf("youtube-start")) { "Publisher dispatched before claim" }
+                    check(store.youtubeBroadcastForSession("youtube-start") == "abcDEF12345") { "Publisher dispatched before broadcast binding" }
+                    dispatched = true
+                }
+                check(accepted && dispatched && lifecycle.status() == DiagnosticPublisherStatus.Connecting) { "Bound YouTube session did not dispatch" }
+            }
+            AndroidSafetyStore(targetContext, name).use { reopened ->
+                check(reopened.youtubeBroadcastForSession("youtube-start") == "abcDEF12345") { "Dispatched session lost broadcast binding after reopen" }
+            }
+            targetContext.deleteDatabase(name)
+            AndroidSafetyStore(targetContext, name).use { store ->
                 store.scorePoint(true)
                 check(store.claimYouTubePublisherSession("youtube-session", store.snapshot(), "abcDEF12345")) { "Selected YouTube broadcast was not bound to the publisher claim" }
             }

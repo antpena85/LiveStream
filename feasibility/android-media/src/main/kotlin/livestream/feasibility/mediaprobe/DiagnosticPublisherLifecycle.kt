@@ -8,6 +8,21 @@ enum class DiagnosticPublisherStatus { Stopped, Connecting, Live, Stopping }
 
 /** Testable session ownership experiment; not an authorization to publish. */
 class DiagnosticPublisherLifecycle(private val store: AndroidSafetyStore) {
+    @Synchronized fun startYouTubeDiagnostic(sessionId: String, broadcastId: String, snapshot: ProbeSnapshot, stop: () -> Unit, connect: () -> Unit): Boolean {
+        if (current != DiagnosticPublisherStatus.Stopped) return false
+        return try {
+            if (!store.claimYouTubePublisherSession(sessionId, snapshot, broadcastId)) return false
+            owner = sessionId
+            assessed = snapshot
+            current = DiagnosticPublisherStatus.Connecting
+            try { connect() } catch (_: Exception) {
+                current = DiagnosticPublisherStatus.Stopping
+                dispatchStop(stop)
+                return false
+            }
+            true
+        } catch (_: Exception) { false }
+    }
     fun callbacksFor(sessionId: String, stop: () -> Unit): PublisherCallbacks = PublisherCallbacks(
         onSuccess = { connected(sessionId, stop) },
         onFailure = { failed(sessionId, stop) },
