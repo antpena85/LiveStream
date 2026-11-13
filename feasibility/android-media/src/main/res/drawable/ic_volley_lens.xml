@@ -1,0 +1,195 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+
+    <!-- Dark, slightly vignetted background for depth -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="radial" android:centerX="54" android:centerY="54" android:gradientRadius="76">
+                <item android:offset="0.0" android:color="#17273A" />
+                <item android:offset="1.0" android:color="#0B131D" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- LEFT SIDE: REALISTIC VOLLEYBALL -->
+    <group>
+        <!-- Clip to the left half, bound by the S-Curve -->
+        <clip-path android:pathData="M 54,20 A 34,34 0 0 0 54,88 C 34,70 74,38 54,20 Z" />
+
+        <!-- Spherical Volleyball Volume -->
+        <path android:pathData="M0,0h108v108h-108z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="36" android:centerY="36" android:gradientRadius="64">
+                    <item android:offset="0.0" android:color="#FFFFFF" />
+                    <item android:offset="0.5" android:color="#E1E6EB" />
+                    <item android:offset="0.85" android:color="#9EAAB7" />
+                    <item android:offset="1.0" android:color="#677685" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Volleyball Seams: Layer 1 (Soft wide shadow for depth) -->
+        <path android:strokeColor="#708293" android:strokeWidth="4" android:strokeLineCap="round" android:pathData="M 40,23 C 28,38 28,70 40,85" />
+        <path android:strokeColor="#708293" android:strokeWidth="4" android:strokeLineCap="round" android:pathData="M 21,42 C 35,44 48,36 58,26" />
+        <path android:strokeColor="#708293" android:strokeWidth="4" android:strokeLineCap="round" android:pathData="M 21,66 C 35,64 48,72 58,82" />
+
+        <!-- Volleyball Seams: Layer 2 (Sharp, dark inner crease) -->
+        <path android:strokeColor="#4A5866" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M 40,23 C 28,38 28,70 40,85" />
+        <path android:strokeColor="#4A5866" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M 21,42 C 35,44 48,36 58,26" />
+        <path android:strokeColor="#4A5866" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M 21,66 C 35,64 48,72 58,82" />
+
+        <!-- Volleyball Seams: Layer 3 (Leather panel highlight) -->
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeLineCap="round" android:pathData="M 42.5,23 C 30.5,38 30.5,70 42.5,85" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeLineCap="round" android:pathData="M 23,40.5 C 36,42.5 49,34.5 59,24.5" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeLineCap="round" android:pathData="M 23,68 C 36,66 49,74 59,84" />
+    </group>
+
+    <!-- RIGHT SIDE: REALISTIC CAMERA LENS -->
+    <group>
+        <!-- Clip to the right half, bound by the S-Curve -->
+        <clip-path android:pathData="M 54,20 A 34,34 0 0 1 54,88 C 34,70 74,38 54,20 Z" />
+
+        <!-- Outer Metallic Barrel -->
+        <path android:pathData="M0,0h108v108h-108z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="20" android:startY="20" android:endX="88" android:endY="88">
+                    <item android:offset="0.0" android:color="#7F8D9A" />
+                    <item android:offset="0.4" android:color="#232C35" />
+                    <item android:offset="0.8" android:color="#4A5661" />
+                    <item android:offset="1.0" android:color="#1A2128" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Inner Bezel (Steep chamfer edge) -->
+        <path android:pathData="M 54,23 a 31,31 0 1,0 0,62 a 31,31 0 1,0 0,-62">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="88" android:startY="20" android:endX="20" android:endY="88">
+                    <item android:offset="0.0" android:color="#0F141A" />
+                    <item android:offset="1.0" android:color="#364049" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Deep Housing / Shadow inside the lens -->
+        <path android:pathData="M 54,27 a 27,27 0 1,0 0,54 a 27,27 0 1,0 0,-54">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="54" android:centerY="54" android:gradientRadius="27">
+                    <item android:offset="0.0" android:color="#030507" />
+                    <item android:offset="0.8" android:color="#080C11" />
+                    <item android:offset="1.0" android:color="#1A222B" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Primary Outer Glass Element (Anti-Reflective Teal coating) -->
+        <path android:pathData="M 54,29 a 25,25 0 1,0 0,50 a 25,25 0 1,0 0,-50">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="64" android:centerY="44" android:gradientRadius="35">
+                    <item android:offset="0.0" android:color="#1B6D83" />
+                    <item android:offset="0.5" android:color="#0D3547" />
+                    <item android:offset="1.0" android:color="#02080D" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Middle Housing Ring -->
+        <path android:pathData="M 54,34 a 20,20 0 1,0 0,40 a 20,20 0 1,0 0,-40">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="34" android:startY="34" android:endX="74" android:endY="74">
+                    <item android:offset="0.0" android:color="#24313D" />
+                    <item android:offset="1.0" android:color="#0B0F14" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Secondary Inner Glass Element (Deep Purple AR tint) -->
+        <path android:pathData="M 54,36 a 18,18 0 1,0 0,36 a 18,18 0 1,0 0,-36">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="48" android:centerY="60" android:gradientRadius="25">
+                    <item android:offset="0.0" android:color="#2A244C" />
+                    <item android:offset="1.0" android:color="#060B12" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Sensor Core / Dark Aperture well -->
+        <path android:pathData="M 54,43 a 11,11 0 1,0 0,22 a 11,11 0 1,0 0,-22">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="54" android:centerY="54" android:gradientRadius="11">
+                    <item android:offset="0.0" android:color="#020914" />
+                    <item android:offset="1.0" android:color="#000205" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Center Bulb Glass Reflection -->
+        <path android:pathData="M 54,45 a 9,9 0 1,0 0,18 a 9,9 0 1,0 0,-18">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="45" android:startY="45" android:endX="63" android:endY="63">
+                    <item android:offset="0.0" android:color="#334DCFDD" />
+                    <item android:offset="0.5" android:color="#004DCFDD" />
+                    <item android:offset="1.0" android:color="#229648D4" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Sweeping Glare Element (Top crescent reflection) -->
+        <path android:pathData="M 54,30 A 24,24 0 0 1 76,44 C 66,35 55,33 46,36 C 49,32 51,30 54,30 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="60" android:startY="30" android:endX="60" android:endY="44">
+                    <item android:offset="0.0" android:color="#99FFFFFF" />
+                    <item android:offset="1.0" android:color="#00FFFFFF" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Sweeping Glare Element (Bottom crescent reflection) -->
+        <path android:pathData="M 54,78 A 24,24 0 0 1 32,64 C 42,73 53,75 62,72 C 59,76 57,78 54,78 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="48" android:startY="78" android:endX="48" android:endY="64">
+                    <item android:offset="0.0" android:color="#775EF0EA" />
+                    <item android:offset="1.0" android:color="#005EF0EA" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Tiny Bright Specular Flares -->
+        <path android:fillColor="#FFFFFF" android:pathData="M 62,40 a 2.5,2.5 0 1,0 0,5 a 2.5,2.5 0 1,0 0,-5" />
+        <path android:fillColor="#D4FCFF" android:pathData="M 66,45 a 1.5,1.5 0 1,0 0,3 a 1.5,1.5 0 1,0 0,-3" />
+    </group>
+
+    <!-- S-CURVE MERGE (The Seam between Volleyball & Lens) -->
+
+    <!-- Heavy drop shadow cast from the lens onto the volleyball -->
+    <path android:pathData="M 54,20 C 74,38 34,70 54,88" android:strokeWidth="5" android:strokeColor="#55000000" android:strokeLineCap="round" />
+
+    <!-- Smooth Chrome/Neon dividing rim -->
+    <path android:pathData="M 54,20 C 74,38 34,70 54,88" android:strokeWidth="2.5" android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient android:type="linear" android:startX="54" android:startY="20" android:endX="54" android:endY="88">
+                <item android:offset="0.0" android:color="#66B8C6" />
+                <item android:offset="0.3" android:color="#DDF5F8" />
+                <item android:offset="0.7" android:color="#00D4EB" />
+                <item android:offset="1.0" android:color="#004649" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ultra-thin white specular highlight running down the S-Curve -->
+    <path android:pathData="M 54,20 C 74,38 34,70 54,88" android:strokeWidth="0.8" android:strokeColor="#BBFFFFFF" android:strokeLineCap="round" />
+
+    <!-- OVERALL OUTER 3D RIM (To separate the icon cleanly from the background) -->
+    <path android:pathData="M 54,20 a 34,34 0 1,0 0,68 a 34,34 0 1,0 0,-68" android:strokeWidth="1.5">
+        <aapt:attr name="android:strokeColor">
+            <gradient android:type="linear" android:startX="20" android:startY="20" android:endX="88" android:endY="88">
+                <item android:offset="0.0" android:color="#AAFFFFFF" />
+                <item android:offset="0.4" android:color="#22FFFFFF" />
+                <item android:offset="0.7" android:color="#44000000" />
+                <item android:offset="1.0" android:color="#AA000000" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
-    <application android:label="M2 Camera and Audio Test" android:allowBackup="false"
+    <application android:label="M2 Camera and Audio Test" android:allowBackup="false" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity android:name=".MediaActivity" android:exported="true" android:screenOrientation="landscape">
             <intent-filter>
