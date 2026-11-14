@@ -39,6 +39,7 @@ import com.pedro.library.generic.GenericStream
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.Scope
+import com.google.android.gms.common.api.ApiException
 import livestream.feasibility.LocalCaptureReadiness
 import livestream.feasibility.LocalCaptureResult
 import livestream.feasibility.ManualDestination
@@ -71,13 +72,15 @@ class MediaActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != 204) return
-        if (resultCode != RESULT_OK || data == null) {
+        if (data == null) {
             showAuthorizationMessage(YouTubeAuthorizationDiagnostic.resultMessage(resultCode, data != null))
             return
         }
         try {
             val result = Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data)
-            showAuthorizationResult(!result.accessToken.isNullOrBlank())
+            showAuthorizationResult(resultCode == RESULT_OK && !result.accessToken.isNullOrBlank())
+        } catch (error: ApiException) {
+            showAuthorizationMessage(YouTubeAuthorizationDiagnostic.providerErrorMessage(error.statusCode))
         } catch (_: Exception) { showAuthorizationResult(false) }
     }
 

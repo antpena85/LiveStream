@@ -38,6 +38,65 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Read-only authorization succeeded after fingerprint correction — 2026-11-14
+
+The owner reported that the Android OAuth client's SHA-1 did not match the
+installed diagnostic and subsequently confirmed completing the correction.
+The next owner-supplied screenshot shows Dev build `m2-dev-98ce4e7fc3f5`
+and the visible result: "YouTube read-only authorization received. No channel
+or broadcast has been verified; publishing remains disabled." Publisher status
+is stopped. This is manual physical-device evidence of a successful read-only
+authorization result on the previously verified Pixel 10 Pro XL build, not
+automated callback or dialog coverage. The Cloud configuration was not
+independently inspected; the observed failure-to-success sequence followed the
+owner-reported fingerprint correction without an intervening APK change.
+
+The authorization diagnostic's immediate blocker is resolved. No channel
+lookup, broadcast eligibility, broadcast creation, publishing permission,
+received stream, or G2 pass is established. Tokens and account details were
+not requested or retained. No additional scopes, provider calls, APK install,
+or code changes were made to record this result. Channel lookup remains a
+separate next integration step, subject to the existing scope and safety
+boundaries; dependency/license clearance and broader validation remain open.
+
+### Observed Google status 8 — 2026-11-14
+
+The owner supplied a screenshot of Dev build `m2-dev-98ce4e7fc3f5`
+reporting Google status 8. Google's [common status reference](https://developers.google.com/android/reference/com/google/android/gms/common/api/CommonStatusCodes)
+defines this as INTERNAL_ERROR; it does not identify a specific configuration,
+network, account or service cause. The installed Pixel 10 Pro XL package was
+verified as versionName `m2-dev-98ce4e7fc3f5`, versionCode 1. Its pulled APK
+SHA-256 matched the local debug APK byte-for-byte. Its signing certificate
+SHA-1 is `5F:4D:92:7C:1C:46:E6:3A:E3:02:4A:C4:32:1F:80:39:5A:35:A1:27`.
+Google Play services is installed and enabled; this package observation does
+not establish API availability or service health. Before speculative code or
+account changes, ask the owner to compare the actual package and fingerprint
+against the Android OAuth client in the intended Cloud project. The previous
+owner confirmation remains historical; no Cloud console was independently
+inspected. No credentials or raw provider logs were collected, and no new APK
+was installed during this investigation.
+
+### Authorization provider status diagnostic — 2026-11-14
+
+The owner observed the non-success result with data on Dev build
+`m2-dev-3c9199d923ec`. The diagnostic now submits a returned intent to the
+Google authorization result parser even for non-success activity results and
+shows only an `ApiException` numeric status, never the raw error or intent.
+A non-success activity result cannot be treated as authorization even if the
+parser returns a token. A controlled status-message test failed before the
+implementation and passed in the Pixel 10 Pro XL publisher-only instrumentation
+run; both APKs built offline. The test checks formatting, not the actual Google
+callback or account behavior. A real owner-initiated retry is still required.
+
+### Non-success authorization result with data — 2026-11-14
+
+After the owner reported the generic message again, the diagnostic now
+distinguishes a non-success Android activity result carrying an intent from a
+result without one. It does not inspect the intent or infer the cause. A
+controlled T03 test failed before implementation and passed in the Pixel 10 Pro
+XL publisher-only instrumentation run; both APKs built offline. Other failure
+paths remain generic, and real provider authorization remains unverified.
+
 ### Missing authorization result — 2026-11-14
 
 The diagnostic distinguishes a canceled Android activity result without an

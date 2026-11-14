@@ -26,9 +26,17 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         val result = Bundle()
         try {
+            check(YouTubeAuthorizationDiagnostic.providerErrorMessage(10) ==
+                "YouTube authorization failed (Google status 10). Publishing remains disabled.") {
+                "Provider status was not reported safely"
+            }
             check(YouTubeAuthorizationDiagnostic.resultMessage(Activity.RESULT_CANCELED, false) ==
                 "YouTube authorization ended without a result. This does not establish why. Publishing remains disabled.") {
                 "A missing authorization result was not distinguished"
+            }
+            check(YouTubeAuthorizationDiagnostic.resultMessage(Activity.RESULT_CANCELED, true) ==
+                "YouTube authorization returned a non-success result with data. The cause is unknown. Publishing remains disabled.") {
+                "A non-success authorization result with data was not distinguished"
             }
             if (!publisherOnly) {
             AndroidSafetyStore(targetContext, "off-air-ui-instrumentation.db").use { store ->
