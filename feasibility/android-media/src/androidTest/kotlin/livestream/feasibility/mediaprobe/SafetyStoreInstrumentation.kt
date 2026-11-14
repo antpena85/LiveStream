@@ -26,9 +26,27 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         val result = Bundle()
         try {
+            val accessRequests = mutableListOf<String>()
+            val accessResult = YouTubeAccessCheck { path ->
+                accessRequests.add(path)
+                200 to """{"items":[{"id":"fixture-private-id"}]}"""
+            }.check()
+            check(accessResult == "YouTube channel access verified. Live API access verified; broadcast eligibility and received output remain unverified. Publishing remains disabled." &&
+                accessRequests == listOf(
+                    "channels?part=id&mine=true&maxResults=1&fields=items(id)",
+                    "liveBroadcasts?part=id&mine=true&maxResults=1&fields=items(id)")) {
+                "Read-only channel and live access were not checked safely"
+            }
             check(YouTubeAuthorizationDiagnostic.providerErrorMessage(10) ==
                 "YouTube authorization failed (Google status 10). Publishing remains disabled.") {
                 "Provider status was not reported safely"
+            }
+            val disabledResult = YouTubeAccessCheck { path ->
+                if (path.startsWith("channels?")) 200 to """{"items":[{"id":"fixture-private-id"}]}"""
+                else 403 to """{"error":{"message":"fixture-private-message","errors":[{"reason":"liveStreamingNotEnabled"}]}}"""
+            }.check()
+            check(disabledResult == "YouTube channel access verified. YouTube reports live streaming is not enabled. Publishing remains disabled.") {
+                "Live streaming not enabled was not distinguished safely"
             }
             check(YouTubeAuthorizationDiagnostic.resultMessage(Activity.RESULT_CANCELED, false) ==
                 "YouTube authorization ended without a result. This does not establish why. Publishing remains disabled.") {

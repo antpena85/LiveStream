@@ -47,9 +47,54 @@ import livestream.feasibility.DestinationResult
 import org.json.JSONArray
 import org.json.JSONObject
 
-/** Operator-initiated local M2 experiment. This activity never starts a network stream. */
+/** Operator-initiated M2 experiment. Read-only provider checks never start a stream. */
 class MediaActivity : Activity() {
+    private var checkYouTubeAccess = false
+    private var youtubeCheckRunning = false
+    private fun receiveYouTubeAuthorization(token: String?) {
+        if (!checkYouTubeAccess || token.isNullOrBlank()) {
+            checkYouTubeAccess = false
+            showAuthorizationResult(!token.isNullOrBlank())
+            return
+        }
+        checkYouTubeAccess = false
+        youtubeCheckRunning = true
+        status.text = "Checking YouTube channel and live API access; no broadcast."
+        Thread {
+            val message = YouTubeAccessCheck { path ->
+                val connection = java.net.URL("https://www.googleapis.com/youtube/v3/$path")
+                    .openConnection() as javax.net.ssl.HttpsURLConnection
+                try {
+                    connection.requestMethod = "GET"
+                    connection.instanceFollowRedirects = false
+                    connection.connectTimeout = 15000
+                    connection.readTimeout = 15000
+                    connection.setRequestProperty("Authorization", "Bearer $token")
+                    val code = connection.responseCode
+                    val stream = if (code == 200) connection.inputStream else connection.errorStream
+                    val body = stream?.bufferedReader()?.use { reader ->
+                        val buffer = CharArray(65537)
+                        var count = 0
+                        while (count < buffer.size) {
+                            val read = reader.read(buffer, count, buffer.size - count)
+                            if (read < 0) break
+                            count += read
+                        }
+                        require(count <= 65536)
+                        String(buffer, 0, count)
+                    } ?: "{}"
+                    code to body
+                } finally { connection.disconnect() }
+            }.check()
+            runOnUiThread {
+                youtubeCheckRunning = false
+                if (!isFinishing && !isDestroyed) showAuthorizationMessage(message)
+            }
+        }.start()
+    }
+
     private fun authorizeYouTube() {
+        youtubeCheckRunning = true
         status.text = "Requesting YouTube read-only authorization; publishing remains disabled."
         val request = AuthorizationRequest.builder().setRequestedScopes(
             listOf(Scope("https://www.googleapis.com/auth/youtube.readonly"))
@@ -61,7 +106,7 @@ class MediaActivity : Activity() {
                         if (result.hasResolution()) {
                             val pending = result.pendingIntent ?: error("Missing authorization resolution")
                             startIntentSenderForResult(pending.intentSender, 204, null, 0, 0, 0)
-                        } else showAuthorizationResult(!result.accessToken.isNullOrBlank())
+                        } else receiveYouTubeAuthorization(result.accessToken)
                     } catch (_: Exception) { showAuthorizationResult(false) }
                 }
                 .addOnFailureListener { showAuthorizationResult(false) }
@@ -78,7 +123,8 @@ class MediaActivity : Activity() {
         }
         try {
             val result = Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data)
-            showAuthorizationResult(resultCode == RESULT_OK && !result.accessToken.isNullOrBlank())
+            if (resultCode == RESULT_OK) receiveYouTubeAuthorization(result.accessToken)
+            else showAuthorizationResult(false)
         } catch (error: ApiException) {
             showAuthorizationMessage(YouTubeAuthorizationDiagnostic.providerErrorMessage(error.statusCode))
         } catch (_: Exception) { showAuthorizationResult(false) }
@@ -91,6 +137,8 @@ class MediaActivity : Activity() {
     }
 
     private fun showAuthorizationMessage(message: String) {
+        youtubeCheckRunning = false
+        checkYouTubeAccess = false
         status.text = message
         if (!isFinishing && !isDestroyed) {
             AlertDialog.Builder(this).setTitle("YouTube authorization").setMessage(message).setPositiveButton("OK", null).show()
@@ -154,7 +202,13 @@ class MediaActivity : Activity() {
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         controls.addView(Button(this).apply {
             text = "Connect YouTube (no broadcast)"
-            setOnClickListener { authorizeYouTube() }
+            setOnClickListener { if (!youtubeCheckRunning) { checkYouTubeAccess = false; authorizeYouTube() } }
+        })
+        controls.addView(Button(this).apply {
+            text = "Check YouTube channel/live access (read-only)"
+            setOnClickListener {
+                if (!youtubeCheckRunning) { checkYouTubeAccess = true; authorizeYouTube() }
+            }
         })
         controls.addView(Button(this).apply {
             text = "Prepare publisher preview"

@@ -38,6 +38,40 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Read-only channel/live access integration — 2026-11-14
+
+Owner authorized continuing channel access, eligibility and broadcast-output
+work. Prior authorization diagnosis was checkpointed as `8e4b19e`.
+The new **Check YouTube channel/live access (read-only)** control reauthorizes
+with the existing `youtube.readonly` scope and performs fixed-host HTTPS GETs
+to `channels.list` and `liveBroadcasts.list`, requesting only IDs. It displays
+neither IDs nor raw responses. The access token is held only for the bounded
+worker operation, never persisted or logged; redirects are disabled, each
+connection has 15-second connect/read timeouts and a 64 KiB response limit.
+Unexpected errors are generic; provider HTTP statuses are numeric and the
+documented `liveStreamingNotEnabled` reason maps to fixed text. Successful
+listing is explicitly not broadcast eligibility or received-output proof.
+
+At confirmed T03, controlled successful listing first failed with the generic
+stub and then passed. The disabled-live case then failed before its fixed-text
+mapping and passed afterward. Both APKs built offline; publisher-only physical
+instrumentation passed on the authorized Pixel 10 Pro XL. Final installed app:
+`livestream.feasibility.mediaprobe`, versionName/Dev build
+`m2-dev-4a4cd2382eb1`, versionCode 1; test package
+`livestream.feasibility.mediaprobe.test`, versionName null, versionCode 0.
+Intermediate installed app builds were `m2-dev-0b231fe580df` (red) and
+`m2-dev-be81dccb5b1f` (first green), each versionCode 1. Build command timeouts
+interrupted the final attempt; the retry completed successfully before final
+installation and verification. Local build logs are under `.tools/m2/`.
+
+The fixtures replace only the external provider boundary: they do not prove
+actual HTTPS, authorization callback wiring, button visibility, or live account
+eligibility. Owner must press the new control and return only the sanitized
+dialog. No provider calls were initiated by instrumentation. No broadcast was
+created or started. Real publisher start remains gated; fit/stop/recovery
+integration and an owner-confirmed destination/receiver trial remain necessary
+before actual broadcast-output evidence. No new dependencies were introduced.
+
 ### Read-only authorization succeeded after fingerprint correction — 2026-11-14
 
 The owner reported that the Android OAuth client's SHA-1 did not match the
