@@ -83,6 +83,16 @@ recommendations and decisions awaiting the user's answer.
   independent host-side or documentation work while waiting; do not block work
   that does not need the device. Apply the same rule to watches when physical
   Wear OS validation is required.
+- After installing or updating an APK on a phone, tablet, watch, or emulator,
+  verify the installed package's `versionName` and `versionCode` on that device
+  and report them in the final response, together with the device model and
+  package name. For the media diagnostic, also identify the `versionName` as
+  the on-screen **Dev build** value so the owner can compare it. Report the
+  installed version for each device when installing on multiple devices. If
+  installation or version verification fails, state that explicitly; never
+  present the intended build's version as a verified installed version. The
+  media diagnostic's source-derived label does not include all dependency or
+  build-environment changes, so matching labels alone do not prove identical APKs.
 - Android Virtual Devices may be used for applicable UI, lifecycle, API-level,
   screen-size, and instrumented tests. Treat emulator results as supplementary:
   they do not establish physical camera/lens or microphone routing, sustained

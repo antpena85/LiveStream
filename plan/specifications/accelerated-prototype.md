@@ -38,6 +38,18 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Missing authorization result — 2026-11-14
+
+The diagnostic distinguishes a canceled Android activity result without an
+intent from its generic failure message. It explicitly does not infer why the
+flow ended, whether the owner canceled, or whether Google rejected access.
+This controlled T03 case failed before implementation and passed on the
+Pixel 10 Pro XL in the publisher-only instrumentation run; both APKs built
+offline. It reports no provider message, account information, or token. Other
+failure paths remain generic, and a new owner-initiated retry is needed to
+learn which result the real flow returns. The full UI instrumentation separately
+failed on a stop-dialog system-UI focus check; it was not established green.
+
 ### Authorization result visibility investigation — 2026-11-14
 
 The owner reported that after choosing an account the chooser disappeared with

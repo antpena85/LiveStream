@@ -72,7 +72,7 @@ class MediaActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != 204) return
         if (resultCode != RESULT_OK || data == null) {
-            showAuthorizationResult(false)
+            showAuthorizationMessage(YouTubeAuthorizationDiagnostic.resultMessage(resultCode, data != null))
             return
         }
         try {
@@ -84,6 +84,10 @@ class MediaActivity : Activity() {
     private fun showAuthorizationResult(authorized: Boolean) {
         val message = if (authorized) "YouTube read-only authorization received. No channel or broadcast has been verified; publishing remains disabled."
         else "YouTube authorization not completed. Publishing remains disabled."
+        showAuthorizationMessage(message)
+    }
+
+    private fun showAuthorizationMessage(message: String) {
         status.text = message
         if (!isFinishing && !isDestroyed) {
             AlertDialog.Builder(this).setTitle("YouTube authorization").setMessage(message).setPositiveButton("OK", null).show()
