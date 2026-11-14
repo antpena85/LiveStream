@@ -38,6 +38,32 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Authorization cancellation boundary — 2026-11-14
+
+At the confirmed T03 destination-setup boundary, a host-side diagnostic now
+returns not authorized on a controlled cancellation and does not invoke the
+supplied continuation. The behavioral test was observed failing before the
+implementation and passed with the offline JVM suite. This is a narrow fixture:
+it is not connected to Android, Google Play services, account consent, or the
+publisher, and it does not implement successful authorization. No account or
+provider was contacted. The Google authorization dependency and its transitive
+licenses and security implications still require review before integration.
+
+### Android OAuth client confirmation — 2026-11-13
+
+The owner confirmed that the Google Cloud Android OAuth client matches the
+diagnostic package `livestream.feasibility.mediaprobe` and its local debug
+signing certificate SHA-1. This is an owner report, not an independently
+verified consent grant or account eligibility result. The diagnostic Android
+project currently depends only on RootEncoder; Google Play services
+authorization is not a declared dependency or present in the local cache.
+An API key or matching client does not authorize account access. YouTube
+authorization remains unimplemented and no account was contacted. Before
+adding an authorization library, resolve its dependency, license and security
+implications under the project's dependency rules; then implement one confirmed
+T03 behavior at a time and have the owner authorize on-device. Never request
+tokens, stream keys or credential-bearing URLs in chat or retained evidence.
+
 ### Bound diagnostic YouTube dispatch — 2026-11-13
 
 The isolated diagnostic lifecycle now offers a controlled YouTube session
