@@ -38,6 +38,21 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Authorization result visibility investigation — 2026-11-14
+
+The owner reported that after choosing an account the chooser disappeared with
+no apparent result. This does not establish success or failure of authorization.
+The existing status lives inside a 56dp scroll area with other notices. A
+controlled cancellation instrumentation check observed that its result text was
+clipped or hidden. A proposed dialog was added, but the subsequent accessibility
+visibility check did not pass on the Pixel 10 Pro XL, so the fix is unverified
+and needs further investigation. No account name, token, or raw provider error
+was collected. This does not establish that the provider callback was delivered.
+The owner subsequently retried and reported seeing the generic unsuccessful
+authorization dialog. This confirms manual dialog visibility and a non-success
+result, not the cause or a successful grant. The unreliable accessibility-based
+check was removed; automated visibility coverage is still missing.
+
 ### Android read-only authorization diagnostic — 2026-11-14
 
 The isolated media diagnostic offers an operator-initiated YouTube connection

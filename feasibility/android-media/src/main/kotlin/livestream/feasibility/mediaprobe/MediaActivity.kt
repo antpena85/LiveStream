@@ -82,8 +82,12 @@ class MediaActivity : Activity() {
     }
 
     private fun showAuthorizationResult(authorized: Boolean) {
-        status.text = if (authorized) "YouTube read-only authorization received. No channel or broadcast has been verified; publishing remains disabled."
+        val message = if (authorized) "YouTube read-only authorization received. No channel or broadcast has been verified; publishing remains disabled."
         else "YouTube authorization not completed. Publishing remains disabled."
+        status.text = message
+        if (!isFinishing && !isDestroyed) {
+            AlertDialog.Builder(this).setTitle("YouTube authorization").setMessage(message).setPositiveButton("OK", null).show()
+        }
     }
 
     internal var diagnosticDatabaseName = "local-diagnostic-score.db"
