@@ -59,6 +59,29 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 return
             }
             val accessRequests = mutableListOf<String>()
+            val failedSelection = YouTubeTestBroadcast { path ->
+                if (path.startsWith("channels?")) 200 to """{"items":[{"id":"fixture-channel"}]}"""
+                else 403 to """{"error":{"message":"private-provider-message"}}"""
+            }
+            check(failedSelection.select("abcdefghijk") == null && failedSelection.failureMessage ==
+                "Private test broadcast check: broadcast request failed (HTTP 403). Publishing remains disabled.") {
+                "Selection failure did not identify the sanitized stage and HTTP status"
+            }
+            val selected = YouTubeTestBroadcast { path ->
+                200 to when {
+                    path.startsWith("channels?") -> """{"items":[{"id":"fixture-channel"}]}"""
+                    path.startsWith("liveBroadcasts?") -> """{"items":[{"id":"abcdefghijk","snippet":{"channelId":"fixture-channel"},"status":{"privacyStatus":"private","lifeCycleStatus":"ready"},"contentDetails":{"boundStreamId":"fixture-stream"}}]}"""
+                    path.startsWith("liveStreams?") -> """{"items":[{"id":"fixture-stream","snippet":{"channelId":"fixture-channel"},"status":{"streamStatus":"inactive"}}]}"""
+                    else -> error("Unexpected provider request")
+                }
+            }.select("abcdefghijk")
+            check(selected == YouTubeTestBinding("abcdefghijk", "fixture-stream")) {
+                "Private owned test broadcast and bound inactive ingest were not selected"
+            }
+            check(YouTubeTestBroadcast { path ->
+                200 to if (path.startsWith("channels?")) """{"items":[{"id":"fixture-channel"}]}"""
+                else """{"items":[{"id":"abcdefghijk","snippet":{"channelId":"fixture-channel"},"status":{"privacyStatus":"public","lifeCycleStatus":"ready"},"contentDetails":{"boundStreamId":"fixture-stream"}}]}"""
+            }.select("abcdefghijk") == null) { "A public broadcast was accepted as a private test" }
             val accessResult = YouTubeAccessCheck { path ->
                 accessRequests.add(path)
                 200 to """{"items":[{"id":"fixture-private-id"}]}"""

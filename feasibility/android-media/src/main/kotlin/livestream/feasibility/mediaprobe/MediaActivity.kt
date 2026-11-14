@@ -51,6 +51,31 @@ import org.json.JSONObject
 class MediaActivity : Activity() {
     private var checkYouTubeAccess = false
     private var youtubeCheckRunning = false
+    private var pendingTestBroadcastId: String? = null
+    private var selectedTestBroadcast: YouTubeTestBinding? = null
+    private fun chooseYouTubeReadOnlyCheck() {
+        AlertDialog.Builder(this).setTitle("YouTube read-only checks")
+            .setItems(arrayOf("Check channel/live API access", "Select private test broadcast")) { _, which ->
+                if (which == 0) { checkYouTubeAccess = true; authorizeYouTube() }
+                else {
+                    val input = EditText(this).apply {
+                        hint = "11-character broadcast/video ID — not a stream key"
+                        inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                        importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+                    }
+                    AlertDialog.Builder(this).setTitle("Select private test broadcast")
+                        .setMessage("Enter only the broadcast/video ID from Studio. No URL, stream key or credentials. This checks ownership, private/ready status and bound inactive ingest; it does not start a stream.")
+                        .setView(input).setNegativeButton("Cancel", null)
+                        .setPositiveButton("Check") { _, _ ->
+                            val id = input.text.toString().trim()
+                            input.text.clear()
+                            selectedTestBroadcast = null
+                            if (!id.matches(Regex("[A-Za-z0-9_-]{11}"))) showAuthorizationMessage("Enter an 11-character broadcast/video ID only. Publishing remains disabled.")
+                            else { pendingTestBroadcastId = id; checkYouTubeAccess = true; authorizeYouTube() }
+                        }.show()
+                }
+            }.setNegativeButton("Cancel", null).show()
+    }
     private fun receiveYouTubeAuthorization(token: String?) {
         if (!checkYouTubeAccess || token.isNullOrBlank()) {
             checkYouTubeAccess = false
@@ -58,10 +83,12 @@ class MediaActivity : Activity() {
             return
         }
         checkYouTubeAccess = false
+        val testBroadcastId = pendingTestBroadcastId
+        pendingTestBroadcastId = null
         youtubeCheckRunning = true
         status.text = "Checking YouTube channel and live API access; no broadcast."
         Thread {
-            val message = YouTubeAccessCheck { path ->
+            val get: (String) -> Pair<Int, String> = { path ->
                 val connection = java.net.URL("https://www.googleapis.com/youtube/v3/$path")
                     .openConnection() as javax.net.ssl.HttpsURLConnection
                 try {
@@ -85,10 +112,18 @@ class MediaActivity : Activity() {
                     } ?: "{}"
                     code to body
                 } finally { connection.disconnect() }
-            }.check()
+            }
+            val selection = YouTubeTestBroadcast(get)
+            val binding = if (testBroadcastId != null) selection.select(testBroadcastId) else null
+            val message = if (testBroadcastId == null) YouTubeAccessCheck(get).check()
+                else if (binding != null) "Private test broadcast selected; owned ready broadcast and bound inactive ingest verified. Selection is temporary; publishing remains disabled."
+                else selection.failureMessage
             runOnUiThread {
                 youtubeCheckRunning = false
-                if (!isFinishing && !isDestroyed) showAuthorizationMessage(message)
+                if (!isFinishing && !isDestroyed) {
+                    if (testBroadcastId != null) selectedTestBroadcast = binding
+                    showAuthorizationMessage(message)
+                }
             }
         }.start()
     }
@@ -137,6 +172,7 @@ class MediaActivity : Activity() {
     }
 
     private fun showAuthorizationMessage(message: String) {
+        pendingTestBroadcastId = null
         youtubeCheckRunning = false
         checkYouTubeAccess = false
         status.text = message
@@ -207,7 +243,7 @@ class MediaActivity : Activity() {
         controls.addView(Button(this).apply {
             text = "Check YouTube channel/live access (read-only)"
             setOnClickListener {
-                if (!youtubeCheckRunning) { checkYouTubeAccess = true; authorizeYouTube() }
+                if (!youtubeCheckRunning) chooseYouTubeReadOnlyCheck()
             }
         })
         controls.addView(Button(this).apply {

@@ -38,6 +38,123 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Channel choice required; selection reached ingest check — 2026-11-14
+
+Owner reported switching the default channel and supplied a subsequent
+`m2-dev-c73a8faf71a2` screenshot reporting the combined ingest ownership,
+identity or inactive-state failure. By the current control flow this means the
+channel, exact broadcast ownership, private/ready status and bound stream ID
+checks passed, and exactly one stream item was returned. It does not identify
+which ingest predicate failed or establish that the default-channel change was
+the cause. Publisher remains stopped; preview visibility is not publishing.
+
+Owner explicitly requires choosing the intended channel instead of assuming
+the Google account's default. Recorded in PRD FR-01. Current authorization and
+`channels.list(mine=true,maxResults=1)` are not a channel-picker implementation.
+Do not represent selecting a Google account, public channel lookup, or changing
+a displayed channel ID as authorization for another channel. Google documents
+default-channel behavior for tools without switching support; the current
+AuthorizationRequest builder exposes account selection but no documented
+YouTube channel parameter. A provider-supported channel-aware authorization
+flow needs evaluation and physical multi-channel validation before claiming
+this requirement is implemented. Do not revoke grants or alter Cloud clients
+without an explicit reason and owner-visible consequences.
+
+The immediate ingest diagnostic should distinguish identity/ownership from
+the allowlisted provider state before changing acceptance rules. Google's
+liveStream resource documents both `ready` and `inactive` states; a newly
+prepared stream being `ready` is a possibility, not an observed fact here.
+Do not equate `ready` with verified stopped ingest or accept it merely to get
+a green result. Sources: [authorization builder](https://developers.google.com/android/reference/com/google/android/gms/auth/api/identity/AuthorizationRequest.Builder),
+[YouTube channel switching limitations](https://support.google.com/youtube/answer/3046478),
+[liveStream states](https://developers.google.com/youtube/data/live/reference/rest/v3/liveStreams).
+No code or APK changed for this requirement/evidence update.
+
+### Broadcast lookup did not return one result — 2026-11-14
+
+Owner screenshot on `m2-dev-c73a8faf71a2` reports "broadcast result missing
+or ambiguous" with publisher stopped. In the current selector this means the
+channel request returned exactly one item, then the exact-ID broadcast request
+returned HTTP 200 with an items array whose length was not one. The diagnostic
+does not distinguish zero from multiple items; no exact count or cause is
+established. Privacy, readiness and ingest checks were not reached. Do not
+infer a permissions failure, bad ID or owner setup mistake from this alone.
+Next clarify whether the supplied ID belongs to a scheduled streaming-software
+broadcast on the same channel authorized on the phone, rather than an uploaded
+video, channel or stream key. No code, scope or provider configuration changed
+in response to this screenshot, and no new APK was installed.
+
+### Selection failure diagnostics — 2026-11-14
+
+Owner screenshot on `m2-dev-3ab6145619c4` confirmed private broadcast selection
+failed, but its generic result did not establish a cause. Preserve that
+uncertainty; no owner setup error or provider failure is inferred. The selector
+now provides fixed stage-specific failures for channel/broadcast/ingest checks,
+numeric HTTP status, missing results, privacy/readiness, and binding mismatch.
+No provider message, returned status string, resource ID or response is shown.
+Existing private/ready/inactive requirements remain unchanged.
+
+A T03 controlled broadcast HTTP 403 test failed against the generic message
+then passed after implementation; existing publisher and focused button UI
+checks passed. Both APKs built offline and installed on Pixel 10 Pro XL.
+Verified final app `livestream.feasibility.mediaprobe`: versionName/Dev build
+`m2-dev-c73a8faf71a2`, versionCode 1; test package
+`livestream.feasibility.mediaprobe.test`: versionName null, versionCode 0.
+Intermediate red app version was `m2-dev-67bf175790a0`, code 1. The new real
+provider diagnostic still needs an owner retry. No broadcast was started,
+no credentials collected, and no eligibility or received-output claim is made.
+
+### Owner-prepared private broadcast selection — 2026-11-14
+
+Owner selected preparation of a private test broadcast in Studio, avoiding
+creation permissions. The existing read-only check button now offers a menu
+with channel/live checks and **Select private test broadcast**. The latter asks
+only for the 11-character video/broadcast ID on-device, not a key or URL.
+Read-only channel, exact broadcast and exact bound-stream requests verify
+ownership, private/ready status and inactive ingest. Fields exclude ingestion
+credentials and titles. IDs are held temporarily in the activity, not persisted
+or attached to a publisher claim; this is selection of an existing binding,
+not the mutating YouTube bind API. Real Start remains blocked.
+
+At T03, selection failed against the stub and passed after implementation.
+A controlled public-broadcast rejection check passed first-run. Offline final
+build and publisher-only instrumentation passed, as did the existing focused
+control-visibility check (not the new menu/input flow). Pixel 10 Pro XL verified
+installation: `livestream.feasibility.mediaprobe`, versionName/Dev build
+`m2-dev-3ab6145619c4`, versionCode 1; test package
+`livestream.feasibility.mediaprobe.test`, versionName null, versionCode 0.
+Intermediate verified app versions were `m2-dev-bba308c9ad2f` (stub) and
+`m2-dev-a7caedb31791` (first green), each code 1. One attempt installed an old
+test before its build completed; it was not counted as red until the completed
+test APK reproduced the missing behavior. A packaging file-lock failure was
+resolved by a completed rebuild before installation. No actual provider call
+was initiated by tests. Owner retry of the new input flow remains required.
+Durable binding, stop reconciliation, eligibility and received output remain
+open. Official references: [broadcast list](https://developers.google.com/youtube/data/live/reference/rest/v3/liveBroadcasts/list),
+[broadcast resource](https://developers.google.com/youtube/data/live/reference/rest/v3/liveBroadcasts),
+[stream resource](https://developers.google.com/youtube/data/live/reference/rest/v3/liveStreams).
+
+### Physical channel and live API access succeeded — 2026-11-14
+
+Owner supplied a screenshot on Dev build `m2-dev-c2f5bbb1a9d3` showing
+"YouTube channel access verified. Live API access verified; broadcast
+eligibility and received output remain unverified. Publishing remains disabled."
+Publisher is stopped. This establishes the manually initiated Android
+authorization-to-read-only-provider path on the previously verified Pixel 10
+Pro XL build, including a visible result dialog. It is not automated callback
+coverage, broadcast creation/mutation permission, verified ingest eligibility,
+or received-output evidence. No account details or credentials were collected.
+
+Inspection confirms real `GenericStream` starts still use `fitReady = false`;
+only the supplied diagnostic publisher path consumes the submitted assessment.
+The lifecycle retains unresolved claims and has no independently verified
+provider stop reconciliation. Keep those gates closed. The next useful slice
+is selecting/binding an exact owner-approved test broadcast and its ingest
+resource before integrating session-specific reconciliation and real start.
+Whether the owner prepares a private broadcast in Studio or authorizes the
+diagnostic to create one remains unconfirmed; do not infer permission to create
+or transmit from successful read-only listing. Trial duration also remains open.
+
 ### Missing read-only access control fixed — 2026-11-14
 
 Owner screenshot on `m2-dev-4a4cd2382eb1` showed the read-only control absent.

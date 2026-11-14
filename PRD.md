@@ -161,6 +161,18 @@ YouTube and Twitch. Other compatible destinations may use manual setup.
   through that step inside the app without requiring manual URL/key retrieval.
 - Show the connected account/channel and selected destination before the user
   confirms going live. Signing in must not start a broadcast automatically.
+- **Confirmed channel choice (owner, 2026-11-14):** let the user explicitly
+  choose the intended YouTube channel, including when one Google account is
+  associated with multiple channels. Do not silently assume its default channel
+  or require changing the account-wide default as the normal app workflow.
+  Verify authorization for the chosen channel before destination setup or
+  publishing; a Google account choice alone is not channel confirmation.
+  Allow changing the channel, invalidate the previous destination selection on
+  change, and require confirmation of the newly authorized channel/destination
+  before going live. If the selected authorization integration cannot expose
+  channel choice, explain the limitation and block mismatched setup rather than
+  silently substituting another channel. Provider-compatible implementation
+  and physical multi-channel validation remain open.
 - Let the user disconnect or change the connected account on the streaming
   phone and remove saved authorization when the account is disconnected.
 - Handle canceled sign-in, expired or revoked authorization, missing
