@@ -80,6 +80,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     check(findText(root, "Publisher: stop unconfirmed") != null) { "Publisher state was not visible" }
                     check(findText(root, "Reset diagnostic score") != null) { "Diagnostic score reset control missing" }
                     check(findText(root, "Prepare publisher preview") != null) { "Publisher preview preparation is missing" }
+                    check(findText(root, "Connect YouTube (no broadcast)") != null) { "YouTube authorization control is missing" }
                     val frameReview = findText(root, "Review score change frames")
                     check(frameReview != null) { "Score change frame review control is missing" }
                     frameReview.performClick()

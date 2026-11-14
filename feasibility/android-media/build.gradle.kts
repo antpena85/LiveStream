@@ -74,4 +74,5 @@ androidComponents.onVariants { variant ->
 
 dependencies {
     implementation("com.github.pedroSG94.RootEncoder:library:2.8.1")
+    implementation("com.google.android.gms:play-services-auth:22.0.0")
 }

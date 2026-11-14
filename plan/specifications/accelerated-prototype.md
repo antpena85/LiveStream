@@ -38,6 +38,34 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Android read-only authorization diagnostic — 2026-11-14
+
+The isolated media diagnostic offers an operator-initiated YouTube connection
+request using Google Play services `AuthorizationClient` and the single
+`youtube.readonly` scope. It reports only whether an access token was returned;
+it does not persist or display the token, request server access, inspect a
+channel, or enable publishing. Cancellation and failures show a generic result.
+The scope is sufficient for the documented broadcast-list endpoint but not
+creation or mutation; later operations require a separate scope review.
+
+The control-presence instrumentation failed before implementation and passed on
+the Pixel 10 Pro XL after implementation. Both Android APKs built offline. The
+test did not press the button or contact Google: real consent, cancellation,
+account selection and provider eligibility remain unverified. The control and
+callback are not wired to the host cancellation fixture or real publishing.
+
+Initial dependency review: `play-services-auth:22.0.0` is a provisional diagnostic
+dependency. Its published POM identifies the Android SDK license rather than
+Apache-2.0 and brings AndroidX, Google Play services and Kotlin/coroutines
+transitives; Gradle's runtime dependency report resolved successfully. Google's
+[Android authorization guide](https://developer.android.com/identity/authorization)
+describes the consent and result flow; the [broadcast-list reference](https://developers.google.com/youtube/data/live/reference/rest/v3/liveBroadcasts/list)
+includes read-only scope. Review the [SDK terms](https://developer.android.com/studio/terms)
+and full resolved dependency licenses and notices before distribution; this
+initial risk review is not a release license clearance or final stack selection.
+Google Play services availability, consent policy, account selection and token
+handling require further physical and security validation.
+
 ### Authorization cancellation boundary — 2026-11-14
 
 At the confirmed T03 destination-setup boundary, a host-side diagnostic now

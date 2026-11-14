@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -35,6 +36,9 @@ import com.pedro.encoder.input.sources.video.Camera2Source
 import com.pedro.encoder.utils.CodecUtil
 import com.pedro.library.base.recording.RecordController
 import com.pedro.library.generic.GenericStream
+import com.google.android.gms.auth.api.identity.AuthorizationRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.Scope
 import livestream.feasibility.LocalCaptureReadiness
 import livestream.feasibility.LocalCaptureResult
 import livestream.feasibility.ManualDestination
@@ -44,6 +48,44 @@ import org.json.JSONObject
 
 /** Operator-initiated local M2 experiment. This activity never starts a network stream. */
 class MediaActivity : Activity() {
+    private fun authorizeYouTube() {
+        status.text = "Requesting YouTube read-only authorization; publishing remains disabled."
+        val request = AuthorizationRequest.builder().setRequestedScopes(
+            listOf(Scope("https://www.googleapis.com/auth/youtube.readonly"))
+        ).build()
+        try {
+            Identity.getAuthorizationClient(this).authorize(request)
+                .addOnSuccessListener { result ->
+                    try {
+                        if (result.hasResolution()) {
+                            val pending = result.pendingIntent ?: error("Missing authorization resolution")
+                            startIntentSenderForResult(pending.intentSender, 204, null, 0, 0, 0)
+                        } else showAuthorizationResult(!result.accessToken.isNullOrBlank())
+                    } catch (_: Exception) { showAuthorizationResult(false) }
+                }
+                .addOnFailureListener { showAuthorizationResult(false) }
+        } catch (_: Exception) { showAuthorizationResult(false) }
+    }
+
+    @Deprecated("Android Activity result callback")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != 204) return
+        if (resultCode != RESULT_OK || data == null) {
+            showAuthorizationResult(false)
+            return
+        }
+        try {
+            val result = Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data)
+            showAuthorizationResult(!result.accessToken.isNullOrBlank())
+        } catch (_: Exception) { showAuthorizationResult(false) }
+    }
+
+    private fun showAuthorizationResult(authorized: Boolean) {
+        status.text = if (authorized) "YouTube read-only authorization received. No channel or broadcast has been verified; publishing remains disabled."
+        else "YouTube authorization not completed. Publishing remains disabled."
+    }
+
     internal var diagnosticDatabaseName = "local-diagnostic-score.db"
     private val handler = Handler(Looper.getMainLooper())
     private val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
@@ -99,6 +141,10 @@ class MediaActivity : Activity() {
         info.addView(status)
         sidebar.addView(ScrollView(this).apply { addView(info) }, LinearLayout.LayoutParams(-1, (56 * resources.displayMetrics.density).toInt()))
         val controls = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        controls.addView(Button(this).apply {
+            text = "Connect YouTube (no broadcast)"
+            setOnClickListener { authorizeYouTube() }
+        })
         controls.addView(Button(this).apply {
             text = "Prepare publisher preview"
             setOnClickListener {
@@ -225,7 +271,7 @@ class MediaActivity : Activity() {
         }
         controls.addView(transitionButton)
         val grid = android.widget.GridLayout(this).apply { columnCount = 3 }
-        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Reset diagnostic score", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Decoded frame", "Run 20-second switch/mute test")
+        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Reset diagnostic score", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Connect YouTube (no broadcast)", "Decoded frame", "Run 20-second switch/mute test")
         val buttons = mutableListOf<Button>()
         fun collectButtons(group: android.view.ViewGroup) {
             for (index in 0 until group.childCount) {
