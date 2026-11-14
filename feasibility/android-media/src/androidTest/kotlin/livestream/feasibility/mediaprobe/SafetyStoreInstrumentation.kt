@@ -9,6 +9,7 @@ import livestream.feasibility.StreamSession
 
 class SafetyStoreInstrumentation : Instrumentation() {
     private var publisherOnly = false
+    private var accessUiOnly = false
     override fun newActivity(cl: ClassLoader, className: String, intent: android.content.Intent): Activity {
         val activity = super.newActivity(cl, className, intent)
         if (activity is MediaActivity) activity.diagnosticDatabaseName = "off-air-ui-instrumentation.db"
@@ -17,6 +18,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
         publisherOnly = arguments?.getString("publisherOnly") == "true"
+        accessUiOnly = arguments?.getString("accessUiOnly") == "true"
         start()
     }
 
@@ -26,6 +28,36 @@ class SafetyStoreInstrumentation : Instrumentation() {
         targetContext.deleteDatabase("off-air-ui-instrumentation.db")
         val result = Bundle()
         try {
+            if (accessUiOnly) {
+                val activity = startActivitySync(android.content.Intent(targetContext, MediaActivity::class.java)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+                try {
+                    waitForIdleSync()
+                    var failure: Throwable? = null
+                    runOnMainSync {
+                        try {
+                            fun find(view: android.view.View): android.widget.Button? {
+                                if (view is android.widget.Button && view.text.toString() == "Check YouTube channel/live access (read-only)") return view
+                                if (view is android.view.ViewGroup) for (i in 0 until view.childCount) {
+                                    find(view.getChildAt(i))?.let { return it }
+                                }
+                                return null
+                            }
+                            val button = find(activity.window.decorView)
+                                ?: error("Read-only YouTube access control is missing from the displayed layout")
+                            val bounds = android.graphics.Rect()
+                            check(button.isEnabled && button.getGlobalVisibleRect(bounds) &&
+                                bounds.width() == button.width && bounds.height() == button.height) {
+                                "Read-only YouTube access control is not fully visible and enabled"
+                            }
+                        } catch (error: Throwable) { failure = error }
+                    }
+                    failure?.let { throw it }
+                } finally { runOnMainSync { activity.finish() } }
+                result.putString("result", "PASS: read-only YouTube access control visible and enabled; no provider request")
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             val accessRequests = mutableListOf<String>()
             val accessResult = YouTubeAccessCheck { path ->
                 accessRequests.add(path)

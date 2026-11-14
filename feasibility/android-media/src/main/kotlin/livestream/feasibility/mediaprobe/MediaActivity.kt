@@ -336,7 +336,7 @@ class MediaActivity : Activity() {
         }
         controls.addView(transitionButton)
         val grid = android.widget.GridLayout(this).apply { columnCount = 3 }
-        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Reset diagnostic score", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Connect YouTube (no broadcast)", "Decoded frame", "Run 20-second switch/mute test")
+        val ordered = listOf("Run 10-second camera/audio test", "+ ABC", "+ XYZ", "Stop", "Review clip", "Reset diagnostic score", "Review score change frames", "Prepare publisher preview", "Manual publisher start", "Check test destination (no broadcast)", "Check diagnostic publisher readiness (no broadcast)", "Connect YouTube (no broadcast)", "Decoded frame", "Run 20-second switch/mute test", "Check YouTube channel/live access (read-only)")
         val buttons = mutableListOf<Button>()
         fun collectButtons(group: android.view.ViewGroup) {
             for (index in 0 until group.childCount) {

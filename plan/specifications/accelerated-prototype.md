@@ -38,6 +38,22 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Missing read-only access control fixed — 2026-11-14
+
+Owner screenshot on `m2-dev-4a4cd2382eb1` showed the read-only control absent.
+The button had been created but omitted from the explicit list that transfers
+controls into the displayed grid; scrolling could not reveal it. A focused
+T06 `accessUiOnly=true` instrumentation run failed with the missing-control
+message before adding the button to the grid list, then passed with the button
+fully visible and enabled on Pixel 10 Pro XL. It does not click the control or
+contact Google. Publisher-only instrumentation also passed. Both APKs built
+offline and installed successfully. Verified app package
+`livestream.feasibility.mediaprobe`: versionName/Dev build
+`m2-dev-c2f5bbb1a9d3`, versionCode 1. Test package
+`livestream.feasibility.mediaprobe.test`: versionName null, versionCode 0.
+The activity was reopened for the owner. The control occupies the bottom-right
+grid cell. Real provider response and broadcast output remain unverified.
+
 ### Read-only channel/live access integration — 2026-11-14
 
 Owner authorized continuing channel access, eligibility and broadcast-output
