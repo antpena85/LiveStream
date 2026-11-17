@@ -2,7 +2,19 @@ package livestream.feasibility.mediaprobe
 
 import org.json.JSONObject
 
-data class YouTubeTestBinding(val broadcastId: String, val streamId: String)
+enum class YouTubeIngestObservation { INACTIVE, CONFIGURATION_READY }
+
+data class YouTubeTestBinding(
+    val broadcastId: String,
+    val streamId: String,
+    val ingestObservation: YouTubeIngestObservation
+) {
+    val selectionMessage: String
+        get() = when (ingestObservation) {
+            YouTubeIngestObservation.INACTIVE -> "Private test broadcast selected; owned ready broadcast and bound inactive ingest verified. Selection is temporary; publishing remains disabled."
+            YouTubeIngestObservation.CONFIGURATION_READY -> "Private test broadcast selected; owned ready broadcast and bound ingest configuration ready. Ingest inactivity is unverified. Selection is temporary; publishing remains disabled."
+        }
+}
 
 /** Read-only selection, not YouTube's mutating bind operation or publishing authorization. */
 class YouTubeTestBroadcast(private val get: (String) -> Pair<Int, String>) {
@@ -39,9 +51,20 @@ class YouTubeTestBroadcast(private val get: (String) -> Pair<Int, String>) {
             if (!streamId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) return fail("bound ingest missing or unsupported")
             stage = "ingest"
             val stream = item("liveStreams?part=id,snippet,status&id=$streamId&fields=items(id,snippet/channelId,status/streamStatus)") ?: return null
-            if (stream.getString("id") != streamId || stream.getJSONObject("snippet").getString("channelId") != channel ||
-                stream.getJSONObject("status").getString("streamStatus") != "inactive") return fail("ingest ownership, identity or inactive-state check failed")
-            YouTubeTestBinding(id, streamId)
+            if (stream.getString("id") != streamId) return fail("ingest identity mismatch")
+            if (stream.getJSONObject("snippet").getString("channelId") != channel) return fail("ingest ownership mismatch")
+            val ingestState = stream.getJSONObject("status").getString("streamStatus")
+            if (ingestState != "inactive" && ingestState != "ready") {
+                val safeState = when (ingestState) {
+                    "created" -> "created"
+                    "active" -> "active"
+                    "error" -> "error"
+                    else -> "unrecognized"
+                }
+                return fail("ingest is not inactive (state: $safeState)")
+            }
+            YouTubeTestBinding(id, streamId, if (ingestState == "inactive")
+                YouTubeIngestObservation.INACTIVE else YouTubeIngestObservation.CONFIGURATION_READY)
         } catch (_: Exception) { fail("$stage request or response unavailable") }
     }
 }

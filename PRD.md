@@ -173,6 +173,9 @@ YouTube and Twitch. Other compatible destinations may use manual setup.
   channel choice, explain the limitation and block mismatched setup rather than
   silently substituting another channel. Provider-compatible implementation
   and physical multi-channel validation remain open.
+  **Ownership clarification (owner, 2026-11-17):** the additional channels
+  are owned by the user, including Brand Account channels under the same
+  Google account, rather than access through Studio manager/editor invitations.
 - Let the user disconnect or change the connected account on the streaming
   phone and remove saved authorization when the account is disconnected.
 - Handle canceled sign-in, expired or revoked authorization, missing

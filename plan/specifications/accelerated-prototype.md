@@ -38,6 +38,97 @@ adoption and complete the release dependency/license review before release.
 
 ## Immediate sequence
 
+### Owned-channel clarification — 2026-11-17
+
+Owner confirmed the additional channels are personally owned, including Brand
+Account channels under the same Google account, rather than Studio-invited
+manager/editor access. Focus subsequent authorization experiments on that
+identity model. Official builder and YouTube Brand Account troubleshooting
+documentation were reviewed; SELECT_ACCOUNT is account selection, not a
+documented channel-picker guarantee. No supported channel-aware replacement
+was established. This clarification does not authorize changing defaults,
+revoking grants or creating a backend, and does not resolve FR-01 channel
+choice. No new device test is requested until there is a useful integration
+change to validate.
+
+### Physical private broadcast selection succeeded — 2026-11-17
+
+Owner screenshot on Dev build `m2-dev-f59db7f5d9c6` confirms the result:
+private test broadcast selected, owned ready broadcast and bound ingest
+configuration ready, inactivity unverified, selection temporary, publishing
+disabled. Publisher is visibly stopped. This is physical owner-observed
+menu/input/authorization/result evidence on the previously verified Pixel 10
+Pro XL installation, not automated provider-callback coverage, channel-switching
+validation, durable binding, stop evidence, eligibility or received output.
+The earlier request for an owner retry is satisfied by this screenshot.
+
+Channel-choice research remains unresolved. The current official
+[AuthorizationRequest builder](https://developers.google.com/android/reference/com/google/android/gms/auth/api/identity/AuthorizationRequest.Builder)
+documents device-account selection, including SELECT_ACCOUNT, not a YouTube
+channel selector. The [channels list reference](https://developers.google.com/youtube/data/reference/rest/v3/channels/list)
+does not establish an all-managed-channels picker from a single ordinary
+mine=true request; do not confuse public lookup with authorization.
+The [native OAuth guidance](https://developers.google.com/identity/protocols/oauth2/native-app)
+does not support using desktop loopback or deprecated copy/paste flows as an
+Android workaround. No verified replacement channel-aware Android flow was
+established in this review. Do not implement undocumented channel parameters,
+revoke grants, change clients or introduce a backend speculatively. Clarify
+whether the intended multiple channels are personally owned/Brand Account
+identities or access delegated through Studio before choosing the next
+provider-specific authorization experiment. Existing publisher gates remain
+closed; no code, APK or provider settings changed for this evidence update.
+
+### Observed ready ingest; read-only selection distinguished — 2026-11-17
+
+Owner screenshot on `m2-dev-044afa3518e0` shows publisher stopped and
+"ingest is not inactive (state: ready)". Identity and ownership checks passed;
+the previously unknown failing predicate is now the ingest state. This does
+not establish a channel-default cause or prove received output.
+
+The [official stream resource](https://developers.google.com/youtube/data/live/reference/rest/v3/liveStreams)
+defines ready as valid CDN settings, distinct from inactive/no received data.
+For temporary read-only setup only, the selector now accepts ready or inactive
+and carries an explicit CONFIGURATION_READY or INACTIVE observation. The ready
+result explicitly says inactivity is unverified; it is not stop evidence or
+publishing authorization. This supersedes the selector's inactive-only rule,
+not the fail-closed publisher or pending-stop requirements. Created, active,
+error and unrecognized states remain rejected. Channel choice remains open.
+
+At confirmed T03, the ready-selection test failed on the prior implementation
+then passed with the observed-state binding and distinct result message.
+Offline build, publisher-only instrumentation and focused button-visibility
+instrumentation passed. Neither run contacted YouTube. Installed on Pixel 10
+Pro XL: `livestream.feasibility.mediaprobe`, versionName/Dev build
+`m2-dev-f59db7f5d9c6`, versionCode 1; test package
+`livestream.feasibility.mediaprobe.test`, versionName null, versionCode 0.
+The red installation was verified as `m2-dev-044afa3518e0`, code 1, with test
+versionName null/code 0. The new menu/input/provider result needs owner retry.
+No stream key retrieval, mutation, claim clearing, or broadcast occurred.
+
+### Ingest rejection diagnostics split — 2026-11-17
+
+At confirmed T03, a controlled ingest identity mismatch failed against the
+combined diagnostic, then passed after separating identity, ownership and
+non-inactive state failures. The same fixture table verifies ownership rejection,
+fixed labels for created/ready/active/error, and an unrecognized label instead
+of exposing an arbitrary provider state. Existing private/ready/inactive
+acceptance rules are unchanged; an inactive owned binding still passes.
+Offline app/test APK build, publisher-only instrumentation and focused access
+button visibility instrumentation passed on Pixel 10 Pro XL. Neither automated
+run initiated provider authorization or a broadcast; the UI check does not
+cover menu/input/provider callbacks. Verified installed app package
+`livestream.feasibility.mediaprobe`: versionName/on-screen Dev build
+`m2-dev-044afa3518e0`, versionCode 1. Test package
+`livestream.feasibility.mediaprobe.test`: versionName null, versionCode 0.
+The red run used verified app version `m2-dev-c73a8faf71a2`, code 1,
+and test versionName null/code 0. Build and instrumentation logs are local
+under `.tools/m2/ingest-diagnostic-{red,green}-*`; these are not committed
+evidence artifacts. Owner retry of Select private test broadcast is next:
+report only the sanitized result dialog, without resource IDs or credentials.
+Channel selection, durable binding, reconciliation, fit integration and received
+output remain open; publishing remains disabled. No provider configuration or
+authorization flow changed. Unrelated IDE device-cache edits were preserved.
+
 ### Channel choice required; selection reached ingest check — 2026-11-14
 
 Owner reported switching the default channel and supplied a subsequent

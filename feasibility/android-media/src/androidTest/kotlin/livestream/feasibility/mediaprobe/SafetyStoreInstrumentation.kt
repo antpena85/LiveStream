@@ -59,9 +59,44 @@ class SafetyStoreInstrumentation : Instrumentation() {
                 return
             }
             val accessRequests = mutableListOf<String>()
+            val ingestFailures = listOf(
+                Triple("other-stream", "fixture-channel", "inactive") to "ingest identity mismatch",
+                Triple("fixture-stream", "other-channel", "inactive") to "ingest ownership mismatch",
+                Triple("fixture-stream", "fixture-channel", "active") to "ingest is not inactive (state: active)",
+                Triple("fixture-stream", "fixture-channel", "created") to "ingest is not inactive (state: created)",
+                Triple("fixture-stream", "fixture-channel", "error") to "ingest is not inactive (state: error)",
+                Triple("fixture-stream", "fixture-channel", "private-provider-message") to "ingest is not inactive (state: unrecognized)"
+            )
+            for ((ingest, reason) in ingestFailures) {
+                val selection = YouTubeTestBroadcast { path ->
+                    200 to when {
+                        path.startsWith("channels?") -> """{"items":[{"id":"fixture-channel"}]}"""
+                        path.startsWith("liveBroadcasts?") -> """{"items":[{"id":"abcdefghijk","snippet":{"channelId":"fixture-channel"},"status":{"privacyStatus":"private","lifeCycleStatus":"ready"},"contentDetails":{"boundStreamId":"fixture-stream"}}]}"""
+                        path.startsWith("liveStreams?") -> """{"items":[{"id":"${ingest.first}","snippet":{"channelId":"${ingest.second}"},"status":{"streamStatus":"${ingest.third}"}}]}"""
+                        else -> error("Unexpected provider request")
+                    }
+                }
+                check(selection.select("abcdefghijk") == null && selection.failureMessage ==
+                    "Private test broadcast check: $reason. Publishing remains disabled.") {
+                    "Rejected ingest selection did not report its sanitized reason: $reason"
+                }
+            }
             val failedSelection = YouTubeTestBroadcast { path ->
                 if (path.startsWith("channels?")) 200 to """{"items":[{"id":"fixture-channel"}]}"""
                 else 403 to """{"error":{"message":"private-provider-message"}}"""
+            }
+            val readySelection = YouTubeTestBroadcast { path ->
+                200 to when {
+                    path.startsWith("channels?") -> """{"items":[{"id":"fixture-channel"}]}"""
+                    path.startsWith("liveBroadcasts?") -> """{"items":[{"id":"abcdefghijk","snippet":{"channelId":"fixture-channel"},"status":{"privacyStatus":"private","lifeCycleStatus":"ready"},"contentDetails":{"boundStreamId":"fixture-stream"}}]}"""
+                    path.startsWith("liveStreams?") -> """{"items":[{"id":"fixture-stream","snippet":{"channelId":"fixture-channel"},"status":{"streamStatus":"ready"}}]}"""
+                    else -> error("Unexpected provider request")
+                }
+            }
+            val readyBinding = readySelection.select("abcdefghijk")
+            check(readyBinding == YouTubeTestBinding("abcdefghijk", "fixture-stream", YouTubeIngestObservation.CONFIGURATION_READY) &&
+                readyBinding.selectionMessage == "Private test broadcast selected; owned ready broadcast and bound ingest configuration ready. Ingest inactivity is unverified. Selection is temporary; publishing remains disabled.") {
+                "Owned configuration-ready ingest could not be selected for read-only setup"
             }
             check(failedSelection.select("abcdefghijk") == null && failedSelection.failureMessage ==
                 "Private test broadcast check: broadcast request failed (HTTP 403). Publishing remains disabled.") {
@@ -75,7 +110,7 @@ class SafetyStoreInstrumentation : Instrumentation() {
                     else -> error("Unexpected provider request")
                 }
             }.select("abcdefghijk")
-            check(selected == YouTubeTestBinding("abcdefghijk", "fixture-stream")) {
+            check(selected == YouTubeTestBinding("abcdefghijk", "fixture-stream", YouTubeIngestObservation.INACTIVE)) {
                 "Private owned test broadcast and bound inactive ingest were not selected"
             }
             check(YouTubeTestBroadcast { path ->

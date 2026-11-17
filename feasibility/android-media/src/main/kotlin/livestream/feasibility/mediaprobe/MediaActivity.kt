@@ -64,7 +64,7 @@ class MediaActivity : Activity() {
                         importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
                     }
                     AlertDialog.Builder(this).setTitle("Select private test broadcast")
-                        .setMessage("Enter only the broadcast/video ID from Studio. No URL, stream key or credentials. This checks ownership, private/ready status and bound inactive ingest; it does not start a stream.")
+                        .setMessage("Enter only the broadcast/video ID from Studio. No URL, stream key or credentials. This checks ownership, private/ready broadcast status and bound ingest state. Configuration-ready ingest does not prove inactivity. This does not start a stream.")
                         .setView(input).setNegativeButton("Cancel", null)
                         .setPositiveButton("Check") { _, _ ->
                             val id = input.text.toString().trim()
@@ -116,7 +116,7 @@ class MediaActivity : Activity() {
             val selection = YouTubeTestBroadcast(get)
             val binding = if (testBroadcastId != null) selection.select(testBroadcastId) else null
             val message = if (testBroadcastId == null) YouTubeAccessCheck(get).check()
-                else if (binding != null) "Private test broadcast selected; owned ready broadcast and bound inactive ingest verified. Selection is temporary; publishing remains disabled."
+                else if (binding != null) binding.selectionMessage
                 else selection.failureMessage
             runOnUiThread {
                 youtubeCheckRunning = false
